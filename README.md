@@ -56,8 +56,7 @@ Do a nyquist diagram plot in GNU Octave
 ![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Sk%C3%A4rmbild%20fr%C3%A5n%202017-11-09%2000-12-02.png)
 
 # Install
-To install Matavecontrol, the following code are written in the terminal of your MATLAB® or GNU Octave program.
-Download the folder "sourcecode" and place it where you want it. 
+To install Matavecontrol, Download the folder "sourcecode" and place it where you want it. Then the following code are written in the terminal of your MATLAB® or GNU Octave program.
 
 ```matlab
 path('path/to/the/sourcecode/folder/where/all/matave/files/are', path)
