@@ -1,7 +1,7 @@
-# matavecontrol
+# Matavecontrol
 Matavecontrol is a basic toolbox for control engineering. The toolbox can be used for both GNU Octave and MATLAB®. Easy to use and easy to install. The main focus on matavecontrol is to offer a control toolbox which can be used in both GNU Octave and MATLAB®. Also the library is a very basic library so other developers can fast dive into the code.
 
-# Use
+# Typical use
 
 To use Matavecontrol, you should allways start with to create a transfer function or a state space model. Then you can use that mathematical model in almost all the function of Matavecontrol. 
 
