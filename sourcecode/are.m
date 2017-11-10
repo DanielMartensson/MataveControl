@@ -56,7 +56,7 @@ function [X] = are(varargin)
     
     if(sampleTime > 0)
       % Create discrete algebraic riccati equation
-      fun = @(X, A, B, Q, R) A'*X*A - (A'*X*B)*inv(R + B'*X*B)*(B'*X*A) + Q;
+      fun = @(X, A, B, Q, R) A'*X*A - X - (A'*X*B)*inv(R + B'*X*B)*(B'*X*A) + Q;
     else
       % Create continuos algebraic riccati equation
       fun = @(X, A, B, Q, R) A'*X + X*A - X*B*inv(R)*B'*X + Q;
