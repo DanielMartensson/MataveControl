@@ -37,7 +37,7 @@ function [X] = are(varargin)
     B = sys.B;
     C = sys.C;
     
-    % Get info
+    % Get info 
     ny = size(C, 1); % Number outputs
     nu = size(B, 2); % Number inputs
     nx = size(A, 1); % Number states
