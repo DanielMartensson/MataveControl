@@ -27,7 +27,7 @@ Create a state space model in MATLAB®
 
 ![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Sk%C3%A4rmbild%20fr%C3%A5n%202017-11-09%2000-06-29.png)
 
-Create a state space model in GNU Octave
+Create a state space model in GNU Octave 
 
 ![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Sk%C3%A4rmbild%20fr%C3%A5n%202017-11-09%2000-06-41.png)
 
