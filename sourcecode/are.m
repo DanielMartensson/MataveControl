@@ -91,7 +91,7 @@ end
 function [value, isterminal, direction] = dare(t, X, A, B, Q, R)
     
   X = reshape(X, size(A)); % Vector -> Matrix
-  value = A'*X*A - X - (A'*X*B)*inv(R + B'*X*B)*(B'*X*A) + Q; % Value is the derivative of X
+  value = A'*X*A -X -A'*X*B*inv(B'*X*B + R)*B'*X*A + Q; % Value is the derivative of X
   value = value(:); % Matrix -> Vector
   
   isterminal = 1;
