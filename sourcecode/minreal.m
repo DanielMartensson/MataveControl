@@ -43,7 +43,7 @@ function [model] = minreal(varargin)
     % Hankel matrix 0
     k = 0;
     H0 = obsv(sysd, r)*sysd.A^k*ctrb(sysd, s);
-    [U,E,V] = svd(H0,'econ')
+    [U,E,V] = svd(H0,'econ');
     
     % New rank n for finding En, Un, Vn
     n = rank(E);
