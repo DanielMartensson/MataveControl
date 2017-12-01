@@ -66,22 +66,6 @@ function [Am, phim, wpi, wc] = margin(varargin)
         % Done!
         % Plot bode diagram
         
-        % Transform the angels so it can show more that -180 degrees
-        BodeAngles = angle(H) * 180/pi;
-        a_past = BodeAngles(1);
-        n = 0;
-        NewBodeAngles = [];
-        for k = 1:L
-          a_now = BodeAngles(k) + n; 
-          if(and(a_now > 170 + n, a_past < -170 + n))
-            n = n - 180*2;
-          else
-            a_past = a_now;
-          end
-          a_now = BodeAngles(k) + n; 
-          NewBodeAngles = [NewBodeAngles a_now];
-        end
-        
         % Get wc, phim
         wc = inf;
         phim = inf;
@@ -94,7 +78,7 @@ function [Am, phim, wpi, wc] = margin(varargin)
           % When dB is under 0 and flag = true
           if (and(20*log10(abs(H(k))) <= 0, flag == true ))
             wc = w(k);
-            phim = 180 + NewBodeAngles(k);
+            phim = 180 + angle(H(k)) * 180/pi;
             break;
           end
         end
@@ -103,7 +87,7 @@ function [Am, phim, wpi, wc] = margin(varargin)
         wpi = inf;
         Am = inf;
         for k = 1:length(H)
-          if (NewBodeAngles(k) <= -180)
+          if (angle(H(k)) * 180/pi <= -180)
             wpi = w(k);
             Am = 20*log10(abs(H(k)));
             break;
@@ -119,7 +103,7 @@ function [Am, phim, wpi, wc] = margin(varargin)
         grid on
         subplot(2,1,2)
         
-        semilogx(w, NewBodeAngles, linspace(wc, wc), linspace(-180, phim - 180), wpi, -180, 'x');
+        semilogx(w, angle(H) * 180/pi, linspace(wc, wc), linspace(-180, phim - 180), wpi, -180, 'x');
         ylabel('Phase [deg]');
         xlabel('Frequency [rad/s]');
         grid on
