@@ -66,7 +66,8 @@ function [drop] = dbdrop(varargin)
         % Done!
         % Plot bode diagram
         
-        dBinitial = 20*log10(abs(H(1))) - 3;
+        dBstatic = 20*log10(abs(freqresp(G(i,j), 0))); % The static G(0) dB gain
+        dBinitial = dBstatic - 3;
         dropWc = NaN;
         for k = 1 : L
           if(20*log10(abs(H(k))) <= dBinitial)  
