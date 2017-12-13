@@ -6,6 +6,4 @@ Here is a list of the following points that need to be fixed:
 
 * Fix så Bodeplots shows "Figure 1, Figure 2, Figure 3" etc.
 
-* Fix dbdrop so it really find the 3 dB drop frequency from G(0)
-
 * Fix så lsim.m can return y,x values
