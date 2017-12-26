@@ -1,11 +1,11 @@
 % Do a impulse response of a transfer function or a state space model
 % Input: G, sys, t(optional)
-% Example 1: impulse(G, t)
-% Example 2: impulse(G)
-% Example 3: impulse(sys, t)
+% Example 1: [y] = impulse(G, t)
+% Example 2: [y] = impulse(G)
+% Example 3: [y] = impulse(sys, t)
 % Author: Daniel Mårtensson, September 2017
 
-function [retval] = impulse(varargin)
+function [y] = impulse(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing input')
@@ -36,7 +36,7 @@ function [retval] = impulse(varargin)
     x0 = zeros(size(varargin{1}.A, 1), 1); % Assume x0 = [0; 0; 0; ..... ; 0]
     
     % Call lsim!
-    lsim(varargin{1}, u, t, x0); 
+    [y] = lsim(varargin{1}, u, t, x0); 
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
     sys = tf2ss(varargin{1}, 'OCF');
@@ -50,7 +50,7 @@ function [retval] = impulse(varargin)
     end
     
     % Call impulse
-    impulse(sys,t);
+    [y] = impulse(sys,t);
   else
     error('Not a state space model or a transfer function')
   end
