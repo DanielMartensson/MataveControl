@@ -1,12 +1,12 @@
 % Do a linear simulation of a transfer function or a state space model
 % Input: G, sys, u, t, x0(optional)
-% Example 1: lsim(G,u,t)
-% Example 2: lsim(sys,u,t)
-% Example 3: lsim(sys,u,t,x0)
+% Example 1: [y] = lsim(G,u,t)
+% Example 2: [y] = lsim(sys,u,t)
+% Example 3: [y] = lsim(sys,u,t,x0)
 % Author: Daniel Mårtensson, September 2017
 
 
-function [varargout] = lsim(varargin)
+function [y] = lsim(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing model')
@@ -149,7 +149,7 @@ function [varargout] = lsim(varargin)
     %end
     
     % Call lsim
-    lsim(sys, u, t, x0)
+    y = lsim(sys, u, t, x0);
     
   else
     error('No transfer function or state space model')
