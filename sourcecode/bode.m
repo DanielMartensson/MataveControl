@@ -1,11 +1,11 @@
 % Plot the bode diagram of a state space model or a 
 % transfer function between frequencies w1 and w2
 % Input: sys, G, w1, w2
-% Example 1:  bode(sys, w1, w2)
-% Example 2:  bode(G, w1, w2)
+% Example 1:  [mag, phase, wout] = bode(sys, w1, w2)
+% Example 2:  [mag, phase, wout] = bode(G, w1, w2)
 % Author: Daniel Mårtensson, Oktober 2017
 
-function [reval] = bode(varargin)
+function [mag, phase, wout] = bode(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error('Missing model')
@@ -77,6 +77,11 @@ function [reval] = bode(varargin)
         ylabel('Phase [deg]');
         xlabel('Frequency [rad/s]');
         grid on 
+        
+        % Return these values
+        mag = 20*log10(abs(H));
+        phase = BodeAngles;
+        wout = w;
       end
     end
   else
