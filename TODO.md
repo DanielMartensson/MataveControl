@@ -11,3 +11,5 @@ Here is a list of the following points that need to be fixed:
 * Fix so Bode/Nyquist plot functions has default frequency intervall
 
 * Fix better help comments at the top of all function
+
+* Create a tutorial how to use the commands
