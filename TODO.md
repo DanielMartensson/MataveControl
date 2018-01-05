@@ -6,6 +6,8 @@ Here is a list of the following points that need to be fixed:
 
 * Fix so Bodeplots shows "Figure 1, Figure 2, Figure 3" etc.
 
-* Fix so lsim.m can return y,x values
-
 * Fix legends so dbdrop shows the right color.
+
+* Fix so Bode/Nyquist plot functions has default frequency intervall
+
+* Fix better help comments at the top of all function
