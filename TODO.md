@@ -15,3 +15,7 @@ Here is a list of the following points that need to be fixed:
 * Create a tutorial how to use the commands
 
 * Create nlsim.m with saturation at states
+
+* Edit this ">> lsim(sysd, U, T);
+error: In signal vecor has not the same rows as B matrix" to ">> lsim(sysd, U, T);
+error: In signal vecor has not the same columns as B matrix"
