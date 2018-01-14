@@ -31,3 +31,5 @@ error: In signal vecor has not the same columns as B matrix"
 * Get the states from initial.m 
 
 * Convert matrix transfer functions to state space models
+
+* Check why pid.m cannot only use Kp
