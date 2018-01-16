@@ -1,12 +1,12 @@
 % Do a linear simulation of a transfer function or a state space model
 % Input: G, sys, u, t, x0(optional)
-% Example 1: [y] = lsim(G,u,t)
-% Example 2: [y] = lsim(sys,u,t)
-% Example 3: [y] = lsim(sys,u,t,x0)
+% Example 1: [y, x] = lsim(G,u,t)
+% Example 2: [y, x] = lsim(sys,u,t)
+% Example 3: [y, x] = lsim(sys,u,t,x0)
 % Author: Daniel Mårtensson, September 2017
 
 
-function [y] = lsim(varargin)
+function [y, X] = lsim(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing model')
@@ -26,7 +26,7 @@ function [y] = lsim(varargin)
     u = varargin{2}; % In signal vector
     % Check in signal vector
     if(size(u, 1) ~= size(B, 2))
-      error('In signal vecor has not the same rows as B matrix')
+      error('In signal vecor has not the same columns as B matrix')
     end
     
     % Get time
@@ -84,6 +84,7 @@ function [y] = lsim(varargin)
       %y(:,k) = C*x + D*delayedInput(:,end);
       %x = Ad*x + Bd*delayedInput(:,end); % Update state vector
       
+      X(:,k) = x; % The return states
       y(:,k) = Cd*x + Dd*u(:,k);
       x = Ad*x + Bd*u(:,k); % Update state vector
     end
@@ -149,7 +150,7 @@ function [y] = lsim(varargin)
     %end
     
     % Call lsim
-    y = lsim(sys, u, t, x0);
+    [y, X] = lsim(sys, u, t, x0);
     
   else
     error('No transfer function or state space model')

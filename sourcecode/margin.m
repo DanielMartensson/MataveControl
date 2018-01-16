@@ -13,11 +13,12 @@ function [Am, phim, wpi, wc] = margin(varargin)
   
   % Check if there is any input
   if(length(varargin) < 3)
-    error('Missing frequencies')
+    w1 = 0.01;
+    w2 = 100;
+  else
+    w1 = varargin{2};
+    w2 = varargin{3};
   end
-  
-  w1 = varargin{2};
-  w2 = varargin{3};
 
   
    % Get the type
@@ -94,7 +95,7 @@ function [Am, phim, wpi, wc] = margin(varargin)
           end
         end
 
-        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))), 'NumberTitle', 'off')
+        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
         subplot(2,1,1)
         semilogx(w, 20*log10(abs(H)), wc, 0, 'x', linspace(wpi, wpi), linspace(0, Am));
         legend('Mag', 'Wc', 'Am')

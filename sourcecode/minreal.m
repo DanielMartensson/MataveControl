@@ -62,7 +62,7 @@ function [model] = minreal(varargin)
     H1 = obsv(sysd, r)*sysd.A^k*ctrb(sysd, s);
     
     % The new minimal state space realization
-    A  = En^(-1/2)*Un'*H1*Vn*En^(-1/2);
+    A = En^(-1/2)*Un'*H1*Vn*En^(-1/2);
     B = En^(1/2)*Vn'*Eu;
     C = Ey'*Un*En^(1/2);
     D = sysd.D;

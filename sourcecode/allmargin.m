@@ -13,11 +13,12 @@ function [S] = allmargin(varargin)
   
   % Check if there is any input
   if(length(varargin) < 3)
-    error('Missing frequencies')
+    w1 = 0.01;
+    w2 = 100;
+  else
+    w1 = varargin{2};
+    w2 = varargin{3};
   end
-  
-  w1 = varargin{2};
-  w2 = varargin{3};
 
   
    % Get the type

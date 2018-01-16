@@ -11,14 +11,16 @@ function [Gpid] = pid(varargin)
   
   % Input the parameters
   if(length(varargin) >= 1)
-    Kp = varargin{1};
+    Kp = tf(varargin{1}, 1);
+    Gpid = Kp;
   else
     error('Need to have at least Kp');
   end
   
   % Integrator
   if(length(varargin) >= 2)
-    Ti = varargin{2};
+    Ki = tf(varargin{2}, [1 0]);
+    Gpid = parallel(Kp, Ki);
   else
     Ti = 0;
   end
@@ -30,11 +32,13 @@ function [Gpid] = pid(varargin)
     Td = 0;
   end
   
-  % Low pass filter
+  % Low pass filter for derivative
   if(length(varargin) >= 4)
     Tf = varargin{4};
+    Kd = tf([Td 0], [Tf 1]);
   else
     Tf = 0;
+    Kd = tf([Td 0], [1]);
   end
   
   % Sampling time
@@ -45,7 +49,12 @@ function [Gpid] = pid(varargin)
   end
   
   % Build the PID
-  Gpid = tf([Kp*Ti*(Td+Tf) Kp*(Ti+Tf) Kp],[Ti*Tf Ti 0]);
+  % Check if derivative was 0
+  if Td > 0
+    Gpid = parallel(Gpid, Kd);
+  end
+  
+  % Else - Just return Gpid as it is
   
   % Convert to discrete if needed
   if(Ts > 0)

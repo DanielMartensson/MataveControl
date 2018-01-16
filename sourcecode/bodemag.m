@@ -13,11 +13,14 @@ function [reval] = bodemag(varargin)
   
   % Check if there is any input
   if(length(varargin) < 3)
-    error('Missing frequencies')
+    w1 = 0.01;
+    w2 = 100;
+  else
+    w1 = varargin{2};
+    w2 = varargin{3};
   end
   
-  w1 = varargin{2};
-  w2 = varargin{3};
+  
   
    % Get the type
   type = varargin{1}.type;
@@ -67,7 +70,7 @@ function [reval] = bodemag(varargin)
         % Done!
         % Plot Bode diagram
 
-        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))), 'NumberTItle', 'off')
+        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
         semilogx(w, 20*log10(abs(H)));
         ylabel('Magnitude [dB]');
         grid on

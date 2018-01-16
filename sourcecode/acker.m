@@ -38,7 +38,7 @@ function [L] = acker(varargin)
       error('Poles need to have the same dimension as matrix A')
     end
     
-    % Create the control law gain matrix L 
+    % Create the control law gain matrix L
     %Formula from Ogata Modern Control Engineering
     L = ctrb(sys)\polyvalm(real(poly(P)), A);
     L = L(size(A,2),:);

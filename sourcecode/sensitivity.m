@@ -13,11 +13,12 @@ function [Ms] = sensitivity(varargin)
   
   % Check if there is any input
   if(length(varargin) < 3)
-    error('Missing frequencies')
+    w1 = 0.01;
+    w2 = 100;
+  else
+    w1 = varargin{2};
+    w2 = varargin{3};
   end
-  
-  w1 = varargin{2};
-  w2 = varargin{3};
 
   
    % Get the type
@@ -81,7 +82,7 @@ function [Ms] = sensitivity(varargin)
         xp = r*cos(ang);
         yp = r*sin(ang);
 
-        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))), 'NumberTitle', 'off')
+        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
         plot([real(H)], [imag(H)],-1, 0 ,'+', linspace(-1, -abs(1-real(Ms))), linspace(0, imag(Ms)), x0 + xp, y0 + yp)
         title('Nyquist diagram')
         xlabel('Real axis')

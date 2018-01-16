@@ -1,10 +1,10 @@
 % Simulate a transfer function or state space model with initial state vector x0 
 % and time constant t, not time vector
 % Input: sys, t, x0
-% Example 3: initial(sys, t, x0)
+% Example 1: [y, x] = initial(sys, t, x0)
 % Author: Daniel Mårtensson, September 2017
 
-function [retval] = initial(varargin)
+function [y, x] = initial(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing input')
@@ -44,7 +44,7 @@ function [retval] = initial(varargin)
     end
     
     % Call lsim!
-    lsim(varargin{1}, u, t, x0); 
+    [y, x] = lsim(varargin{1}, u, t, x0); 
   elseif(strcmp(varargin{1}.type,'TF'))
     error('Only for state space models')
   else

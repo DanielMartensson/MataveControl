@@ -13,11 +13,12 @@ function [drop] = dbdrop(varargin)
   
   % Check if there is any input
   if(length(varargin) < 3)
-    error('Missing frequencies')
+    w1 = 0.01;
+    w2 = 100;
+  else
+    w1 = varargin{2};
+    w2 = varargin{3};
   end
-  
-  w1 = varargin{2};
-  w2 = varargin{3};
 
   
    % Get the type
@@ -66,6 +67,7 @@ function [drop] = dbdrop(varargin)
         % Done!
         % Plot bode diagram
         
+
         dBstatic = 20*log10(abs(freqresp(G(i,j), 0))); % The static G(0) dB gain
         dBinitial = dBstatic - 3;
         dropWc = NaN;
@@ -77,11 +79,14 @@ function [drop] = dbdrop(varargin)
         end
         
 
-        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))), 'NumberTItle', 'off')
-        semilogx(w, 20*log10(abs(H)), [drop drop], [dBinitial (dBinitial + 3)]);
+        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
+        semilogx(w, 20*log10(abs(H)), 'b');
+        hold on
+        h = semilogx([drop drop], [dBinitial (dBinitial + 3)], 'r');
         ylabel('Magnitude [dB]');
         grid on
-        legend(strcat('3 dB drop: ', num2str(drop), ' rad/s')) 
+        legend(h,strcat('3 dB drop at: ', num2str(drop), ' rad/s'))
+
              
       end
     end

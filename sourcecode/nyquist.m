@@ -13,11 +13,12 @@ function [reval] = nyquist(varargin)
   
   % Check if there is any input
   if(length(varargin) < 3)
-    error('Missing frequencies')
+    w1 = 0.01;
+    w2 = 100;
+  else
+    w1 = varargin{2};
+    w2 = varargin{3};
   end
-  
-  w1 = varargin{2};
-  w2 = varargin{3};
   
    % Get the type
   type = varargin{1}.type;
@@ -65,7 +66,7 @@ function [reval] = nyquist(varargin)
         % Done!
         % Plot nyquist diagram
 
-        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))), 'NumberTitle', 'off')
+        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
         plot([real(H) nan real(H)], [imag(H) nan -imag(H)],-1, 0 ,'+')
         title('Nyquist diagram')
         xlabel('Real axis')

@@ -57,7 +57,7 @@ function [retval] = rlocus(varargin)
         end
         % Done! Plot it now!
 
-        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))), 'NumberTitle', 'off')
+        figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
         plot(real(pvector), imag(pvector), '.r', real(zvector), imag(zvector), 'bo');
         grid on
         

@@ -36,7 +36,7 @@ function [y] = impulse(varargin)
     x0 = zeros(size(varargin{1}.A, 1), 1); % Assume x0 = [0; 0; 0; ..... ; 0]
     
     % Call lsim!
-    [y] = lsim(varargin{1}, u, t, x0); 
+    y = lsim(varargin{1}, u, t, x0); 
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
     sys = tf2ss(varargin{1}, 'OCF');
@@ -50,7 +50,7 @@ function [y] = impulse(varargin)
     end
     
     % Call impulse
-    [y] = impulse(sys,t);
+    y = impulse(sys,t);
   else
     error('Not a state space model or a transfer function')
   end
