@@ -8,5 +8,12 @@ Removed the solver fsolve and replaced it with ode45 because fsolve is a part of
 
 * Version 1.6 (2017-12-13)
 Fixed dbdrop.m so it takes G(0) as the beginning static gain.
+
+* Version 2.0 (2018-01-18
+All bode/nyquist/sigma diagrams have default frequency interval.
+Fixed color at dbdrop.m
+Fixed bug at pid.m so now you can choose only static gain transfer functions
+initial.m can return states
+lsim.m, impulse, ramp and step.m can return output
  
  
