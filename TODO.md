@@ -4,5 +4,3 @@ Here is a list of the following points that need to be fixed:
 
 * Create a tutorial how to use the commands
 
-* Create nlsim.m with saturation at states
-
