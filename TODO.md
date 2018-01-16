@@ -20,14 +20,6 @@ Here is a list of the following points that need to be fixed:
 error: In signal vecor has not the same rows as B matrix" to ">> lsim(sysd, U, T);
 error: In signal vecor has not the same columns as B matrix"
 
-* Linear MPC control
-
-* Adaptive control - MIT Rule and Lyapunov control
-
-* H-infinity control
-
-* H-2 control
-
 * Get the states from initial.m 
 
 * Convert matrix transfer functions to state space models
