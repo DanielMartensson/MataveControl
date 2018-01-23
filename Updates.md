@@ -15,5 +15,6 @@ Fixed color at dbdrop.m
 Fixed bug at pid.m so now you can choose only static gain transfer functions
 initial.m can return states
 lsim.m, impulse, ramp and step.m can return output
- 
- 
+
+* Version 2.5 (2018-01-23)
+Added nlsim.m - Nonlinear simulation with state staturation
