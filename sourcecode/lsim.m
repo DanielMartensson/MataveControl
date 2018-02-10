@@ -1,12 +1,12 @@
 % Do a linear simulation of a transfer function or a state space model
 % Input: G, sys, u, t, x0(optional)
-% Example 1: [y, x] = lsim(G,u,t)
-% Example 2: [y, x] = lsim(sys,u,t)
-% Example 3: [y, x] = lsim(sys,u,t,x0)
+% Example 1: [y,t,x] = lsim(G,u,t)
+% Example 2: [y,t,x] = lsim(sys,u,t)
+% Example 3: [y,t,x] = lsim(sys,u,t,x0)
 % Author: Daniel Mårtensson, September 2017
 
 
-function [y, X] = lsim(varargin)
+function [y,t,X] = lsim(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing model')
@@ -68,27 +68,13 @@ function [y, X] = lsim(varargin)
     Cd = sysd.C;
     Dd = sysd.D;
     
-    
-    % Create the delayed input. 
-    % If t(1,1) = delay = no delay    
-    %for i = 1:size(t,2)
-      %if(t(1,i) >= delay)
-        %delayedInput = zeros(size(u,1), i); % The same row widt as signal u
-        %break;
-      %end
-    %end
-    
     % Simulation 
     for k = 1:size(t,2) 
-      %delayedInput = [u(:,k) delayedInput(:, 1:(length(delayedInput) - 1))];
-      %y(:,k) = C*x + D*delayedInput(:,end);
-      %x = Ad*x + Bd*delayedInput(:,end); % Update state vector
-      
       X(:,k) = x; % The return states
       y(:,k) = Cd*x + Dd*u(:,k);
       x = Ad*x + Bd*u(:,k); % Update state vector
     end
-
+    
     
     % If we have a sample time bigger that 0, then we need to make sure
     % that the signal look like it's in discrete form.
@@ -120,7 +106,11 @@ function [y, X] = lsim(varargin)
       subplot(size(C,1),1,i)
       plot(t, y(i,:)); 
       ylabel(strcat('y', num2str(i)));
-      xlabel('Timeunits');
+      if (sampleTime > 0)
+        xlabel('Samples');
+      else
+        xlabel('Timeunits');
+      end
       grid on
     end
     
@@ -150,7 +140,7 @@ function [y, X] = lsim(varargin)
     %end
     
     % Call lsim
-    [y, X] = lsim(sys, u, t, x0);
+    [y,t,X] = lsim(sys, u, t, x0);
     
   else
     error('No transfer function or state space model')

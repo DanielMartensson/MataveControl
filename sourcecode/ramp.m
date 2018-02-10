@@ -1,11 +1,11 @@
 % Ramp a state space model or a transfer function
 % Input: sys, G, t(optinal)
-% Example 1: [y] = ramp(G, t)
-% Example 2: [y] = ramp(G)
-% Example 3: [y] = ramp(sys, t)
+% Example 1: [y,t,x] = ramp(G, t)
+% Example 2: [y,t,x] = ramp(G)
+% Example 3: [y,t,x] = ramp(sys, t)
 % Author: Daniel Mårtensson, 2017 September
 
-function [y] = ramp(varargin)
+function [y,t,X] = ramp(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing input')
@@ -35,7 +35,7 @@ function [y] = ramp(varargin)
     u = repmat(u, size(varargin{1}.B, 2), 1); % Creates 0 -> 1
     x0 = zeros(size(varargin{1}.A, 1), 1); % Assume x0 = [0; 0; 0; ..... ; 0]
     % Call lsim!
-    y = lsim(varargin{1}, u, t, x0); 
+    [y,t,X] = lsim(varargin{1}, u, t, x0); 
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
     sys = tf2ss(varargin{1}, 'OCF');
@@ -49,7 +49,7 @@ function [y] = ramp(varargin)
     end
     
     % Call ramp
-    y = ramp(sys,t);
+    [y,t,X] = ramp(sys,t);
   else
     error('Not a state space model or a transfer function')
   end

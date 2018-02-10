@@ -1,10 +1,10 @@
 % Do a nonlinear simulation of a transfer function or a state space model
 % Input: sys, u, t, x0(optional), xL(optional)
-% Example 1: [y, x] = nlsim(sys,u,t,x0, xL)
+% Example 1: [y,t,x] = nlsim(sys,u,t,x0, xL)
 % Author: Daniel Mårtensson, January 2018
 
 
-function [y, X] = nlsim(varargin)
+function [y,t,X] = nlsim(varargin)
   % Check if there is some input arguments or it's not a model
   if(isempty(varargin{1}))
     error ('Missing model')
@@ -138,7 +138,11 @@ function [y, X] = nlsim(varargin)
       subplot(size(C,1),1,i)
       plot(t, y(i,:)); 
       ylabel(strcat('y', num2str(i)));
-      xlabel('Timeunits');
+      if (sampleTime > 0)
+        xlabel('Samples');
+      else
+        xlabel('Timeunits');
+      end
       grid on
     end
     
@@ -161,7 +165,7 @@ function [y, X] = nlsim(varargin)
     end
     
     % Call lsim
-    [y, X] = nlsim(sys, u, t, x0);
+    [y,t,X] = nlsim(sys, u, t, x0);
     
   else
     error('No transfer function or state space model')
