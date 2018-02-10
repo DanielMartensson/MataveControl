@@ -107,7 +107,7 @@ function [y,t,X] = lsim(varargin)
       plot(t, y(i,:)); 
       ylabel(strcat('y', num2str(i)));
       if (sampleTime > 0)
-        xlabel('Samples');
+        xlabel(strcat(num2str(sampleTime), ' timeunit/sample'));
       else
         xlabel('Timeunits');
       end
