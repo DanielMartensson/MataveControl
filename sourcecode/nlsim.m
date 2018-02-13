@@ -139,9 +139,9 @@ function [y,t,X] = nlsim(varargin)
       plot(t, y(i,:)); 
       ylabel(strcat('y', num2str(i)));
       if (sampleTime > 0)
-        xlabel(strcat(num2str(sampleTime), ' timeunit/sample'));
+        xlabel(strcat(num2str(sampleTime), ' time unit/sample'));
       else
-        xlabel('Timeunits');
+        xlabel('Time units');
       end
       grid on
     end
