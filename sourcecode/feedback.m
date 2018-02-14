@@ -109,6 +109,16 @@ function [model] = feedback(varargin)
       
       % Do minreal now!
       model = minreal(model);
+      
+      % Discrete or not?
+      if (model.sampleTime > 0)
+        % Replace the delaytime to discrete delay time
+        model.tfdash = strrep(model.tfdash, 'e', 'z');
+        model.tfdash = strrep(model.tfdash, 's', '');
+        % Remove all s -> s
+        model.tfnum = strrep(model.tfnum, 's', 'z');
+        model.tfden = strrep(model.tfden, 's', 'z');
+      end
     else
       error('Need to have the same sampling time')
     end
