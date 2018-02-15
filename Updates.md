@@ -18,3 +18,6 @@ lsim.m, impulse, ramp and step.m can return output
 
 * Version 2.5 (2018-01-23)
 Added nlsim.m - Nonlinear simulation with state staturation
+
+* Version 2.9 (2018-02-15)
+Added findmaxgain.m - To compute the maximum gain limit
