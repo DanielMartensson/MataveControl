@@ -2,7 +2,7 @@
 % Input: sys, G, maxgain
 % Example 1: [K] = findmaxgain(sys, maxgain)
 % Example 2: [K] = findmaxgain(G, maxgain)
-% Author: Daniel Mårtensson, 2018 Februari
+% Author: Daniel MÃ¥rtensson, 2018 Februari
 
 function [K] = findmaxgain(varargin)
   % Check if there is any input
@@ -42,7 +42,7 @@ function [K] = findmaxgain(varargin)
         end
         
         % P-controller vector
-        P = linspace(0, maxgain, 1000);
+        P = linspace(0, maxgain, 10000);
         
         % Turn them into equal length
         if length(den) < length(num)
