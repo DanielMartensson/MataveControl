@@ -1,7 +1,6 @@
 % Generate control law gain matrix L of a state space model by using eigen values vector P
 % Input: G, sys, P
 % Example 1: [L] = acker(sys, P)
-% Example 2: [L] = acker(G, P)
 % Author: Daniel Mårtensson, October 2017
 % Source from Modern Control Engineering, Ogata, 3th edition.
 
