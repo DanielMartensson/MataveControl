@@ -42,7 +42,7 @@ function [L] = acker(varargin)
     %Formula from Ogata Modern Control Engineering
     Cm = ctrb(sys); % Controllability matrix
     RealPoly = real(poly(P)); % Real polynomal of P
-    L = Cm\polyvalm(ctrb, A);
+    L = Cm\polyvalm(RealPoly, A);
     L = L(size(A,2),:);
     
     % Check if the user has put in very bad pole locations
@@ -58,7 +58,7 @@ function [L] = acker(varargin)
     
     % Get the difference between pole locations and eigen values
     Diff = abs(P-eigenvalues);
-    if(max(diff./M) > .05)
+    if(max(Diff./M) > .05)
       disp('Warning: Pole locations are in more that 5% error')
     end
     
