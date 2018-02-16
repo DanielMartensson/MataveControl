@@ -2,6 +2,8 @@
 % Input: sys, G, maxgain
 % Example 1: [K] = findmaxgain(sys, maxgain)
 % Example 2: [K] = findmaxgain(G, maxgain)
+% Example 3: [K] = findmaxgain(G)
+% Example 4: [K] = findmaxgain(sys)
 % Author: Daniel Mårtensson, 2018 Februari
 
 function [K] = findmaxgain(varargin)
@@ -19,7 +21,8 @@ function [K] = findmaxgain(varargin)
     if(length(varargin) >= 2)
       maxgain = varargin{2};
     else
-      error('Missing maximum gain');
+      %disp('Default gain is 1000');
+      maxgain = 1000;
     end
     % Call findmaxgain
     findmaxgain(G, maxgain);
@@ -38,7 +41,8 @@ function [K] = findmaxgain(varargin)
         if(length(varargin) >= 2)
           maxgain = varargin{2};
         else
-          error('Missing maximum gain');
+          %disp('Default gain is 1000');
+          maxgain = 1000;
         end
         
         % P-controller vector

@@ -3,6 +3,7 @@
 % Example 1: [L] = acker(sys, P)
 % Example 2: [L] = acker(G, P)
 % Author: Daniel Mårtensson, October 2017
+% Source from Modern Control Engineering, Ogata, 3th edition pdf.
 
 function [L] = acker(varargin)
   % Check if there is any input
@@ -40,18 +41,26 @@ function [L] = acker(varargin)
     
     % Create the control law gain matrix L
     %Formula from Ogata Modern Control Engineering
-    L = ctrb(sys)\polyvalm(real(poly(P)), A);
+    Cm = ctrb(sys); % Controllability matrix
+    RealPoly = real(poly(P)); % Real polynomal of P
+    L = Cm\polyvalm(ctrb, A);
     L = L(size(A,2),:);
     
     % Check if the user has put in very bad pole locations
     P = sort(P);
     nonZeroPoles = find(P ~= 0);
     P = P(nonZeroPoles);
-    eigenvalues = sort(eig(A-B*L)); % The state feedback eigenvalues
+    % Sort the eigen values
+    eigenvalues = sort(eig(A-B*L)); 
+    % Ge the egenvalues which has non zero poles
     eigenvalues = eigenvalues(nonZeroPoles);
+    % Get the absolute maximum value of P
     M = abs(P);
-    if(max(abs(P-eigenvalues)./M) > .10)
-      disp('Warning: Pole locations are in more that 10% error')
+    
+    % Get the difference between pole locations and eigen values
+    Diff = abs(P-eigenvalues);
+    if(max(diff./M) > .05)
+      disp('Warning: Pole locations are in more that 5% error')
     end
     
   elseif(strcmp(type, 'TF' ))
