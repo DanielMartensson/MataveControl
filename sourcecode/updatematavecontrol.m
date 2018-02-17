@@ -19,7 +19,7 @@ function [retval] = updatematavecontrol(varargin)
   
   % Read the listOfFunctions
   fid = fopen('listOfFunctions');
-  txt = textscan(fid, '%s', 'delimiter', ','); % Importat to have the delimiter = ','
+  txt = textscan(fid, '%s', 'delimiter', '\n'); % Importat to have the delimiter = '\n'
   % Remove this double struct
   fileList = txt{1,1};
   
