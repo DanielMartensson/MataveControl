@@ -69,7 +69,7 @@ path('/home/hp/Dokument/Reglerteknik/matavecontrol', path)
 savepath
 ```
 
-Importat! All the .m files need to be inside the folder matavecontrol if you want the update function to work.
+Important! All the .m files need to be inside the folder matavecontrol if you want the update function to work.
 
 # Update
 Write this inside the terminal. Then Matavecontrol is going to download new .m files to matavecontrol from GitHub
