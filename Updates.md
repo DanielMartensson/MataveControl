@@ -24,3 +24,6 @@ Added findmaxgain.m - To compute the maximum gain limit
 
 * Version 3.0 (2018-02-18
 Implemented updatematavecontrol.m so it can update the whole library by using the terminal
+
+* Version 3.5 (2018-02-18)
+Added pade approximation pade.m for time delays
