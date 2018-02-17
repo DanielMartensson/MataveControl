@@ -38,6 +38,7 @@ modred.m
 nlsim.m
 nyquist.m
 obsv.m
+pade.m
 parallel.m
 pid.m
 pipd.m
