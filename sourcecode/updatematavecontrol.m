@@ -25,7 +25,7 @@ function [retval] = updatematavecontrol(varargin)
     URL = strcat('https://raw.githubusercontent.com/DanielMartensson/matavecontrol/master/sourcecode/', nameOfFile)
     [saveplace, Success] = urlwrite(URL, nameOfFile);
     saveplace
-    isSuccess
+    Success
   end
   
   disp('Matavecontrol is updated!')
