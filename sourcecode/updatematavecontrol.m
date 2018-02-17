@@ -2,6 +2,9 @@
 % Author: Daniel Mårtensson, Februari 2018
 
 function [retval] = updatematavecontrol(varargin)
+  % Get the current working dictionary
+  currentFolder = pwd;
+  
   % Just update matavecontrol
   A = what('matavecontrol'); % Importat that it must stand 'matavecontrol'. Nothing else!
   
@@ -32,5 +35,8 @@ function [retval] = updatematavecontrol(varargin)
   end
   
   disp('Matavecontrol is updated!')
+  
+  % Get to the current working dictionary
+  cd(currentFolder);
   
 end
