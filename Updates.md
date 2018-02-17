@@ -21,3 +21,6 @@ Added nlsim.m - Nonlinear simulation with state staturation
 
 * Version 2.9 (2018-02-15)
 Added findmaxgain.m - To compute the maximum gain limit
+
+* Version 3.0 (2018-02-18
+Implemented updatematavecontrol.m so it can update the whole library by using the terminal
