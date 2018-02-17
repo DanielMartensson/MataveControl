@@ -1,3 +1,6 @@
+% Update the whole matavecontrol library by downloading from GitHub
+% Author: Daniel Mårtensson, Februari 2018
+
 function [retval] = updatematavecontrol(varargin)
   % Just update matavecontrol
   A = what('matavecontrol'); % Importat that it must stand 'matavecontrol'. Nothing else!
