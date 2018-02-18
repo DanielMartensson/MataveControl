@@ -50,6 +50,7 @@ rlocus.m
 sensitivity.m
 series.m
 sigma.m
+smithpredict.m
 ss.m
 ss2tf.m
 step.m
