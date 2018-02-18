@@ -27,3 +27,6 @@ Implemented updatematavecontrol.m so it can update the whole library by using th
 
 * Version 3.5 (2018-02-18)
 Added pade approximation pade.m for time delays. Pade approximation is good enough when to construct controllers.
+
+* Version 3.6 (2018-02-18)
+Added an Otto Smith delay time compensator.
