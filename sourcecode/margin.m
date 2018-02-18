@@ -49,7 +49,7 @@ function [Am, phim, wpi, wc] = margin(varargin)
           a = [zeros(1, size(b,2) - size(a,2)) a];
         end
         
-        L = 1000;                                  % Number of frequency elements
+        L = 10000;                                 % Number of frequency elements
         N = length(b);                             % Number of denomerators                
         w = logspace(log10(w1), log10(w2), L);     % Angular frequencies
         % Evaluate transfer function
