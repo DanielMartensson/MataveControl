@@ -84,6 +84,8 @@ function [model] = smithpredict(varargin)
       
       % Our smitth predictor system!
       model = feedback(Looptransferfunction, M);
+    else
+      error('Not the same sample time')
     end
   else
     error('Only transfer functions');
