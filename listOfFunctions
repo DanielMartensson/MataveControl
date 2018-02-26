@@ -22,6 +22,7 @@ freqresp.m
 gensig.m
 gram.m
 hsvd.m
+imc.m
 impulse.m
 initial.m
 loop.m
