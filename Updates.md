@@ -30,3 +30,6 @@ Added pade approximation pade.m for time delays. Pade approximation is good enou
 
 * Version 3.6 (2018-02-18)
 Added an Otto Smith delay time compensator.
+
+* Version 4.0 (2018-02-26)
+Added Internal Model Control compensator imc.
