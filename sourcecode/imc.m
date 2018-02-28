@@ -51,7 +51,7 @@ function [model] = imc(varargin)
       den = conv(den1, den2);
       
       % Create a transfer function of num and den
-      GGo = tf(num, den)
+      GGo = tf(num, den);
       % Need to have the same sample time as G!
       GGo.sampleTime = G.sampleTime;
       % Do feedback witg GGo and K.
