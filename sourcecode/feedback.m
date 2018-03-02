@@ -107,9 +107,6 @@ function [model] = feedback(varargin)
       end
       model.sampleTime = G1.sampleTime;
       
-      % Do minreal now!
-      model = minreal(model);
-      
       % Discrete or not?
       if (model.sampleTime > 0)
         % Replace the delaytime to discrete delay time
