@@ -1,5 +1,5 @@
 % Generates the parallel PID controller as a transfer function
-% Input: Kp, Ti(Optinal), Td(Optional), Tf(Optinal), Ts(Optinal)
+% Input: Kp, Ti(Integrator, Optinal), Td(Derivative, Optional), Tf(Low pass filter, Optinal), Ts(Sample time, Optinal)
 % Example 1: [Gpid] = pid(Kp, Ti, Td, Tf, Ts)
 % Author: Daniel Mårtensson, Oktober 2017
 
