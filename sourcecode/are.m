@@ -18,6 +18,26 @@ function [X] = are(varargin)
     error('Missing Q or R');
   end
   
+  % Check if Q < 0
+  [m, n] = size(Q); 
+  for i = 1:m
+    for j = 1:n
+      if Q(i,j) < 0
+          error('Q matrix to Algebraic Riccati Equation is not positive semi-definite');
+      end
+    end
+  end
+  
+  % Check if R <= 0
+  [m, n] = size(R); 
+  for i = 1:m
+    for j = 1:n
+      if R(i,j) <= 0
+          error('R matrix to Algebraic Riccati Equation is not positive definite');
+      end
+    end
+  end
+  
   % Get model type
   type = varargin{1}.type;  
   % Check if there is a TF or SS model
@@ -65,17 +85,7 @@ function [X] = are(varargin)
     
     % Get the last value of X and turn it into a matrix_type
     X = reshape(X(size(X, 1), :), size(A)); % Here is the solution!
-    
-    % Check if X < 0
-    [m, n] = size(X); 
-    for i = 1:m
-      for j = 1:n
-        if X(i,j) < 0
-            error('Solution to Algebraic Riccati Equation is not positive semi-definite');
-        end
-      end
-    end
-    
+
   elseif(strcmp(type, 'TF' ))
     disp('Only state space models only')
   else
