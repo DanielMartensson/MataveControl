@@ -92,7 +92,7 @@ function [sysd, l] = c2dt(varargin)
       % Get the sample time
       sampleTime = varargin{1}.sampleTime;
       % Call c2dt
-      sysd = c2dt(sys, sampleTime);
+      [sysd, l] = c2dt(sys, sampleTime);
     else
       % TF to SS
       G = varargin{1};
@@ -100,7 +100,7 @@ function [sysd, l] = c2dt(varargin)
       % Get the sample time
       sampleTime = varargin{2};
       % Call c2dt
-      sysd = c2dt(sys, sampleTime);
+      [sysd, l] = c2dt(sys, sampleTime);
     end
   else
     error('No state space model or transfer function')
