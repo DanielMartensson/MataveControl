@@ -58,7 +58,7 @@ function [K] = findmaxgain(varargin)
         % Do numerical calculation
         for k = 1:length(P)
           % Multiply P with num and add with den
-          polynomal = P(k)*num + den; % Always begin with 0
+          polynomal = P(k)*num + den; % Always begin with P(k) = 0.  G(s) = K*num + den is the feedback G(s) = K*G/(1 + K*G)
           % Find the roots
           PolyRoots = roots(polynomal);
           % Check if the system is discrete or not
