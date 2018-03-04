@@ -1,10 +1,12 @@
 % Transform a state space model or transfer function to discrete state space model with delay
 % Input: G, sys, sampleTime
-% Example 1: [sysd] = c2dt(G, sampleTime)
-% Example 2: [sysd] = c2dt(sys, sampleTime)
+% Output: sysd(discrete state space model with delay), l(step prediction)
+% Example 1: [sysd, l] = c2dt(G, sampleTime)
+% Example 2: [sysd, l] = c2dt(sys, sampleTime)
 % Author: Daniel Mårtensson, Oktober 2017
+% Updated: 2018-03-04
 
-function [sysd] = c2dt(varargin)
+function [sysd, l] = c2dt(varargin)
   if(isempty(varargin{1}))
     error ('Missing model')
   end
@@ -51,7 +53,7 @@ function [sysd] = c2dt(varargin)
     % Get sizes of input and output matrix
     [bx,by] = size(B);
     [cx,cy] = size(C);
-    l = ceil(delay/sampleTime) % Check of delay is less that sampleTime - Round up
+    l = ceil(delay/sampleTime); % Check of delay is less that sampleTime - Round up
     m = l*sampleTime - delay;
     
     % Create discrete matrecies s1, s2 s3 etc
