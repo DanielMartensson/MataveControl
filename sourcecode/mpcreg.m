@@ -1,11 +1,11 @@
-% Generates the state feedback state space model with disturbance matrix Bd and noise matrix Bn
-% Input: SS, L, K, Bd(optional), Bn(optional)
-% Example 1: [regsys] = lqgreg(sys, L, K)
-% Example 2: [regsys] = lqgreg(sys, L, K, Bd)
-% Example 3: [regsys] = lqgreg(sys, L, K, Bd, Bn)
-% Author: Daniel Mårtensson, November 2017
+% Generates the model predicitve state feedback state space model with disturbance matrix Bd and noise matrix Bn
+% Input: SS, Np, Nc, Rw, K, Bd(optional), Bn(optional)
+% Example 1: [regsys] = mpcreg(sys, Np, Nc, Rw, K)
+% Example 2: [regsys] = mpcreg(sys, Np, Nc, Rw, K, Bd)
+% Example 3: [regsys] = mpcreg(sys, Np, Nc, Rw, K, Bd, Bn)
+% Author: Daniel Mårtensson, Februari 2018
 
-function [regsys] = lqgreg(varargin)
+function [regsys] = mpcreg(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing input')
@@ -15,28 +15,42 @@ function [regsys] = lqgreg(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
   
-    % Get the control law L;
+    % Get the predict horizon Np
     if(length(varargin) >= 2)
-      L = varargin{2};
+      Np = varargin{2};
     else
-      error('Missing the control law L');
+      error('Missing the predict horizon Np');
     end
     
-    % Get the kalman gain matrix
+    % Get the control horizon Nc
     if(length(varargin) >= 3)
-      K = varargin{3};
+      Nc = varargin{3};
+    else
+      error('Missing the control horizon Nc');
+    end
+    
+    % Get the tuning parameter Rw
+    if(length(varargin) >= 4)
+      Rw = varargin{4};
+    else
+      error('Missing the tuning parameter Rw');
+    end
+    
+    % Get the kalman filter gain matrix K
+    if(length(varargin) >= 5)
+      K = varargin{5};
     else
       error('Missing the kalman gain matrix K');
     end
     
-    % Get the disturbance matrix
-    if(length(varargin) >= 4)
-      Bd = varargin{4};
+    % Get the disturbance matrix Bd
+    if(length(varargin) >= 6)
+      Bd = varargin{6};
     end
     
-    % Get the noise matrix
-    if(length(varargin) >= 5)
-      Bn = varargin{5};
+    % Get the noise matrix Bn
+    if(length(varargin) >= 7)
+      Bn = varargin{7};
     end
     
     % Check if what feedback controller you should use
@@ -50,10 +64,35 @@ function [regsys] = lqgreg(varargin)
     D = sys.D;
     delay = sys.delay;
     sampleTime = sys.sampleTime;
-
+    
+    % Check if the model is discrete! MPC can only be discrete in this case.
+    if sampleTime <= 0
+      error('Only discrete state space models')
+    end
+    
+    % Before we entering the switch case, we need to find 
+    % the MPC control L and precompensator factor Kr
+    
+    % Compute the F matrix now!
+    F = Fmatrix(C, A, Np);
+    % Compute the PHI matrix now
+    PHI = PHImatrix(C, A, B, Np, Nc);
+    % Find the MPC control law L
+    barR = Rw*eye(Nc, Nc);
+    L = inv(PHI'*PHI+barR)*PHI'*F;
+    % Get size of B matrix
+    [n, m] = size(B);
+    % Get the m rows of L control law
+    L = L(m, :);
+    % Find the MPC precompensator factor Kr
+    barRs = ones(1, Np)';
+    Kr = inv(PHI'*PHI+barR)*PHI'*barRs;
+    % Get the m rows
+    Kr = Kr(m, :);
+    
     % Create new feedback model
     switch regulatorNumber
-      case 3 % LQG - Without disturbance matrix and noise matrix
+      case 5 % MPC - Without disturbance matrix and noise matrix
         % Create the A matrix
         A11 = (A-B*L);
         A12 = B*L;
@@ -61,14 +100,6 @@ function [regsys] = lqgreg(varargin)
         A21 = zeros(size(A11, 2), size(A22, 1));
         A = [A11 A12; A21 A22];
         
-        % Create the B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A)*B);
-        else
-          Kr = 1./(C*inv(-A11)*B);
-        end
         % Now create B matrix with precompensator factor - For better tracking
         B11 = B*Kr;
         B21 = zeros(size(B));
@@ -92,7 +123,7 @@ function [regsys] = lqgreg(varargin)
         regsys = ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
         
-      case 4 % LQG - Without noise matrix
+      case 6 % MPC - Without noise matrix
         % Create the A matrix
         A11 = (A-B*L);
         A12 = B*L;
@@ -105,15 +136,7 @@ function [regsys] = lqgreg(varargin)
           str = sprintf('Dustirbance matrix Bd need to have the dimension %ix%i', size(B,1), size(B,2));
           error(str);
         end
-        
-        % Create B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A)*B);
-        else
-          Kr = 1./(C*inv(-A11)*B);
-        end
+
         % Now create B matrix with precompensator factor - For better tracking
         B11 = B*Kr;
         B21 = zeros(size(Bd,1), size(B, 2));
@@ -141,7 +164,7 @@ function [regsys] = lqgreg(varargin)
         
         regsys = ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
-      case 5 % LQG 
+      case 7 % MPC 
         % Create the A matrix
         A11 = (A-B*L);
         A12 = B*L;
@@ -161,14 +184,6 @@ function [regsys] = lqgreg(varargin)
           error(str);
         end
         
-        % Create B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A)*B);
-        else
-          Kr = 1./(C*inv(-A11)*B);
-        end
         % Now create B matrix with precompensator factor Kr - For better tracking
         B11 = B*Kr;
         B21 = zeros(size(Bd,1), size(B, 2));
@@ -204,8 +219,39 @@ function [regsys] = lqgreg(varargin)
      end
     
   elseif(strcmp(type, 'TF' ))
-    disp('Only state space models')
+    disp('Only state space models only')
   else
     error('This is not TF or SS');
   end
 end
+
+function [F] = Fmatrix(C, A, Np)
+  F = [];
+  for i = 1:(Np)
+    F = [F; C*A^i];
+  end
+  
+end
+
+function [PHI] = PHImatrix(C, A, B, Np, Nc)
+  F = [];
+  PHI = [];
+  for j = 1:Nc
+    for i = (1-j):(Np-j)
+      
+      if i < 0
+        F = [F; 0*C*A^i*B];
+      else
+        F = [F; C*A^i*B];
+      end
+      
+    end
+    
+    % Add to PHI
+    PHI = [PHI F];
+    % Clear F
+    F = [];
+  end
+  
+end
+

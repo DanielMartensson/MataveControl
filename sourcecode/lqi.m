@@ -1,9 +1,9 @@
 % Compute the LQI integral gain matrix control law L with the weighing matricies Q and R and state space model
 % Input: SS, Q, R
-% Example 1: [Li] = lqi(sys, Q, R)
+% Example 1: [L, Li] = lqi(sys, Q, R)
 % Author: Daniel Mårtensson, October 2017
 
-function [Li] = lqi(varargin)
+function [L, Li] = lqi(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing model')
@@ -36,11 +36,12 @@ function [Li] = lqi(varargin)
     % Create the augmented state space model
     sys.A = [A zeros(nx, ny); -C zeros(ny, ny)];
     sys.B = [B; -D];
-  
+    
     % Get the LQR + LQI control law  
-    Li = lqr(sys, Q, R); 
-    % Remove the LQR gain's
-    Li = Li(:, (1 + size(C, 2)):end); % We add +1 beacuse we want Li from [L Li].
+    ControlLaw = lqr(sys, Q, R); 
+    % Important to have a negative sign!
+    Li = -ControlLaw(:, (1 + size(C, 2)):end); % We add +1 beacuse we want -Li from [L -Li]. 
+    L = ControlLaw(:, 1:size(C, 2));
     
   elseif(strcmp(type, 'TF' ))
     disp('Only state space models only')
