@@ -1,11 +1,11 @@
 % Generates the model predicitve state feedback state space model with disturbance matrix Bd and noise matrix Bn
 % Input: SS, Np, Nc, Rw, K, Bd(optional), Bn(optional)
-% Example 1: [regsys] = mpcreg(sys, Np, Nc, Rw, K)
-% Example 2: [regsys] = mpcreg(sys, Np, Nc, Rw, K, Bd)
-% Example 3: [regsys] = mpcreg(sys, Np, Nc, Rw, K, Bd, Bn)
+% Example 1: [regsys, L, Kr] = mpcreg(sys, Np, Nc, Rw, K)
+% Example 2: [regsys, L, Kr] = mpcreg(sys, Np, Nc, Rw, K, Bd)
+% Example 3: [regsys, L, Kr] = mpcreg(sys, Np, Nc, Rw, K, Bd, Bn)
 % Author: Daniel Mårtensson, Februari 2018
 
-function [regsys] = mpcreg(varargin)
+function [regsys, L, Kr] = mpcreg(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing input')
