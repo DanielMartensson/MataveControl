@@ -1,11 +1,11 @@
 % Generates the state feedback state space model with disturbance matrix Bd and noise matrix Bn
 % Input: SS, L, K, Bd(optional), Bn(optional)
-% Example 1: [regsys] = lqgreg(sys, L, K)
-% Example 2: [regsys] = lqgreg(sys, L, K, Bd)
-% Example 3: [regsys] = lqgreg(sys, L, K, Bd, Bn)
+% Example 1: [regsys, Kr] = lqgreg(sys, L, K)
+% Example 2: [regsys, Kr] = lqgreg(sys, L, K, Bd)
+% Example 3: [regsys, Kr] = lqgreg(sys, L, K, Bd, Bn)
 % Author: Daniel Mårtensson, November 2017
 
-function [regsys] = lqgreg(varargin)
+function [regsys, Kr] = lqgreg(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing input')
