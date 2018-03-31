@@ -34,6 +34,8 @@ lsim.m
 lyap.m
 mag2db.m
 margin.m
+mpcreg.m
+intss.m
 minreal.m
 modred.m
 nlsim.m
