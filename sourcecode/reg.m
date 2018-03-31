@@ -1,8 +1,8 @@
 % Generates the state feedback controler with the control law L and with integral action law Li
 % Input: sys, L, Li(optional), Kr(optional)
 % Example 1: [regsys, Kr] = reg(sys, L)
-% Example 2: [regsys] = reg(sys, L, Li)
-% Example 3: [regsys] = reg(sys, L, Li, Kr)
+% Example 2: [regsys, Kr] = reg(sys, L, Li)
+% Example 3: [regsys, Kr] = reg(sys, L, Li, Kr)
 % Author: Daniel Mårtensson, November 2017
 
 function [regsys, Kr] = reg(varargin)
