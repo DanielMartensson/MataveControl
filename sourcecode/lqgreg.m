@@ -65,7 +65,7 @@ function [regsys] = lqgreg(varargin)
         % Check if the model is discrete or not
         % Create the precompensator factor for the reference vector
         if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A)*B);
+          Kr = 1./(C*inv(eye(size(A11)) - A11)*B);
         else
           Kr = 1./(C*inv(-A11)*B);
         end
@@ -110,7 +110,7 @@ function [regsys] = lqgreg(varargin)
         % Check if the model is discrete or not
         % Create the precompensator factor for the reference vector
         if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A)*B);
+          Kr = 1./(C*inv(eye(size(A11)) - A11)*B);
         else
           Kr = 1./(C*inv(-A11)*B);
         end
@@ -165,7 +165,7 @@ function [regsys] = lqgreg(varargin)
         % Check if the model is discrete or not
         % Create the precompensator factor for the reference vector
         if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A)*B);
+          Kr = 1./(C*inv(eye(size(A11)) - A11)*B);
         else
           Kr = 1./(C*inv(-A11)*B);
         end
