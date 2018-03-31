@@ -33,3 +33,10 @@ Added an Otto Smith delay time compensator.
 
 * Version 4.0 (2018-02-26)
 Added Internal Model Control compensator imc.
+
+* Version 5.0 (2018-03-31)
+Added intss.m which is adding integration to a state space model.
+Added a MPC - Model Predictive Controller - mpcreg.m. This controller is without constrains. But that will be included in the future.
+Fixed feed forward factor for referece signal for better tracking - reg.m and lqgreg.m
+Fixed lqi.m controller to get the integral control law. Also added precompensator factor for anti-winup.
+
