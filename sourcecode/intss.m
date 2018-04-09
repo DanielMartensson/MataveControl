@@ -31,7 +31,8 @@ function [model] = intss(varargin)
     else
       Im = zeros(q, q);
       I = eye(q, q);
-      B = [Bm; Bm*0];
+      m = size(Bm, 2);
+      B = [Bm; zeros(q,m)];
     end
     % Create the rest of the matrecies
     Om = zeros(q, n);
