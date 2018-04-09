@@ -27,14 +27,15 @@ function [model] = intss(varargin)
     if sys.sampleTime > 0
       Im = eye(q, q);
       I = eye(q, q);
+      B = [Bm; Cm*Bm];
     else
       Im = zeros(q, q);
       I = eye(q, q);
+      B = [Bm; Bm*0];
     end
     % Create the rest of the matrecies
     Om = zeros(q, n);
     A = [Am Om'; Cm*Am Im];
-    B = [Bm; Cm*Bm];
     C = [Om I];
     
     % Get delay
