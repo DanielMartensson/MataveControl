@@ -9,3 +9,5 @@ Here is a list of the following points that need to be fixed:
 * Rename nlsim.m to satsim.m beacuse it's saturation function included nlsim.m
 
 * Remove intss.m beacuse it's not integration. 
+
+* Insert delay in lsim.m and satsim.m
