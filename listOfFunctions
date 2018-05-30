@@ -26,6 +26,7 @@ imc.m
 impulse.m
 initial.m
 loop.m
+lmpc.m
 lqe.m
 lqgreg.m
 lqi.m
@@ -34,11 +35,10 @@ lsim.m
 lyap.m
 mag2db.m
 margin.m
-mpcreg.m
 intss.m
 minreal.m
 modred.m
-nlsim.m
+satlsim.m
 nyquist.m
 obsv.m
 pade.m
