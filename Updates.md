@@ -40,3 +40,10 @@ Added a MPC - Model Predictive Controller - mpcreg.m. This controller is without
 Fixed feed forward factor for referece signal for better tracking - reg.m and lqgreg.m
 Fixed lqi.m controller to get the integral control law. Also added precompensator factor for anti-winup.
 
+* Version 6.0 (2018-05-30)
+Removed intss.m.
+Renamed nlsim.m to satlsim.m 
+Removed mpcreg.m
+Added lmpc.m
+
+
