@@ -4,10 +4,4 @@ Here is a list of the following points that need to be fixed:
 
 * Create a tutorial how to use the commands
 
-* Remove all MPC commands - Create a new project of MPC
-
-* Rename nlsim.m to satsim.m beacuse it's saturation function included nlsim.m
-
-* Remove intss.m beacuse it's not integration. 
-
 * Insert delay in lsim.m and satsim.m
