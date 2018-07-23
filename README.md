@@ -57,7 +57,7 @@ Do a nyquist diagram plot in GNU Octave
 
 # Model Predictive Control
 
-![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Sk%C3%A4rmbild%20fr%C3%A5n%202017-11-09%2000-12-02.png)
+![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Markering_024.png)
 
 # Install
 To install Matavecontrol, download the folder "sourcecode" and place it where you want it. Then the following code need to be written in the terminal of your MATLAB® or GNU Octave program.
