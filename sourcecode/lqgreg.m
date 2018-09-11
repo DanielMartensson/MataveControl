@@ -62,15 +62,7 @@ function [regsys, Kr] = lqgreg(varargin)
         A = [A11 A12; A21 A22];
         
         % Create the B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A11)*B);
-        else
-          Kr = 1./(C*inv(-A11)*B);
-        end
-        % Now create B matrix with precompensator factor - For better tracking
-        B11 = B*Kr;
+        B11 = B;
         B21 = zeros(size(B));
         B = [B11; B21];
         
@@ -107,15 +99,7 @@ function [regsys, Kr] = lqgreg(varargin)
         end
         
         % Create B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A11)*B);
-        else
-          Kr = 1./(C*inv(-A11)*B);
-        end
-        % Now create B matrix with precompensator factor - For better tracking
-        B11 = B*Kr;
+        B11 = B;
         B21 = zeros(size(Bd,1), size(B, 2));
         B12 = Bd;
         B22 = Bd;
@@ -162,15 +146,7 @@ function [regsys, Kr] = lqgreg(varargin)
         end
         
         % Create B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A11)) - A11)*B);
-        else
-          Kr = 1./(C*inv(-A11)*B);
-        end
-        % Now create B matrix with precompensator factor Kr - For better tracking
-        B11 = B*Kr;
+        B11 = B;
         B21 = zeros(size(Bd,1), size(B, 2));
         B12 = Bd;
         B22 = Bd;
