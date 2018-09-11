@@ -51,17 +51,7 @@ function [regsys, Kr] = reg(varargin)
       case 2 % LQR + precompensator for reference
         % Create the A matrix
         A = (A-B*L);
-        % Create the B matrix
-        % Check if the model is discrete or not
-        % Create the precompensator factor for the reference vector
-        if sampleTime > 0 
-          Kr = 1./(C*inv(eye(size(A)) - A)*B);
-        else
-          Kr = 1./(C*inv(-A)*B);
-        end
-        % Now create B matrix with precompensator factor - For better tracking
-        B = B*Kr;
-        %C matrix and D matrix are the same
+        %B matrix and C matrix and D matrix are the same
         
         regsys = ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
