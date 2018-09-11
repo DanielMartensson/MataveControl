@@ -48,6 +48,7 @@ pipd.m
 pole.m
 pzmap.m
 ramp.m
+referencegain.m
 reg.m
 rlocus.m
 sensitivity.m
