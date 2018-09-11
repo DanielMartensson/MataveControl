@@ -41,8 +41,8 @@ function [retval] = rlocus(varargin)
         [npole,mpole] = size(pole(G));
         [nzero,mzero] = size(zero(G));
         % Create empty vectors for storeing the zeros and poles
-        pvector = zeros(npole, length(Kvector));
-        zvector = zeros(nzero, length(Kvector));
+        pvector = [];%zeros(npole, length(Kvector));
+        zvector = [];%zeros(nzero, length(Kvector));
         for k = 1:length(Kvector)
           if(sampleTime > 0) % Discret
             GK = tf(Kvector(k),1);
