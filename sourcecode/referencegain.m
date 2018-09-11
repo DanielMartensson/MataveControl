@@ -1,5 +1,4 @@
 % Computes the reference gain Kr and give back a state space model with including the reference gain
-% IMPORTANT! Only open loop SS-models need first to get their reference gain. Then you can give the system feedback.
 % Input: sys
 % Example 1: [sys_kr, Kr] = referencegain(sys)
 % Author: Daniel Mårtensson, September 2018
