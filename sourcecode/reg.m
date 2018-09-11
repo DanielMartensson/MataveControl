@@ -1,8 +1,8 @@
 % Generates the state feedback controler with the control law L and with integral action law Li
 % Input: sys, L, Li(optional), Kr(optional)
-% Example 1: [regsys, Kr] = reg(sys, L)
-% Example 2: [regsys, Kr] = reg(sys, L, Li)
-% Example 3: [regsys, Kr] = reg(sys, L, Li, Kr)
+% Example 1: [regsys] = reg(sys, L)
+% Example 2: [regsys] = reg(sys, L, Li)
+% Example 3: [regsys] = reg(sys, L, Li)
 % Author: Daniel Mårtensson, November 2017
 
 function [regsys, Kr] = reg(varargin)
@@ -27,13 +27,6 @@ function [regsys, Kr] = reg(varargin)
       Li = varargin{3};
     end
     
-    % Get the precompensator factor Kr - Reference
-    if(length(varargin) >= 4)
-      Kr = varargin{4};
-    else
-      Kr = 0; % For LQI only
-    end
-
     % Check if what feedback controller you should use
     regulatorNumber = length(varargin);
     
@@ -79,7 +72,7 @@ function [regsys, Kr] = reg(varargin)
         % Create B matrix
         ny = size(C, 1); % Number outputs
         nu = size(B, 2); % Number inputs
-        B = [Kr*B; ones(ny, nu)]; %<- precompensator for reference = Kr
+        B = [B; ones(ny, nu)]; 
         
         % Create C matrix
         C = [(C-D*L) D*Li];
