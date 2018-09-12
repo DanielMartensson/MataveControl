@@ -117,7 +117,7 @@ function [regsys, Kr] = lqgreg(varargin)
         % Create D matrix
         D11 = zeros(size(C11,1), size(B11, 2));
         D21 = zeros(size(C11,1), size(B11, 2));
-        D31 = Kr;
+        D31 = zeros(size(C11,1), size(B11, 2));
         D12 = zeros(size(C11, 1), size(B12, 2));
         D22 = zeros(size(C11, 1), size(B12, 2));
         D32 = zeros(size(C31, 1), size(B12, 2));
@@ -166,7 +166,7 @@ function [regsys, Kr] = lqgreg(varargin)
         % Create D matrix
         D11 = zeros(size(C11,1), size(B11, 2));
         D21 = zeros(size(C11,1), size(B11, 2));
-        D31 = Kr;
+        D31 = zeros(size(C11,1), size(B11, 2));
         D12 = zeros(size(C11, 1), size(B12, 2));
         D22 = zeros(size(C11, 1), size(B12, 2));
         D32 = zeros(size(C31, 1), size(B12, 2));
