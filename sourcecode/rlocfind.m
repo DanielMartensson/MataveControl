@@ -42,7 +42,7 @@ function [K] = rlocfind (varargin)
         end
         
         N = length(b);
-        
+        h = sampleTime;
         % Notice that a and b has been switched, compared to bode.m
         if sampleTime > 0
           K(i,j) = abs((b*fliplr((exp(p*h)).^(0 : N-1)).')/(a*fliplr((exp(p*h)).^(0 : N-1)).')*exp(-delay*exp(p*h)));
