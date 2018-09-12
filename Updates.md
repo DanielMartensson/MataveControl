@@ -49,4 +49,5 @@ Added lmpc.m
 * Version 6.1 (2018-08-11)
 Seperate the reference gain function from reg and lqgreg into referencegain.m due to the infinity of inverse A-matrix issue.
 
-
+* Version 6.2 (2018-08-12)
+Added sgrid.m and rlocfind.m
