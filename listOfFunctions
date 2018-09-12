@@ -35,7 +35,6 @@ lsim.m
 lyap.m
 mag2db.m
 margin.m
-intss.m
 minreal.m
 modred.m
 satlsim.m
@@ -51,8 +50,10 @@ ramp.m
 referencegain.m
 reg.m
 rlocus.m
+rlocfind.m
 sensitivity.m
 series.m
+sgrid.m
 sigma.m
 smithpredict.m
 ss.m
