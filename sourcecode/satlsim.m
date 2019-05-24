@@ -1,7 +1,7 @@
 % Do a nonlinear simulation of a transfer function or a state space model
 % Here you can use saturation limits on inputs
 % Input: sys, u, t, x0(optional), xL(optional)
-% Example 1: [y,t,x] = nlsim(sys,u,t,x0, xL)
+% Example 1: [y,t,x] = satlsim(sys,u,t,x0, xL)
 % Author: Daniel Mårtensson, January 2018
 
 
