@@ -34,8 +34,14 @@ function [L, Li] = lqi(varargin)
     nx = size(A, 1); % Number states
     
     % Create the augmented state space model
-    sys.A = [A zeros(nx, ny); -C zeros(ny, ny)];
-    sys.B = [B; -D];
+    if(sys.sampleTime > 0)
+      sys.A = [A zeros(nx, ny); -C ones(ny, ny)];
+      sys.B = [B; -D];
+    else 
+      sys.A = [A zeros(nx, ny); -C zeros(ny, ny)];
+      sys.B = [B; -D];
+    end
+    
     
     % Get the LQR + LQI control law  
     ControlLaw = lqr(sys, Q, R); 
