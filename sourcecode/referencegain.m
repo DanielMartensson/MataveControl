@@ -22,9 +22,9 @@ function [sys_kr, Kr] = referencegain(varargin)
     sampleTime = sys.sampleTime;
     
     if sampleTime > 0 
-      Kr = 1./(C*inv(eye(size(A)) - A)*B);
+      Kr = 1./(C*inv(eye(size(A)) - A)*B+D);
     else
-      Kr = 1./(C*inv(-A)*B);
+      Kr = 1./(C*inv(-A)*B+D);
     end
     % Now create B matrix with precompensator factor - For better tracking
     B = B*Kr;
