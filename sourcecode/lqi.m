@@ -4,6 +4,7 @@
 % Example 2: [L, Li, sysi] = lqi(sys, Q, R)
 % Author: Daniel Mårtensson, October 2017
 % Update 2019-06-07: Returning the model wth integral action
+% Update 2019-06-26: LQI for MIMO systems
 
 function [L, Li, sys] = lqi(varargin)
   % Check if there is any input
@@ -52,7 +53,7 @@ function [L, Li, sys] = lqi(varargin)
     % Get the LQR + LQI control law  
     ControlLaw = lqr(sys, Q, R); 
     % Important to have a negative sign!
-    Li = -ControlLaw(:, (1 + size(C, 2)):end); % We add +1 beacuse we want -Li from [L -Li]. 
+    Li = -ControlLaw(:, (1 + size(C, 2)):(1 + size(C, 2))); % We add +1 beacuse we want -Li from [L -Li]. 
     L = ControlLaw(:, 1:size(C, 2));
     
   elseif(strcmp(type, 'TF' ))
