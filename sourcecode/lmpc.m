@@ -76,7 +76,7 @@ function [y, t, X, U] = lmpc(varargin)
     
     % Get the maximum input signal limit
     if(length(varargin) >= 8)
-      A_ub = varargin{8};
+      y_ub = varargin{8};
     else
       error('Need maximum input signal limit')
     end
@@ -99,14 +99,14 @@ function [y, t, X, U] = lmpc(varargin)
     % Create initial input signal 
     q = GAMMA'*Q*PHI*x - GAMMA'*Q*R;
     % Choose the lower bounds and upper bounds limits for input
-    LB = repmat(u_lb, Nc, 1);
-    UB = repmat(u_ub, Nc, 1);
+    U_LB = repmat(u_lb, N, 1);
+    U_UB = repmat(u_ub, N, 1);
     % Choose the lower bounds and upper bounds limits for output
-    A_in = GAMMA;
-    y_lb = repmat(y_lb, N, 1) - PHI*x;
-    y_ub = repmat(y_ub, N, 1) - PHI*x;
+    A_IN = GAMMA;
+    Y_LB = repmat(y_lb, N, 1) - PHI*x;
+    Y_LB = repmat(y_ub, N, 1) - PHI*x;
     % Compute the first input signals!
-    u = qp([], H, q, [], [], u_lb, u_ub, y_lb, A_in, y_ub);
+    u = qp([], H, q, [], [], U_LB, U_UB, Y_LB, A_IN, Y_LB);
     
     % Find the optimal input signals U from the QP-formula: J = 0.5*U'H*U + U'*q
     for k = 1:size(t,2) 
@@ -120,7 +120,7 @@ function [y, t, X, U] = lmpc(varargin)
       % Update states and input signals and q matrix
       x = A*x + B*u(1:size(B, 2)); 
       q = GAMMA'*Q*PHI*x - GAMMA'*Q*R;
-      u = qp([], H, q, [], [], u_lb, u_ub, y_lb, A_in, y_ub);
+      u = qp([], H, q, [], [], U_LB, U_UB, Y_LB, A_IN, Y_LB);
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
