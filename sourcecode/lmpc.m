@@ -1,6 +1,7 @@
 % Use linear Model Predictive Control with limits on inputs
-% Input: sysd, Np(prediction horizon), Nc(Control horizon), r(Reference vector), T(End time), lb(Min limit input), ub(Max limit input),  x0(Initial state)
-% Example 1: [y, t, x, u] = lmpc(sysd, Np, Nc, r, T, lb, ub)
+% Input: sysd, N(horizon), r(Reference vector), T(End time), u_lb(Min limit input), u_ub(Max limit input), y_lb(Min limit output), y_ub(Max limit output), x0(Initial state)
+% Example 1: [y, t, x, u] = lmpc(sysd, N, r, T, u_lb, u_ub, y_lb, y_ub)
+% Example 2: [y, t, x, u] = lmpc(sysd, N, r, T, u_lb, u_ub, y_lb, y_ub, x0)
 % Author: Daniel Mårtensson
 
 % Can only be still used with Octave due to the QP-command! I will work on that!
@@ -29,72 +30,83 @@ function [y, t, X, U] = lmpc(varargin)
       error('Only discrete state space models')
     end
     
-    % Get the predict horizon Np
+    % Get the horizon N
     if(length(varargin) >= 2)
-      Np = varargin{2};
+      N = varargin{2};
     else
       error('Missing the predict horizon Np');
     end
     
-    % Get the control horizon Nc
-    if(length(varargin) >= 3)
-      Nc = varargin{3};
-    else
-      error('Missing the control horizon Nc');
-    end
-    
     % Get the reference vector R
-    if(length(varargin) >= 4)
-      r = varargin{4};
-      R = repmat(r, Np, 1); % Create the reference vector R = [r1; r2; r1; r2; ... etc]
+    if(length(varargin) >= 3)
+      r = varargin{3};
+      R = repmat(r, N, 1); % Create the reference vector R = [r1; r2; r1; r2; ... etc]
     else
       error('Missing the reference vector R');
     end
     
     % Get the total time 
-    if(length(varargin) >= 5)
-      T = varargin{5};
+    if(length(varargin) >= 4)
+      T = varargin{4};
       t = 0:sampleTime:T; % Get time vector - Also return it!
     else
       error('Missing the total time number T');
     end
     
-    % Get the lower bound vector lb 
-    if(length(varargin) >= 6)
-      lb = varargin{6};
+    % Get the lower bound vector u_lb 
+    if(length(varargin) >= 5)
+      u_lb = varargin{5};
     else
-      lb = []; 
+      error('Need lower bound vector u_lb')
     end
     
-    % Get the upper bound vector ub 
-    if(length(varargin) >= 7)
-      ub = varargin{7};
+    % Get the upper bound vector u_ub 
+    if(length(varargin) >= 6)
+      u_ub = varargin{6};
     else
-      ub = [];
+      error('Need lower bound vector u_ub')
+    end
+    
+    % Get the minimum input signal limit
+    if(length(varargin) >= 7)
+      y_lb = varargin{7};
+    else
+      error('Need minimum input signal limit')
+    end
+    
+    % Get the maximum input signal limit
+    if(length(varargin) >= 8)
+      A_ub = varargin{8};
+    else
+      error('Need maximum input signal limit')
     end
     
     % Get the initial trajectory vector x
-    if(length(varargin) >= 8)
-      x = varargin{8};
+    if(length(varargin) >= 9)
+      x = varargin{9};
     else
       x = zeros(size(A, 1), 1);
     end
     
     % Compute the PHI matrix now!
-    PHI = PHImatrix(C, A, Np);
+    PHI = phiMat(C, A, N);
     % Compute the GAMMA matrix now
-    GAMMA = GAMMAmatrix(C, A, B, Np, Nc);
+    GAMMA = gammaMat(A, B, C, N);
     % Compute the tuning matrix - Set it to identity matrix
     Q = eye(size(GAMMA, 1), size(GAMMA, 1));
     % Compute H matrix
     H = GAMMA'*Q*GAMMA;
     % Create initial input signal 
     q = GAMMA'*Q*PHI*x - GAMMA'*Q*R;
-    % Choose the lower bounds and upper bounds limits
-    LB = repmat(lb, Nc, 1);
-    UB = repmat(ub, Nc, 1);
+    % Choose the lower bounds and upper bounds limits for input
+    LB = repmat(u_lb, Nc, 1);
+    UB = repmat(u_ub, Nc, 1);
+    % Choose the lower bounds and upper bounds limits for output
+    A_in = GAMMA;
+    y_lb = repmat(y_lb, N, 1) - PHI*x;
+    y_ub = repmat(y_ub, N, 1) - PHI*x;
     % Compute the first input signals!
-    u = qp([], H, q, [], [], LB, UB);
+    u = qp([], H, q, [], [], u_lb, u_ub, y_lb, A_in, y_ub);
     
     % Find the optimal input signals U from the QP-formula: J = 0.5*U'H*U + U'*q
     for k = 1:size(t,2) 
@@ -108,7 +120,7 @@ function [y, t, X, U] = lmpc(varargin)
       % Update states and input signals and q matrix
       x = A*x + B*u(1:size(B, 2)); 
       q = GAMMA'*Q*PHI*x - GAMMA'*Q*R;
-      u = qp([], H, q, [], [], LB, UB);
+      u = qp([], H, q, [], [], u_lb, u_ub, y_lb, A_in, y_ub);
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
@@ -161,34 +173,33 @@ function [y, t, X, U] = lmpc(varargin)
   endif
 endfunction
 
-function [PHI] = PHImatrix(C, A, Np)
-  
-  PHI = [];
-  for i = 1:(Np)
-    PHI = [PHI; C*A^i];
-  endfor
-  
-endfunction
 
-function [GAMMA] = GAMMAmatrix(C, A, B, Np, Nc)
+function PHI = phiMat(A, C, N)
+  
+  % Create the special Observabillity matrix
   PHI = [];
+  for i = 1:N
+    PHI = vertcat(PHI, C*A^i);
+  end
+  
+end
+
+function GAMMA = gammaMat(A, B, C, N)
+  
+  % Create the lower triangular toeplitz matrix
   GAMMA = [];
+  for i = 1:N
+    GAMMA = horzcat(GAMMA, vertcat(zeros((i-1)*size(C*A*B, 1), size(C*A*B, 2)),cabMat(A, B, C, N-i+1)));
+  end
   
-  for j = 1:Nc
-    for i = (1-j):(Np-j)
-      
-      if i < 0
-        PHI = [PHI; 0*C*A^i*B];
-      else
-        PHI = [PHI; C*A^i*B];
-      endif
-      
-    endfor
-    
-    % Add to PHI
-    GAMMA = [GAMMA PHI];
-    % Clear F
-    PHI = [];
-  endfor
+end
+
+function CAB = cabMat(A, B, C, N)
   
-endfunction
+  % Create the column for the GAMMA matrix
+  CAB = [];
+  for i = 0:N-1
+    CAB = vertcat(CAB, C*A^i*B);
+  end
+  
+end
