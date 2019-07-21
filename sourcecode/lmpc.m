@@ -89,7 +89,7 @@ function [y, t, X, U] = lmpc(varargin)
     end
     
     % Compute the PHI matrix now!
-    PHI = phiMat(C, A, N);
+    PHI = phiMat(A, C, N);
     % Compute the GAMMA matrix now
     GAMMA = gammaMat(A, B, C, N);
     % Compute the tuning matrix - Set it to identity matrix
