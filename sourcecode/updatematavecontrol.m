@@ -15,7 +15,11 @@ function [retval] = updatematavecontrol(varargin)
   cd(path);
   
   % Downloading listOfFunctions
-  urlwrite('https://raw.githubusercontent.com/DanielMartensson/matavecontrol/master/listOfFunctions', 'listOfFunctions');
+  if(exist('OCTAVE_VERSION', 'builtin') ~= 0)
+    urlwrite('https://raw.githubusercontent.com/DanielMartensson/matavecontrol/master/listOfFunctions', 'listOfFunctions');
+  else
+     websave('https://raw.githubusercontent.com/DanielMartensson/matavecontrol/master/listOfFunctions', 'listOfFunctions');
+  end
   
   % Read the listOfFunctions
   fid = fopen('listOfFunctions');
