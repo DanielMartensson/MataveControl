@@ -133,7 +133,7 @@ function [returnString] = stringPoly(array)
   for i = 1:length(polyString)
     % No only-zeros are allowed
     if(and(~strcmp(char(polyString(1,i)), '0'), ~strcmp(char(polyString(1,i)), '-0')))
-      if(length(findstr(char(polyString(1,i)), '-')) > 0)
+      if(length(strfind(char(polyString(1,i)), '-')) > 0)
         returnString = [returnString,' ', char(polyString(1,i))];
       else
         if(length(returnString) == 0)
