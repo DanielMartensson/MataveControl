@@ -112,7 +112,7 @@ function [y, t, X, U] = lmpc(varargin)
    
     % This is for LINEAR PROGRAMMING - uncomment them all
     % This is on the form max: c^Tx, St: Ax <= b, x >= 0.
-    % Notice that this have Tikonov Regularization included
+    % Notice that this have Tikhonov Regularization included
     %b = R - PHI*x;
     %CTYPE = repmat(["U"], 1, size(A_IN, 1));
     %VARTYPE = repmat(["C"], 1, size(A_IN, 2));
