@@ -3,6 +3,7 @@
 % Example 1: [y, t, x, u] = lmpc(sysd, N, r, T, u_lb, u_ub, y_lb, y_ub)
 % Example 2: [y, t, x, u] = lmpc(sysd, N, r, T, u_lb, u_ub, y_lb, y_ub, x0)
 % Author: Daniel Mårtensson
+% Update: Added Linear programming too. 2020-04-10
 
 % Can only be still used with Octave due to the QP-command! I will work on that!
 
@@ -107,6 +108,13 @@ function [y, t, X, U] = lmpc(varargin)
     Y_UB = repmat(y_ub, N, 1) - PHI*x;
     % Compute the first input signals!
     u = qp([], H, q, [], [], U_LB, U_UB, Y_LB, A_IN, Y_UB);
+   
+    % This is for LINEAR PROGRAMMING - uncomment them all
+    % This is on the form max: c^Tx, St: Ax <= b, x >= 0.
+    %b = R - PHI*x;
+    %CTYPE = repmat(["U"], 1, size(A_IN, 1));
+    %VARTYPE = repmat(["C"], 1, size(A_IN, 2));
+    %u = glpk(GAMMA'*b, GAMMA, b, U_LB, [], CTYPE, VARTYPE, -1);
     
     % Find the optimal input signals U from the QP-formula: J = 0.5*U'H*U + U'*q
     for k = 1:size(t,2) 
@@ -121,6 +129,10 @@ function [y, t, X, U] = lmpc(varargin)
       x = A*x + B*u(1:size(B, 2)); 
       q = GAMMA'*Q*PHI*x - GAMMA'*Q*R;
       u = qp([], H, q, [], [], U_LB, U_UB, Y_LB, A_IN, Y_UB);
+      
+      % This is for LINEAR PROGRAMMING - uncomment them all
+      %b = R - PHI*x;
+      %u = glpk(GAMMA'*b, GAMMA, b, U_LB, [], CTYPE, VARTYPE, -1);
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
