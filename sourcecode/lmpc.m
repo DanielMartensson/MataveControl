@@ -94,7 +94,8 @@ function [y, t, X, U] = lmpc(varargin)
     % Compute the GAMMA matrix now
     GAMMA = gammaMat(A, B, C, N);
     % Compute the tuning matrix - Set it to identity matrix
-    Q = eye(size(GAMMA, 1), size(GAMMA, 1));
+    alpha = 0.001; % Regularization parameter
+    Q = alpha*eye(size(GAMMA, 1), size(GAMMA, 1)); 
     % Compute H matrix
     H = GAMMA'*Q*GAMMA;
     % Create initial input signal 
@@ -111,10 +112,12 @@ function [y, t, X, U] = lmpc(varargin)
    
     % This is for LINEAR PROGRAMMING - uncomment them all
     % This is on the form max: c^Tx, St: Ax <= b, x >= 0.
+    % Notice that this have Tikonov Regularization included
     %b = R - PHI*x;
     %CTYPE = repmat(["U"], 1, size(A_IN, 1));
     %VARTYPE = repmat(["C"], 1, size(A_IN, 2));
-    %u = glpk(GAMMA'*b, GAMMA, b, U_LB, [], CTYPE, VARTYPE, -1);
+    %u = glpk((GAMMA'*GAMMA + alpha*eye(size(GAMMA)))'*b, (GAMMA'*GAMMA + alpha*eye(size(GAMMA))), GAMMA'*b, U_LB, [], CTYPE, VARTYPE, -1);
+
     
     % Find the optimal input signals U from the QP-formula: J = 0.5*U'H*U + U'*q
     for k = 1:size(t,2) 
@@ -132,7 +135,7 @@ function [y, t, X, U] = lmpc(varargin)
       
       % This is for LINEAR PROGRAMMING - uncomment them all
       %b = R - PHI*x;
-      %u = glpk(GAMMA'*b, GAMMA, b, U_LB, [], CTYPE, VARTYPE, -1);
+      %u = glpk((GAMMA'*GAMMA + alpha*eye(size(GAMMA)))'*b, (GAMMA'*GAMMA + alpha*eye(size(GAMMA))), GAMMA'*b, U_LB, [], CTYPE, VARTYPE, -1);
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
