@@ -41,10 +41,12 @@ function [regsys, Kr] = reg(varargin)
 
     % Create new feedback model
     switch regulatorNumber
-      case 2 % LQR + precompensator for reference
+      case 2 % Standard LQR 
         % Create the A matrix
         A = (A-B*L);
-        %B matrix and C matrix and D matrix are the same
+        %B matrix is the same
+        C = [C;L]; % This is for the uf = L*x control law
+        D = [D; D*0]; % D need to have the same row length as C 
         
         regsys = ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
