@@ -50,8 +50,7 @@ function [regsys] = reg(varargin)
              u = -uf + r = -Lx + r % Feedback control law
            To this:
              dx = (A-BL)x + Br
-             dx = (A-BL)x + Br
-             [y;uf]  = [C; L]x
+             [y;uf]  = [C; L]x + [D;0]r
         %}
         
         % Create the A matrix
