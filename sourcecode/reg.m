@@ -5,7 +5,7 @@
 % Example 3: [regsys] = reg(sys, L, Li)
 % Author: Daniel Mårtensson, November 2017
 
-function [regsys, Kr] = reg(varargin)
+function [regsys] = reg(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing input')
@@ -50,8 +50,7 @@ function [regsys, Kr] = reg(varargin)
              u = -uf + r = -Lx + r % Feedback control law
            To this:
              dx = (A-B*L)x + Br
-             y  = C*x
-             uf = L*x
+             [y;uf]  = [C; L]*x
         %}
         
         % Create the A matrix
