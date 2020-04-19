@@ -43,14 +43,15 @@ function [regsys] = reg(varargin)
     switch regulatorNumber
       case 2 % Standard LQR 
         
-        %{ Formula:
+        %{
            From this:
              dx = Ax + Bu
              y = Cx + Du
              u = -uf + r = -Lx + r % Feedback control law
            To this:
-             dx = (A-B*L)x + Br
-             [y;uf]  = [C; L]*x
+             dx = (A-BL)x + Br
+             dx = (A-BL)x + Br
+             [y;uf]  = [C; L]x
         %}
         
         % Create the A matrix
