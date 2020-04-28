@@ -1,9 +1,9 @@
 % Use linear Model Predictive Control
-% Input: sysd(Discrete state space model), N(Horizon), t(Time vector), regularization(optimal), x0(Initial state, optimal)
+% Input: sysd(Discrete state space model), N(Horizon number), r(Reference vector), t(Time vector), regularization(optimal), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [y, T, X, U] = lmpc(sysd, R, t)
-% Example 2: [y, T, X, U] = lmpc(sysd, R, t, regularization)
-% Example 3: [y, T, X, U] = lmpc(sysd, R, t, regularization, x0)
+% Example 1: [y, T, X, U] = lmpc(sysd, N, r, t)
+% Example 2: [y, T, X, U] = lmpc(sysd, N, r, t, regularization)
+% Example 3: [y, T, X, U] = lmpc(sysd, N, r, t, regularization, x0)
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
 
@@ -30,45 +30,59 @@ function [y, T, X, U] = lmpc(varargin)
     delay = sys.delay;
     sampleTime = sys.sampleTime;
     
-    % Get the reference vector R
+    % Get the horizon number
     if(length(varargin) >= 2)
-      R = varargin{2};
-      if(size(R, 1) ~= size(B, 2))
-        error("Use the same dimension of R as nu(number of inputs)");
-      end
+      N = varargin{2};
     else
-      error('Missing the reference vector R');
+      error('Missing the horizon number');
+    end
+    
+    % Get the reference vector r
+    if(length(varargin) >= 3)
+      r = varargin{3};
+    else
+      error('Missing the reference vector r');
     end
     
     % Get the total time 
-    if(length(varargin) >= 3)
-      t = varargin{3};
-      if(length(t) ~= length(R))
-        error("t and R need to have the same length");
+    if(length(varargin) >= 4)
+      t = varargin{4};
+      if(length(r)*size(C, 1) ~= length(t))
+        error("Use the same length of r times rows of C as length of t: length(r)*Crows == length(t)");
       end
     else
       error('Missing the time vector');
     end
     
     % Get the regularization parameter
-    if(length(varargin) >= 4)
-      regularization = varargin{4};
+    if(length(varargin) >= 5)
+      regularization = varargin{5};
     else
       regularization = 0;
     end
     
     % Get the initial trajectory vector x
-    if(length(varargin) >= 5)
-      x = varargin{5};
+    if(length(varargin) >= 6)
+      x = varargin{6};
     else
       x = zeros(size(A, 1), 1);
     end
     
-    %% Solve this formula: R = PHI*x + GAMMA*U, where we want U
+    % Combine r [r1; r2; r3; r4...] to r = [r1 r2 r3 f4...] with space
+    r = r(:)'; 
     
-    % Compute the PHI and GAMMA matrix now with horizon length of R
-    PHI = phiMat(A, C, length(R));
-    GAMMA = gammaMat(A, B, C, length(R));
+    % Do a check if length(r) can be divided with N
+    if mod(length(r), N*size(C, 1)) > 0
+      error('The reference r cannot be divided with horizon N');
+    else
+      step = N*size(C, 1);
+    end
+    
+    %% Solve this formula: r = PHI*x + GAMMA*U, where we want U
+    
+    % Compute the PHI and GAMMA matrix now with horizon N
+    PHI = phiMat(A, C, N);
+    GAMMA = gammaMat(A, B, C, N);
     
     % We using Tikhonov regularization when we are using linear programming: Max c^T, S.t: Ax <= b, x >= 0
     % clp = (A'*A + lambda*I)'*b
@@ -76,10 +90,10 @@ function [y, T, X, U] = lmpc(varargin)
     % alp = A'*A + lambda*I
     alp = GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA));
     iteration_limit = 200;
-    u = zeros(size(alp, 2), size(B, 2)); % Prevent over shoot from the beginning
-    
-    % Find the optimal input signals U from the QP-formula: J = 0.5*U'H*U + U'*q
-    for k = 1:size(t,2) 
+    u = zeros(size(B, 2), 1); % Prevent over shoot from the beginning
+
+    count = 0;
+    for k = 1:length(t)
       % Return states and input signals
       X(:,k) = x;
       U(:,k) = u(1:size(B, 2)); % First element!
@@ -91,9 +105,16 @@ function [y, T, X, U] = lmpc(varargin)
       x = A*x + B*u(1:size(B, 2)); 
       
       % Update the constraints and objective function
-      clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R(:, k) - PHI*x);
-      blp = GAMMA'*(R(:, k) - PHI*x);
+      R = r(1 + count*step:count*step + step)'; % Select the set of signals - Important with transpose!
+      clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R - PHI*x);
+      blp = GAMMA'*(R - PHI*x);
       u = linprog2(clp, alp, blp, 0, iteration_limit);
+      
+      % Count the steps for next input signal set
+      if(k > step + count*step)
+        count = count + 1;
+      end
+      
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
@@ -153,10 +174,10 @@ function [x] = linprog2(c, A, b, max_or_min, iteration_limit)
   column_a = size(A, 2);
   
   if(max_or_min == 0)
-    % Maximization - Regular simplex method
+    % Maximization
     x = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit);
   else
-    % Minimization - The dual simplex method
+    % Minimization
     x = opti(b, A', c, column_a, row_a, max_or_min, iteration_limit);
   end
 end
@@ -165,10 +186,10 @@ end
 function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
   
   % Clear the solution
-  if(max_or_min == 0)
-    x = zeros(column_a, 1);
-  else
-    x = zeros(row_a, 1);
+	if(max_or_min == 0)
+		x = zeros(column_a, 1);
+	else
+		x = zeros(row_a, 1);
   end
   
   % Create the tableau
@@ -193,15 +214,15 @@ function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
   tableau(row_a + 1, column_a + row_a + 1) = 1;
   
   % Do row operations
-  entry = -1.0; % Need to start with a negative number because MATLAB don't have do-while! ;(
-  pivotColumIndex = 0;
-  pivotRowIndex = 0;
-  pivot = 0.0;
-  value1 = 0.0;
-  value2 = 0.0;
-  value3 = 0.0;
-  smallest = 0.0;
-  count = 0;
+	entry = -1.0; % Need to start with a negative number because MATLAB don't have do-while! ;(
+	pivotColumIndex = 0;
+	pivotRowIndex = 0;
+	pivot = 0.0;
+	value1 = 0.0;
+	value2 = 0.0;
+	value3 = 0.0;
+	smallest = 0.0;
+	count = 0;
   while(entry < 0) % Continue if we have still negative entries
     % Find our pivot column
     pivotColumIndex = 1;
