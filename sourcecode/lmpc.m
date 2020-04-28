@@ -1,9 +1,9 @@
 % Use linear Model Predictive Control
-% Input: sysd(Discrete state space model), N(Horizon), r(Reference vector), t(Time vector), regularization(optimal), x0(Initial state, optimal)
+% Input: sysd(Discrete state space model), N(Horizon), t(Time vector), regularization(optimal), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [y, T, X, U] = lmpc(sysd, N, r, t)
-% Example 2: [y, T, X, U] = lmpc(sysd, N, r, t, regularization)
-% Example 3: [y, T, X, U] = lmpc(sysd, N, r, t, regularization, x0)
+% Example 1: [y, T, X, U] = lmpc(sysd, R, t)
+% Example 2: [y, T, X, U] = lmpc(sysd, R, t, regularization)
+% Example 3: [y, T, X, U] = lmpc(sysd, R, t, regularization, x0)
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
 
@@ -19,6 +19,10 @@ function [y, T, X, U] = lmpc(varargin)
   if(strcmp(type, 'SS' ))
     % Get A, B, C, D matrecies
     sys = varargin{1};
+    % Check if the model is discrete! MPC can only be discrete in this case.
+    if sys.sampleTime <= 0
+      error('Only discrete state space models');
+    end
     A = sys.A;
     B = sys.B;
     C = sys.C;
@@ -26,58 +30,52 @@ function [y, T, X, U] = lmpc(varargin)
     delay = sys.delay;
     sampleTime = sys.sampleTime;
     
-    % Check if the model is discrete! MPC can only be discrete in this case.
-    if sampleTime <= 0
-      error('Only discrete state space models')
-    end
-    
-    % Get the horizon N
-    if(length(varargin) >= 2)
-      N = varargin{2};
-    else
-      error('Missing the predict horizon Np');
-    end
-    
     % Get the reference vector R
-    if(length(varargin) >= 3)
-      r = varargin{3};
-      R = repmat(r, N, 1); % Create the reference vector R = [r1; r2; r1; r2; ... etc]
+    if(length(varargin) >= 2)
+      R = varargin{2};
+      if(size(R, 1) ~= size(B, 2))
+        error("Use the same dimension of R as nu(number of inputs)");
+      end
     else
       error('Missing the reference vector R');
     end
     
     % Get the total time 
-    if(length(varargin) >= 4)
-      t = varargin{4};
+    if(length(varargin) >= 3)
+      t = varargin{3};
+      if(length(t) ~= length(R))
+        error("t and R need to have the same length");
+      end
     else
       error('Missing the time vector');
     end
     
     % Get the regularization parameter
-    if(length(varargin) >= 5)
-      regularization = varargin{5};
+    if(length(varargin) >= 4)
+      regularization = varargin{4};
     else
       regularization = 0;
     end
     
     % Get the initial trajectory vector x
-    if(length(varargin) >= 6)
-      x = varargin{6};
+    if(length(varargin) >= 5)
+      x = varargin{5};
     else
       x = zeros(size(A, 1), 1);
     end
     
     %% Solve this formula: R = PHI*x + GAMMA*U, where we want U
     
-    % Compute the PHI and GAMMA matrix now
-    PHI = phiMat(A, C, N);
-    GAMMA = gammaMat(A, B, C, N);
+    % Compute the PHI and GAMMA matrix now with horizon length of R
+    PHI = phiMat(A, C, length(R));
+    GAMMA = gammaMat(A, B, C, length(R));
     
-    % We using Tikhonov regularization when we are using LP: Max c^T, S.t: Ax <= b, x >= 0
+    % We using Tikhonov regularization when we are using linear programming: Max c^T, S.t: Ax <= b, x >= 0
     % clp = (A'*A + lambda*I)'*b
     % blp = A'*b
     % alp = A'*A + lambda*I
     alp = GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA));
+    iteration_limit = 200;
     u = zeros(size(alp, 2), size(B, 2)); % Prevent over shoot from the beginning
     
     % Find the optimal input signals U from the QP-formula: J = 0.5*U'H*U + U'*q
@@ -93,9 +91,9 @@ function [y, T, X, U] = lmpc(varargin)
       x = A*x + B*u(1:size(B, 2)); 
       
       % Update the constraints and objective function
-      clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R-PHI*x);
-      blp = GAMMA'*(R-PHI*x);
-      u = linprog2(clp, alp, blp, 0, 200);
+      clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R(:, k) - PHI*x);
+      blp = GAMMA'*(R(:, k) - PHI*x);
+      u = linprog2(clp, alp, blp, 0, iteration_limit);
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
@@ -155,10 +153,10 @@ function [x] = linprog2(c, A, b, max_or_min, iteration_limit)
   column_a = size(A, 2);
   
   if(max_or_min == 0)
-    % Maximization
+    % Maximization - Regular simplex method
     x = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit);
   else
-    % Minimization
+    % Minimization - The dual simplex method
     x = opti(b, A', c, column_a, row_a, max_or_min, iteration_limit);
   end
 end
@@ -167,10 +165,10 @@ end
 function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
   
   % Clear the solution
-	if(max_or_min == 0)
-		x = zeros(column_a, 1);
-	else
-		x = zeros(row_a, 1);
+  if(max_or_min == 0)
+    x = zeros(column_a, 1);
+  else
+    x = zeros(row_a, 1);
   end
   
   % Create the tableau
@@ -195,15 +193,15 @@ function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
   tableau(row_a + 1, column_a + row_a + 1) = 1;
   
   % Do row operations
-	entry = -1.0; % Need to start with a negative number because MATLAB don't have do-while! ;(
-	pivotColumIndex = 0;
-	pivotRowIndex = 0;
-	pivot = 0.0;
-	value1 = 0.0;
-	value2 = 0.0;
-	value3 = 0.0;
-	smallest = 0.0;
-	count = 0;
+  entry = -1.0; % Need to start with a negative number because MATLAB don't have do-while! ;(
+  pivotColumIndex = 0;
+  pivotRowIndex = 0;
+  pivot = 0.0;
+  value1 = 0.0;
+  value2 = 0.0;
+  value3 = 0.0;
+  smallest = 0.0;
+  count = 0;
   while(entry < 0) % Continue if we have still negative entries
     % Find our pivot column
     pivotColumIndex = 1;
