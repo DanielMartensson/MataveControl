@@ -109,6 +109,7 @@ function [y, T, X, U] = lmpc(varargin)
       clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R - PHI*x);
       blp = GAMMA'*(R - PHI*x);
       u = linprog2(clp, alp, blp, 0, iteration_limit);
+      u(u(1) > u(end)) = u(end); % Prevent jumpy inputs
       
       % Count the steps for next input signal set
       if(k > step + count*step)
