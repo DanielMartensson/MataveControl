@@ -115,7 +115,7 @@ function [y, T, X, U] = lmpc(varargin)
       
       % This code is regular least squares. 
       u = inv(GAMMA'*GAMMA)*GAMMA'*(R-PHI*x);
-      u(u(1) > u(end)) = u(end); % Prevent jumpy inputs
+      u(u(1:size(B, 2)) > u(end-size(B, 2)+1:end)) = u(end-size(B, 2)+1:end); % Prevent jumpy inputs
       
       % Count the steps for next input signal set
       if(k > step + count*step)
