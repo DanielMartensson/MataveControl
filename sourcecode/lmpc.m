@@ -6,6 +6,7 @@
 % Example 3: [y, T, X, U] = lmpc(sysd, N, r, t, regularization, x0)
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
+% Update: Added least square options to use as well.
 
 function [y, T, X, U] = lmpc(varargin)
   % Check if there is any input
