@@ -108,7 +108,12 @@ function [y, T, X, U] = lmpc(varargin)
       R = r(1 + count*step:count*step + step)'; % Select the set of signals - Important with transpose!
       clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R - PHI*x);
       blp = GAMMA'*(R - PHI*x);
-      u = linprog2(clp, alp, blp, 0, iteration_limit);
+      
+      % Uncomment this code to use Linear programming as optimization - Please use regularization
+      %u = linprog2(clp, alp, blp, 0, iteration_limit);
+      
+      % This code is regular least squares. 
+      u = inv(GAMMA'*GAMMA)*GAMMA'*(R-PHI*x);
       u(u(1) > u(end)) = u(end); % Prevent jumpy inputs
       
       % Count the steps for next input signal set
