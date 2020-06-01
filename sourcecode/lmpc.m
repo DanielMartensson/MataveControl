@@ -1,12 +1,10 @@
 % Use linear Model Predictive Control
-% Input: sysd(Discrete state space model), N(Horizon number), r(Reference vector), t(Time vector), regularization(optimal), x0(Initial state, optimal)
+% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [y, T, X, U] = lmpc(sysd, N, r, t)
-% Example 2: [y, T, X, U] = lmpc(sysd, N, r, t, regularization)
-% Example 3: [y, T, X, U] = lmpc(sysd, N, r, t, regularization, x0)
+% Example 1: [y, T, X, U] = lmpc(sysd, N, R, T)
+% Example 2: [y, T, X, U] = lmpc(sysd, N, R, T, x0)
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
-% Update: Added least square options to use as well.
 
 function [y, T, X, U] = lmpc(varargin)
   % Check if there is any input
@@ -40,28 +38,18 @@ function [y, T, X, U] = lmpc(varargin)
     
     % Get the reference vector r
     if(length(varargin) >= 3)
-      r = varargin{3};
+      r = repmat(varargin{3}, N, 1);
     else
-      error('Missing the reference vector r');
+      error('Missing the reference vector R');
     end
     
     % Get the total time 
     if(length(varargin) >= 4)
-      t = varargin{4};
-      if(length(r)*size(C, 1) ~= length(t))
-        error("Use the same length of r times rows of C as length of t: length(r)*Crows == length(t)");
-      end
+      t = 0:sampleTime:varargin{4};
     else
-      error('Missing the time vector');
+      error('Missing the end time T');
     end
-    
-    % Get the regularization parameter
-    if(length(varargin) >= 5)
-      regularization = varargin{5};
-    else
-      regularization = 0;
-    end
-    
+
     % Get the initial trajectory vector x
     if(length(varargin) >= 6)
       x = varargin{6};
@@ -69,31 +57,33 @@ function [y, T, X, U] = lmpc(varargin)
       x = zeros(size(A, 1), 1);
     end
     
-    % Combine r [r1; r2; r3; r4...] to r = [r1 r2 r3 f4...] with space
-    r = r(:)'; 
-    
-    % Do a check if length(r) can be divided with N
-    if mod(length(r), N*size(C, 1)) > 0
-      error('The reference r cannot be divided with horizon N');
-    else
-      step = N*size(C, 1);
+    % Check if the system has integration behaviour
+    abseigenvalues = abs(pole(sys));
+    hasIntegration = 0;
+    if(max(abseigenvalues) == 1)
+      hasIntegration = 1; % Yes
     end
     
-    %% Solve this formula: r = PHI*x + GAMMA*U, where we want U
-    
-    % Compute the PHI and GAMMA matrix now with horizon N
+    % We are going to solve U from r = PHI*x + GAMMA*U
     PHI = phiMat(A, C, N);
     GAMMA = gammaMat(A, B, C, N);
     
-    % We using Tikhonov regularization when we are using linear programming: Max c^T, S.t: Ax <= b, x >= 0
-    % clp = (A'*A + lambda*I)'*b
+    % We using linear programming: Max c^T, S.t: Ax <= b, x >= 0
+    % clp = (A'*A)'*b
     % blp = A'*b
-    % alp = A'*A + lambda*I
-    alp = GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA));
+    % alp = A'*A
+    clp = (GAMMA'*GAMMA)'*(r - PHI*x);
+    blp = GAMMA'*(r - PHI*x);
+    alp = GAMMA'*GAMMA;
     iteration_limit = 200;
-    u = zeros(size(B, 2), 1); % Prevent over shoot from the beginning
-
-    count = 0;
+    CTYPE = repmat("U", 1, N*size(B,2));
+    VARTYPE = repmat("C", 1, N*size(B,2));
+    %u = linprog2(clp, alp, blp, 0, iteration_limit);
+    u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+    if(hasIntegration == 0)
+      u(1:size(B, 2)) = u(end-size(B, 2)+1:end); % Take the last 
+    end
+    
     for k = 1:length(t)
       % Return states and input signals
       X(:,k) = x;
@@ -106,22 +96,15 @@ function [y, T, X, U] = lmpc(varargin)
       x = A*x + B*u(1:size(B, 2)); 
       
       % Update the constraints and objective function
-      R = r(1 + count*step:count*step + step)'; % Select the set of signals - Important with transpose!
-      clp = (GAMMA'*GAMMA + regularization*eye(size(GAMMA'*GAMMA)))'*(R - PHI*x);
-      blp = GAMMA'*(R - PHI*x);
+      clp = (GAMMA'*GAMMA)'*(r - PHI*x);
+      blp = GAMMA'*(r - PHI*x);
       
-      % Uncomment this code to use Linear programming as optimization - Please use regularization
+      % Linear programming
       %u = linprog2(clp, alp, blp, 0, iteration_limit);
-      
-      % This code is regular least squares. 
-      u = inv(GAMMA'*GAMMA)*GAMMA'*(R-PHI*x);
-      u(u(1:size(B, 2)) > u(end-size(B, 2)+1:end)) = u(end-size(B, 2)+1:end); % Prevent jumpy inputs
-      
-      % Count the steps for next input signal set
-      if(k > step + count*step)
-        count = count + 1;
+      u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+      if(hasIntegration == 0)
+        u(1:size(B, 2)) = u(end-size(B, 2)+1:end); % Take the last 
       end
-      
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
