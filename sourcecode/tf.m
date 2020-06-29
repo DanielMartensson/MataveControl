@@ -76,9 +76,6 @@ function [G] = tf(varargin)
       dash = regexprep(dash,'[1]','');
     end
     G.delay = delay;
-    G.type = 'TF';
-    G.sampleTime = 0;
-    G = pade(G, 4); % Padé approximation
   else
     G.delay = 0;
   end
@@ -88,6 +85,11 @@ function [G] = tf(varargin)
   G.tfden = denomeratorString;
   G.type = 'TF';
   G.sampleTime = 0;
+  
+  % Padé approximation
+  if(G.delay > 0)
+    G = pade(G, 4); 
+  end
 end
 
 % Get a dashed line with dynamical length depending on denomeratorString or numeratorString
