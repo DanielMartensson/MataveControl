@@ -43,6 +43,9 @@ function [model] = c2d(varargin)
     sys = tf2ss(varargin{1}, 'OCF');
     % Turn sys to discrete
     h = varargin{2};
+    if(and(h > 0, sys.delay > 0))
+      error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = tf2ss(G) -> sysd = c2d(sys)');
+    end
     model = c2d(sys, h);
     % Turn it then into a tf
     model = ss2tf(model);
