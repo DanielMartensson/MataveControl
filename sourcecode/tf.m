@@ -77,6 +77,7 @@ function [G] = tf(varargin)
     end
     G.delay = delay;
     G.type = 'TF';
+    G.sampleTime = 0;
     G = pade(G, 4); % Padé approximation
   else
     G.delay = 0;
