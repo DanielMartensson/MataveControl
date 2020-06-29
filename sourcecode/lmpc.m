@@ -5,6 +5,7 @@
 % Example 2: [y, T, X, U] = lmpc(sysd, N, R, T, x0)
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
+% Notice that you can change to the internal linearprogramming function linprog2 in the code!
 
 function [y, T, X, U] = lmpc(varargin)
   % Check if there is any input
@@ -176,10 +177,10 @@ end
 function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
   
   % Clear the solution
-	if(max_or_min == 0)
-		x = zeros(column_a, 1);
-	else
-		x = zeros(row_a, 1);
+  if(max_or_min == 0)
+    x = zeros(column_a, 1);
+  else
+    x = zeros(row_a, 1);
   end
   
   % Create the tableau
@@ -204,15 +205,15 @@ function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
   tableau(row_a + 1, column_a + row_a + 1) = 1;
   
   % Do row operations
-	entry = -1.0; % Need to start with a negative number because MATLAB don't have do-while! ;(
-	pivotColumIndex = 0;
-	pivotRowIndex = 0;
-	pivot = 0.0;
-	value1 = 0.0;
-	value2 = 0.0;
-	value3 = 0.0;
-	smallest = 0.0;
-	count = 0;
+  entry = -1.0; % Need to start with a negative number because MATLAB don't have do-while! ;(
+  pivotColumIndex = 0;
+  pivotRowIndex = 0;
+  pivot = 0.0;
+  value1 = 0.0;
+  value2 = 0.0;
+  value3 = 0.0;
+  smallest = 0.0; 
+  count = 0;
   while(entry < 0) % Continue if we have still negative entries
     % Find our pivot column
     pivotColumIndex = 1;
@@ -233,10 +234,16 @@ function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
     % Find our pivot row
     pivotRowIndex = 1;
     value1 = tableau(1, pivotColumIndex); % Value in pivot column
+    if(value1 == 0)
+      value1 = eps;
+    end
     value2 = tableau(1, column_a+row_a+2); % Value in the b vector
     smallest = value2/value1; % Initial smalles value1
     for i = 2:row_a
       value1 = tableau(i, pivotColumIndex); % Value in pivot column
+      if(value1 == 0)
+        value1 = eps;
+      end
       value2 = tableau(i, column_a+row_a+2); % Value in the b vector
       value3 = value2/value1;
       if(or(and(value3 > 0, value3 < smallest), smallest < 0))
@@ -267,7 +274,7 @@ function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
     end
     
     % Count for the iteration
-		count = count + 1;
+    count = count + 1;
   end
   
   % If max_or_min == 0 -> Maximization problem
