@@ -76,6 +76,7 @@ function [G] = tf(varargin)
       if delay == 1
         dash = regexprep(dash,'[1]','');
       end
+      G.delay = delay;
     else
       G.delay = 0;
     end
