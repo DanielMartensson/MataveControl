@@ -70,12 +70,15 @@ function [G] = tf(varargin)
   if(length(varargin) >= 3)
     % Get dashed line delay
     delay = varargin{3};
-    dash = strcat(dash, 'e^(', num2str(-delay), 's', ')');
-    % Remove 1 to '' if delay = 1
-    if delay == 1
-      dash = regexprep(dash,'[1]','');
+    if(delay > 0)
+      dash = strcat(dash, 'e^(', num2str(-delay), 's', ')');
+      % Remove 1 to '' if delay = 1
+      if delay == 1
+        dash = regexprep(dash,'[1]','');
+      end
+    else
+      G.delay = 0;
     end
-    G.delay = delay;
   else
     G.delay = 0;
   end
