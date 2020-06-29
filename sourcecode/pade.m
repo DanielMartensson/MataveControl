@@ -57,7 +57,7 @@ function [model] = pade(varargin)
         model = series(G(i,j), TFdelay);
         % Add sample time
         model.sampleTime = sampleTime;
-
+        model.delay = delay;
         
         % Discrete or not?
         if (model.sampleTime > 0)
