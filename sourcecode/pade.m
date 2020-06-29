@@ -31,7 +31,7 @@ function [model] = pade(varargin)
         % Get sample time
         sampleTime = G(i,j).sampleTime;
         if(and(sampleTime > 0, delay > 0))
-          error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = tf2ss(G) -> sysd = c2d(sys)!');
+          error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = tf2ss(G) -> sysd = c2d(sys)');
         end
         
         switch PadeOrder
