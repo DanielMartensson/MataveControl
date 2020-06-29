@@ -75,6 +75,7 @@ function [G] = tf(varargin)
       dash = regexprep(dash,'[1]','');
     end
     G.delay = delay;
+    G = pade(G, 4); % Padé approximation
   else
     G.delay = 0;
   end
