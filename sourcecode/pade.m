@@ -50,11 +50,6 @@ function [model] = pade(varargin)
         % Need to have the same sample time. Or else series.m won't work for us
         TFdelay.sampleTime = sampleTime;
         
-        % Check if discrete - This is needed for series.m if we have a discrete model
-        if (sampleTime > 0)
-          TFdelay = c2d(TFdelay, sampleTime);
-        end
-        
         % Remove the delay because we don't want e^(-delay*s) notion
         G(i,j).delay = 0;
         model = series(G(i,j), TFdelay);
@@ -62,15 +57,6 @@ function [model] = pade(varargin)
         model.sampleTime = sampleTime;
         model.delay = delay;
         
-        % Discrete or not?
-        if (model.sampleTime > 0)
-          % Replace the delaytime to discrete delay time
-          model.tfdash = strrep(model.tfdash, 'e', 'z');
-          model.tfdash = strrep(model.tfdash, 's', '');
-          % Remove all s -> s
-          model.tfnum = strrep(model.tfnum, 's', 'z');
-          model.tfden = strrep(model.tfden, 's', 'z');
-        end
       end
     end
   else
