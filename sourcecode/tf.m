@@ -3,6 +3,7 @@
 % Example 1: G = tf(num, den, delay)
 % Example 2: G = tf(num, den)
 % Author: Daniel Mårtensson, 2017 September
+% Update: Added padé approximation 2020-06-29
 
 function [G] = tf(varargin)
   % Check if there is some input arguments
