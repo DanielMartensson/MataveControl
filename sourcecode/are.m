@@ -18,24 +18,18 @@ function [X] = are(varargin)
     error('Missing Q or R');
   end
   
-  % Check if Q < 0
-  [m, n] = size(Q); 
-  for i = 1:m
-    for j = 1:n
-      if Q(i,j) < 0
-          error('Q matrix to Algebraic Riccati Equation is not positive semi-definite');
-      end
-    end
+  % Check if Q is symmetric positive definite
+  if(issymmetric(Q) == 0)
+    error('Matrix Q is not symmetric')
+  end
+  if(eig(Q) < 0)
+    error('Matrix Q is not semi-positive definite')
   end
   
-  % Check if R <= 0
-  [m, n] = size(R); 
-  for i = 1:m
-    for j = 1:n
-      if R(i,j) <= 0
-          error('R matrix to Algebraic Riccati Equation is not positive definite');
-      end
-    end
+  % Check if R is symmetric positive definite
+  [~, P] = chol(R);
+  if(P == 1)
+    error('Matrix R is not symmetric positive definite')
   end
   
   % Get model type
