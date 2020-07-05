@@ -3,6 +3,7 @@
 % Example 1: [X] = are(sys, Q, R)
 % Author: Daniel Mårtensson, Oktober 2017
 % Updated: November 2017
+% Updated: July 2020 - Added symmetric semi-positive definitive check for Q and R
 
 function [X] = are(varargin)
   % Check if there is any input
