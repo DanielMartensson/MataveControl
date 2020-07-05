@@ -18,7 +18,7 @@ function [X] = are(varargin)
     error('Missing Q or R');
   end
   
-  % Check if Q is symmetric positive definite
+  % Check if Q is symmetric semi-positive definite
   if(issymmetric(Q) == 0)
     error('Matrix Q is not symmetric')
   end
