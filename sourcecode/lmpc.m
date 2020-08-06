@@ -6,6 +6,7 @@
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
 % Notice that you can change to the internal linearprogramming function linprog2 in the code!
+% Update: I added automatic integral action so you don't need to add integral action by your self
 
 function [y, T, X, U] = lmpc(varargin)
   % Check if there is any input
@@ -37,9 +38,9 @@ function [y, T, X, U] = lmpc(varargin)
       error('Missing the horizon number');
     end
     
-    % Get the reference vector r
+    % Get the reference vector R
     if(length(varargin) >= 3)
-      r = repmat(varargin{3}, N, 1);
+      R = repmat(varargin{3}, N, 1);
     else
       error('Missing the reference vector R');
     end
@@ -58,32 +59,40 @@ function [y, T, X, U] = lmpc(varargin)
       x = zeros(size(A, 1), 1);
     end
     
-    % Check if the system has integration behaviour
+    % Check if the system has integration behaviour already
     abseigenvalues = abs(pole(sys));
-    hasIntegration = 0;
     if(max(abseigenvalues) == 1)
-      hasIntegration = 1; % Yes
+      % Integral action is added already
+      PHI = phiMat(A, C, N);
+      GAMMA = gammaMat(A, B, C, N);
+    else
+      % Add integral action
+      am = size(A, 1);
+      bn = size(B, 2);
+      cm = size(C, 1);
+      rm = size(varargin{3}, 1); % Get the size of our reference vector as input
+      A = [A zeros(am, cm); C*A eye(cm, cm)];
+      B = [B; C*B];
+      C = [zeros(cm, am) eye(cm, cm)];
+      x = [x; zeros(rm, 1)];
     end
-    
-    % We are going to solve U from r = PHI*x + GAMMA*U
+
+    % Find the observability matrix PHI and lower triangular toeplitz matrix GAMMA of C*PHI
     PHI = phiMat(A, C, N);
     GAMMA = gammaMat(A, B, C, N);
     
-    % We using linear programming: Max c^T, S.t: Ax <= b, x >= 0
+    % Solve: R = PHI*x + GAMMA*U with linear programming: Max c^T, S.t: Ax <= b, x >= 0
     % clp = (A'*A)'*b
     % blp = A'*b
     % alp = A'*A
-    clp = (GAMMA'*GAMMA)'*(r - PHI*x);
-    blp = GAMMA'*(r - PHI*x);
+    clp = (GAMMA'*GAMMA)'*(R - PHI*x);
+    blp = GAMMA'*(R - PHI*x);
     alp = GAMMA'*GAMMA;
     iteration_limit = 200;
     CTYPE = repmat("U", 1, N*size(B,2));
     VARTYPE = repmat("C", 1, N*size(B,2));
-    %u = linprog2(clp, alp, blp, 0, iteration_limit);
+    %u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
     u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
-    if(hasIntegration == 0)
-      u(1:size(B, 2)) = u(end-size(B, 2)+1:end); % Take the last 
-    end
     
     for k = 1:length(t)
       % Return states and input signals
@@ -97,15 +106,12 @@ function [y, T, X, U] = lmpc(varargin)
       x = A*x + B*u(1:size(B, 2)); 
       
       % Update the constraints and objective function
-      clp = (GAMMA'*GAMMA)'*(r - PHI*x);
-      blp = GAMMA'*(r - PHI*x);
+      clp = (GAMMA'*GAMMA)'*(R - PHI*x);
+      blp = GAMMA'*(R - PHI*x);
       
       % Linear programming
-      %u = linprog2(clp, alp, blp, 0, iteration_limit);
+      %u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
       u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
-      if(hasIntegration == 0)
-        u(1:size(B, 2)) = u(end-size(B, 2)+1:end); % Take the last 
-      end
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
