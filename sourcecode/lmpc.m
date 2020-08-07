@@ -6,7 +6,6 @@
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
 % Notice that you can change to the internal linearprogramming function linprog2 in the code!
-% Update: I added automatic integral action so you don't need to add integral action by your self
 
 function [y, T, X, U] = lmpc(varargin)
   % Check if there is any input
@@ -53,8 +52,8 @@ function [y, T, X, U] = lmpc(varargin)
     end
 
     % Get the initial trajectory vector x
-    if(length(varargin) >= 6)
-      x = varargin{6};
+    if(length(varargin) >= 5)
+      x = varargin{5};
     else
       x = zeros(size(A, 1), 1);
     end
@@ -75,6 +74,7 @@ function [y, T, X, U] = lmpc(varargin)
       B = [B; C*B];
       C = [zeros(cm, am) eye(cm, cm)];
       x = [x; zeros(rm, 1)];
+      
     end
 
     % Find the observability matrix PHI and lower triangular toeplitz matrix GAMMA of C*PHI
@@ -91,8 +91,8 @@ function [y, T, X, U] = lmpc(varargin)
     iteration_limit = 200;
     CTYPE = repmat("U", 1, N*size(B,2));
     VARTYPE = repmat("C", 1, N*size(B,2));
-    %u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
-    u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+    u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
+    %u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
     
     for k = 1:length(t)
       % Return states and input signals
@@ -110,8 +110,8 @@ function [y, T, X, U] = lmpc(varargin)
       blp = GAMMA'*(R - PHI*x);
       
       % Linear programming
-      %u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
-      u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+      u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
+      %u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
