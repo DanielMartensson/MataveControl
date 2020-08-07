@@ -74,7 +74,6 @@ function [y, T, X, U] = lmpc(varargin)
       B = [B; C*B];
       C = [zeros(cm, am) eye(cm, cm)];
       x = [x; zeros(rm, 1)];
-      
     end
 
     % Find the observability matrix PHI and lower triangular toeplitz matrix GAMMA of C*PHI
