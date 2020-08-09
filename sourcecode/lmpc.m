@@ -1,13 +1,13 @@
 % Use linear Model Predictive Control
 % Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [y, T, X, U] = lmpc(sysd, N, R, T)
-% Example 2: [y, T, X, U] = lmpc(sysd, N, R, T, x0)
+% Example 1: [Y, T, X, U] = lmpc(sysd, N, R, T)
+% Example 2: [Y, T, X, U] = lmpc(sysd, N, R, T, x0)
 % Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
 % Notice that you can change to the internal linearprogramming function linprog2 in the code!
 
-function [y, T, X, U] = lmpc(varargin)
+function [Y, T, X, U] = lmpc(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing model')
@@ -66,14 +66,17 @@ function [y, T, X, U] = lmpc(varargin)
       GAMMA = gammaMat(A, B, C, N);
     else
       % Add integral action
+      % A = [A B; 0 1]
+      % B = [0; I]
+      % C = [C 0]
+      % x = [x; u(k-1)]
       am = size(A, 1);
       bn = size(B, 2);
       cm = size(C, 1);
-      rm = size(varargin{3}, 1); % Get the size of our reference vector as input
-      A = [A zeros(am, cm); C*A eye(cm, cm)];
-      B = [B; C*B];
-      C = [zeros(cm, am) eye(cm, cm)];
-      x = [x; zeros(rm, 1)];
+      A = [A B; zeros(bn, am) eye(bn, bn)];
+      B = [zeros(am, bn); eye(bn, bn)];
+      C = [C zeros(cm, bn)];
+      x = [x; zeros(bn, 1)];
     end
 
     % Find the observability matrix PHI and lower triangular toeplitz matrix GAMMA of C*PHI
@@ -92,17 +95,18 @@ function [y, T, X, U] = lmpc(varargin)
     VARTYPE = repmat("C", 1, N*size(B,2));
     u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
     %u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
-    
+    past_inputs = zeros(1, size(B, 2));
+    delta = zeros(1, size(B, 2));
     for k = 1:length(t)
       % Return states and input signals
       X(:,k) = x;
-      U(:,k) = u(1:size(B, 2)); % First element!
+      U(:,k) = delta; % First element!
       
       % Compute outputs
-      y(:,k) = C*x + D*u(1:size(B, 2)); % size(B, 2) = If multiple inputs...
+      Y(:,k) = C*x + D*delta; % size(B, 2) = If multiple inputs...
       
       % Update states
-      x = A*x + B*u(1:size(B, 2)); 
+      x = A*x + B*delta;
       
       % Update the constraints and objective function
       clp = (GAMMA'*GAMMA)'*(R - PHI*x);
@@ -111,13 +115,15 @@ function [y, T, X, U] = lmpc(varargin)
       % Linear programming
       u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
       %u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+      delta = u(1:size(B, 2)) - 0.5*past_inputs; % We are using 0.5 as integral action
+      past_inputs = u(1:size(B, 2));
     end
     
     % Change t and y vector and u so the plot look like it is discrete - Important!
-    for(i = 1:2:length(y)*2)
-      leftPart = y(:,1:i);
-      rightPart = y(:,(i+1):end);
-      y = [leftPart y(:,i) rightPart];
+    for(i = 1:2:length(Y)*2)
+      leftPart = Y(:,1:i);
+      rightPart = Y(:,(i+1):end);
+      Y = [leftPart Y(:,i) rightPart];
     end
         
     for(i = 1:2:length(t)*2)
@@ -141,7 +147,7 @@ function [y, T, X, U] = lmpc(varargin)
     % Just remove the first one 
     T = t(:,2:length(t));
     % And the last one
-    y = y(:,1:(length(y)-1));
+    Y = Y(:,1:(length(Y)-1));
     % And for U and X too
     U = U(:,1:(length(U)-1));
     X = X(:,1:(length(X)-1));
@@ -150,7 +156,7 @@ function [y, T, X, U] = lmpc(varargin)
     % Plot - How many subplots?
     for i = 1:size(C,1)
       subplot(size(C,1),1,i)
-      plot(T, y(i,:)); 
+      plot(T, Y(i,:)); 
       ylabel(strcat('y', num2str(i)));
       if (sampleTime > 0)
         xlabel(strcat(num2str(sampleTime), ' time unit/sample'));
@@ -159,10 +165,8 @@ function [y, T, X, U] = lmpc(varargin)
       end
       grid on
     end
-    
   end
 end
-
 
 % This simplex method has been written as it was C code
 function [x] = linprog2(c, A, b, max_or_min, iteration_limit)
