@@ -260,6 +260,9 @@ function [x] = opti(c, A, b, row_a, column_a, max_or_min, iteration_limit)
     % We know where our pivot is. Turn the pivot into 1
     % 1/pivot * PIVOT_ROW -> PIVOT_ROW
     pivot = tableau(pivotRowIndex, pivotColumIndex); % Our pivot value
+    if(pivot == 0)
+      pivot = eps;
+    end
     for i = 1:column_a + row_a + 2
       value1 = tableau(pivotRowIndex, i); % Our row value at pivot row
       tableau(pivotRowIndex, i) = value1 * 1/pivot; % When value1 = pivot, then pivot will be 1
