@@ -66,7 +66,7 @@ function [Y, T, X, U] = lmpc(varargin)
       GAMMA = gammaMat(A, B, C, N);
     else
       % Add integral action
-      % A = [A B; 0 1]
+      % A = [A B; 0 I]
       % B = [0; I]
       % C = [C 0]
       % x = [x; u(k-1)]
