@@ -4,8 +4,7 @@
 % Example 1: [Y, T, X, U] = lmpc(sysd, N, R, T)
 % Example 2: [Y, T, X, U] = lmpc(sysd, N, R, T, x0)
 % Author: Daniel Mårtensson
-% Update: Replaced QP solver with LP solver due to CControl library - Sorry! 
-% Notice that you can change to the internal linearprogramming function linprog2 in the code!
+% Update: Replaced QP solver with LP solver due to CControl library has a C linear programming code as well
 
 function [Y, T, X, U] = lmpc(varargin)
   % Check if there is any input
@@ -78,6 +77,9 @@ function [Y, T, X, U] = lmpc(varargin)
       C = [C zeros(cm, bn)];
       x = [x; zeros(bn, 1)];
     end
+    
+    % Check if it's MATLAB or Octave
+    isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
 
     % Find the observability matrix PHI and lower triangular toeplitz matrix GAMMA of C*PHI
     PHI = phiMat(A, C, N);
@@ -93,8 +95,11 @@ function [Y, T, X, U] = lmpc(varargin)
     iteration_limit = 200;
     CTYPE = repmat("U", 1, N*size(B,2));
     VARTYPE = repmat("C", 1, N*size(B,2));
-    u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
-    %u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+    if(isOctave == 1)
+      u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1);
+    else
+      u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
+    end
     past_inputs = zeros(1, size(B, 2));
     delta = zeros(1, size(B, 2));
     for k = 1:length(t)
@@ -113,8 +118,11 @@ function [Y, T, X, U] = lmpc(varargin)
       blp = GAMMA'*(R - PHI*x);
       
       % Linear programming
-      u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
-      %u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1); % If you using GNU Octave - Uncomment this
+      if(isOctave == 1)
+        u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1);
+      else
+        u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
+      end
       delta = u(1:size(B, 2)) - 0.5*past_inputs; % We are using 0.5 as integral action
       past_inputs = u(1:size(B, 2));
     end
