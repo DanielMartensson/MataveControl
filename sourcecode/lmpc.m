@@ -5,7 +5,7 @@
 % Example 2: [Y, T, X, U] = lmpc(sysd, N, R, T, a)
 % Example 3: [Y, T, X, U] = lmpc(sysd, N, R, T, a, I)
 % Example 4: [Y, T, X, U] = lmpc(sysd, N, R, T, a, I, x0)
-% Author: Daniel Mårtensson
+% Author: Daniel MÃ¥rtensson
 % Update: Replaced QP solver with LP solver due to CControl library has a C linear programming code as well
 % Update: Added regularization and integral action
 
@@ -102,7 +102,7 @@ function [Y, T, X, U] = lmpc(varargin)
     PHI = phiMat(A, C, N);
     GAMMA = gammaMat(A, B, C, N);
     
-    % Solve: R = PHI*x + GAMMA*U with linear programming: Max c^T, S.t: Ax <= b, x >= 0
+    % Solve: R = PHI*x + GAMMA*U with linear programming: Max: c^Tx, S.t: Ax <= b, x >= 0
     % clp = (A'*A + lambda)'*b
     % blp = A'*b
     % alp = A'*A + lambda
