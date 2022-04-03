@@ -1,10 +1,13 @@
 % Use linear Model Predictive Control
-% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), x0(Initial state, optimal)
+% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda parameter), I(integral parameter 0 to 1), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = lmpc(sysd, N, R, T)
-% Example 2: [Y, T, X, U] = lmpc(sysd, N, R, T, x0)
-% Author: Daniel MÃ¥rtensson
+% Example 2: [Y, T, X, U] = lmpc(sysd, N, R, T, a)
+% Example 3: [Y, T, X, U] = lmpc(sysd, N, R, T, a, I)
+% Example 4: [Y, T, X, U] = lmpc(sysd, N, R, T, a, I, x0)
+% Author: Daniel Mårtensson
 % Update: Replaced QP solver with LP solver due to CControl library has a C linear programming code as well
+% Update: Added regularization and integral action
 
 function [Y, T, X, U] = lmpc(varargin)
   % Check if there is any input
@@ -49,22 +52,36 @@ function [Y, T, X, U] = lmpc(varargin)
     else
       error('Missing the end time T');
     end
-
-    % Get the initial trajectory vector x
+    
+    % Get the lambda
     if(length(varargin) >= 5)
-      x = varargin{5};
+      a = varargin{5};
+    else
+      a = 0;
+    end
+
+    % Get the integral action parameter
+    if(length(varargin) >= 6)
+      I = varargin{6};
+    else
+      I = 0; % Max integral action
+    end
+    
+    % Get the initial trajectory vector x
+    if(length(varargin) >= 7)
+      x = varargin{7};
     else
       x = zeros(size(A, 1), 1);
     end
     
     % Check if the system has integration behaviour already
     abseigenvalues = abs(pole(sys));
-    if(max(abseigenvalues) == 1)
+    if(max(abseigenvalues) >= 1)
       % Integral action is added already
       PHI = phiMat(A, C, N);
       GAMMA = gammaMat(A, B, C, N);
     else
-      % Add integral action
+      % Add integral action - It's very good and pratical!
       % A = [A B; 0 I]
       % B = [0; I]
       % C = [C 0]
@@ -86,20 +103,20 @@ function [Y, T, X, U] = lmpc(varargin)
     GAMMA = gammaMat(A, B, C, N);
     
     % Solve: R = PHI*x + GAMMA*U with linear programming: Max c^T, S.t: Ax <= b, x >= 0
-    % clp = (A'*A)'*b
+    % clp = (A'*A + lambda)'*b
     % blp = A'*b
-    % alp = A'*A
-    clp = (GAMMA'*GAMMA)'*(R - PHI*x);
+    % alp = A'*A + lambda
+    lambda = a*eye(size(GAMMA));
+    clp = (GAMMA'*GAMMA + lambda)'*(R - PHI*x);
     blp = GAMMA'*(R - PHI*x);
-    alp = GAMMA'*GAMMA;
+    alp = GAMMA'*GAMMA + lambda;
+    
+    % Settings for the GLPK for GNU Octave only
     iteration_limit = 200;
     CTYPE = repmat("U", 1, N*size(B,2));
     VARTYPE = repmat("C", 1, N*size(B,2));
-    if(isOctave == 1)
-      u = glpk (clp, alp, blp, [], [], CTYPE, VARTYPE, -1);
-    else
-      u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
-    end
+    
+    % Loop and save the data 
     past_inputs = zeros(1, size(B, 2));
     delta = zeros(1, size(B, 2));
     for k = 1:length(t)
@@ -111,10 +128,11 @@ function [Y, T, X, U] = lmpc(varargin)
       Y(:,k) = C*x + D*delta; % size(B, 2) = If multiple inputs...
       
       % Update states
+      % For applying this MPC regulator in reality, then state vector x should be the "sensors" if C = identity and D = 0
       x = A*x + B*delta;
       
       % Update the constraints and objective function
-      clp = (GAMMA'*GAMMA)'*(R - PHI*x);
+      clp = (GAMMA'*GAMMA + lambda)'*(R - PHI*x);
       blp = GAMMA'*(R - PHI*x);
       
       % Linear programming
@@ -123,7 +141,9 @@ function [Y, T, X, U] = lmpc(varargin)
       else
         u = linprog2(clp, alp, blp, 0, iteration_limit); % Used for MATLAB users
       end
-      delta = u(1:size(B, 2)) - 0.5*past_inputs; % We are using 0.5 as integral action
+      
+      % Do integral action by compare new inputs with old inputs
+      delta = u(1:size(B, 2)) - I*past_inputs;
       past_inputs = u(1:size(B, 2));
     end
     
