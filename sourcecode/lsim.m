@@ -4,6 +4,7 @@
 % Example 2: [y,t,x] = lsim(sys,u,t)
 % Example 3: [y,t,x] = lsim(sys,u,t,x0)
 % Author: Daniel Mårtensson, September 2017
+% Update 2022-04-20: Plots the input signal as well now
 
 
 function [y,t,X] = lsim(varargin)
@@ -101,10 +102,13 @@ function [y,t,X] = lsim(varargin)
       % Now we have two vectors which look like a discrete signal
     end
     
+    % This is for the sub plot - How many max rows should we have
+    rows = max(size(C,1), size(B, 2));
+
     % Plot - How many subplots?
     for i = 1:size(C,1)
-      subplot(size(C,1),1,i)
-      plot(t, y(i,:)); 
+      subplot(rows,1,i)
+      plot(t, y(i,:));
       ylabel(strcat('y', num2str(i)));
       if (sampleTime > 0)
         xlabel(strcat(num2str(sampleTime), ' time unit/sample'));
@@ -112,6 +116,19 @@ function [y,t,X] = lsim(varargin)
         xlabel('Time units');
       end
       grid on
+    end
+
+    % Plot the input signals as well
+    for i = 1:size(B, 2)
+      subplot(rows, 1, i)
+      hold on
+      plot(t, u(i, :))
+      grid on
+      if(i <= size(C,1))
+        legend(strcat('y', num2str(i)), strcat('u', num2str(i)))
+      else
+        legend(strcat('u', num2str(i)))
+      end
     end
     
   elseif(strcmp(varargin{1}.type,'TF'))
@@ -131,13 +148,6 @@ function [y,t,X] = lsim(varargin)
     else
       x0 = zeros(size(sys.A, 1), 1); % Assume x0 = 0
     end
-    
-    % Check simulation method
-    %if(length(varargin) >= 5)
-      %method = varargin{5};
-    %else
-      %method = 'lsim';
-    %end
     
     % Call lsim
     [y,t,X] = lsim(sys, u, t, x0);
