@@ -82,11 +82,17 @@ function [y,t,X] = lsim(varargin)
     % If the model has the sample time t(2) - t(1)
     % the model will be inteprented as time continous
     if(sampleTime > 0)
-      % Change t and y vector so the plot look like it is discrete
+      % Change t, u and y vector so the plot look like it is discrete
       for(i = 1:2:length(y)*2)
         leftPart = y(:,1:i);
         rightPart = y(:,(i+1):end);
         y = [leftPart y(:,i) rightPart];
+      end
+      
+      for(i = 1:2:length(u)*2)
+        leftPart = u(:,1:i);
+        rightPart = u(:,(i+1):end);
+        u = [leftPart u(:,i) rightPart];
       end
         
       for(i = 1:2:length(t)*2)
@@ -99,7 +105,8 @@ function [y,t,X] = lsim(varargin)
       t = t(:,2:length(t));
       % And the last one
       y = y(:,1:(length(y)-1));
-      % Now we have two vectors which look like a discrete signal
+      u = u(:,1:(length(u)-1));
+      % Now we have three vectors which look like a discrete signal
     end
     
     % This is for the sub plot - How many max rows should we have
