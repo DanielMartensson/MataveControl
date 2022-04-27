@@ -65,3 +65,4 @@ tzero.m
 updatematavecontrol.m
 zero.m
 zpk.m
+nlsim.m
