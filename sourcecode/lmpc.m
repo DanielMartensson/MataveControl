@@ -131,7 +131,7 @@ function [Y, T, X, U] = lmpc(varargin)
       blp = GAMMA'*(R - PHI*x);
 
       % Linear programming
-      if(isOctave == 0)
+      if(isOctave == 1)
         [u, ~, e] = glpk(clp, alp, blp, [], [], CTYPE, VARTYPE, -1);
         if(e > 0)
           error('Linear programming GLPK could not optimize input signals. Try increase the horizion N number.');
@@ -195,6 +195,7 @@ function [Y, T, X, U] = lmpc(varargin)
       grid on
     end
   end
+  title('Model Predictive Control with Linear Programming')
 end
 
 % This simplex method has been written as it was C code
