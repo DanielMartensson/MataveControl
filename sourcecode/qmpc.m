@@ -5,7 +5,7 @@
 % Example 2: [Y, T, X, U] = qmpc(sysd, N, R, T, a)
 % Example 3: [Y, T, X, U] = qmpc(sysd, N, R, T, a, I)
 % Example 4: [Y, T, X, U] = qmpc(sysd, N, R, T, a, I, x0)
-% Author: Daniel Mårtensson
+% Author: Daniel Mårtensson 2022 September 3
 
 function [Y, T, X, U] = qmpc(varargin)
   % Check if there is any input
