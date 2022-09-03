@@ -59,9 +59,9 @@ Do a nyquist diagram plot in GNU Octave
 
 ![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Sk%C3%A4rmbild%20fr%C3%A5n%202017-11-09%2000-12-02.png)
 
-# Model Predictive Control - Linear programming
+# Model Predictive Control - Linear programming & Quadratic programming
 
-Here I use MPC with linear programming. I used to use MPC with a quadratic programming, but unfortunately quadprog is only available for MATLAB and you need to have a license for that. So I wrote my own linear programming MPC with regularization for smoother outputs and inputs. The linear programming algorithm is available in C code as well in my other projects for embedded MPC systems, and that's the main reason why I selected a simple optimization solver instead of a large and difficult one.
+Matavecontrol have both linear programming MPC and quadratic programming MPC. There is equivalent C code at [CControl](https://github.com/DanielMartensson/CControl) if you want to apply them to embedded hardware. Select the programming method, quadratic or linear, that works with your situation. Both works fine.
 
 ![alt text](https://github.com/DanielMartensson/matavecontrol/blob/master/examples/Markering_024.png)
 
