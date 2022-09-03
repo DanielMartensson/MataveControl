@@ -226,7 +226,7 @@ function [x, solution] = quadprog2(Q, c, A, b)
     lambda(i,1) = max(0,-w/P(i,i));
    end
    w = (lambda - lambda_p)'*(lambda - lambda_p);
-   if (w < 10e-8)
+   if (w < 10e-7)
        break;
    end
    if(km == 255)
