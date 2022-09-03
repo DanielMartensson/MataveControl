@@ -27,6 +27,7 @@ impulse.m
 initial.m
 loop.m
 lmpc.m
+qmpc.m
 lqe.m
 lqgreg.m
 lqi.m
