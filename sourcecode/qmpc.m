@@ -132,12 +132,12 @@ function [Y, T, X, U] = qmpc(varargin)
       if(isOctave == 1)
         [u, ~, e] = qp ([], qqp, cqp, [], [], [], [], [], aqp, bqp);
         if(e.info == 3)
-          error('Quadraitc programming QP could not optimize input signals. Try increase the horizion N number.');
+          error('Quadratic programming QP could not optimize input signals. Try increase the horizion N number.');
         end
       else
         [u, solution] = quadprog2(qqp, cqp, aqp, bqp); % Used for MATLAB users
         if(solution == false)
-          error('Linear programming linprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
+          error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
         end
       end
 
@@ -193,6 +193,7 @@ function [Y, T, X, U] = qmpc(varargin)
       grid on
     end
   end
+  title('Model Predictive Control with Quadratic Programming')
 end
 
 function [x, solution] = quadprog2(Q, c, A, b)
