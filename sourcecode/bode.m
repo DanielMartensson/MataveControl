@@ -17,6 +17,9 @@ function [mag, phase, wout] = bode(varargin)
     w2 = 100;
   else
     w1 = varargin{2};
+    if(w1 == 0)
+      w1 = 0.001;
+    end
     w2 = varargin{3};
   end
   
