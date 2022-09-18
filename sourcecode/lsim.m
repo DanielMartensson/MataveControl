@@ -27,7 +27,7 @@ function [y,t,X] = lsim(varargin)
     u = varargin{2}; % In signal vector
     % Check in signal vector
     if(size(u, 1) ~= size(B, 2))
-      error('In signal vector has not the same columns as B matrix')
+      error('Input signal vector has not the same columns size as B matrix')
     end
     
     % Get time
