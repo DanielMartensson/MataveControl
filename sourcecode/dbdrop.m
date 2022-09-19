@@ -17,6 +17,9 @@ function [drop] = dbdrop(varargin)
     w2 = 100;
   else
     w1 = varargin{2};
+    if(w1 == 0)
+      w1 = 0.001;
+    end
     w2 = varargin{3};
   end
 
@@ -78,6 +81,12 @@ function [drop] = dbdrop(varargin)
           end
         end
         
+        % Check if drop has changed
+        if(drop == 0)
+          opts = struct('WindowStyle','modal', 'Interpreter','tex');
+          warndlg('\color{blue} No dB drop of 3 dB was found. Try to increase the frequency range.', 'No dB', opts);
+          return;
+        end
 
         figure('Name', sprintf(strcat('Transfer function: ', num2str(i), 'x', num2str(j))))
         semilogx(w, 20*log10(abs(H)), 'b');
