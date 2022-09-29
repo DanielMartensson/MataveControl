@@ -1,6 +1,6 @@
 % Solve Algebraic Riccati Equation
 % Input: sys(State space model for A,B,C,D), Q(Hermitian and same size as A), R(Hermitian and same size as columns of B)
-% Input: S(Same size as A), E(Hermitian and same size as A), G(Hermitian and continuous ARE. Same size as rows of B)
+% Input: S(Same rows as A and same columns as B), E(Hermitian and same size as A), G(Hermitian and continuous ARE. Same size as rows of B)
 % Example 1: [X, K, L] = are(sys, Q, R)
 % Example 2: [X, K, L] = are(sys, Q, R, S)
 % Example 3: [X, K, L] = are(sys, Q, R, S, E)
