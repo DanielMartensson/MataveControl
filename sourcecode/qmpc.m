@@ -1,4 +1,4 @@
-% Use Model Predictive Control with quadratic programming
+% Use Model Predictive Control with integral action and quadratic programming 
 % Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), I(integral parameter 0 to 1), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = qmpc(sysd, N, R, T)
@@ -193,7 +193,7 @@ function [Y, T, X, U] = qmpc(varargin)
       grid on
     end
   end
-  title('Model Predictive Control with Quadratic Programming')
+  title('Model Predictive Control With Integral Action And Quadratic Programming')
 end
 
 function [x, solution] = quadprog2(Q, c, A, b)
