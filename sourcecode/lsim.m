@@ -175,7 +175,6 @@ function [y,t,X] = lsim(varargin)
     end
     sampleTime = varargin{1}.sampleTime;
 
-
     % Check if t and u have the same length
     lengthTime = length(t);
     lengthSignal = length(u);
