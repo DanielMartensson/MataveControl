@@ -191,6 +191,8 @@ function [y,t,X] = lsim(varargin)
     plot(t, y, t, u);
     grid on
     legend('y', 'u');
+    xlabel(strcat(num2str(sampleTime), ' time unit/sample'));
+    ylabel('y1');
   else
     error('No transfer function or state space model')
   end
