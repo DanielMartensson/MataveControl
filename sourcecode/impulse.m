@@ -54,14 +54,21 @@ function [y,t,X] = impulse(varargin)
     [y,t,X] = impulse(sys,t);
   elseif(strcmp(varargin{1}.type,'ARMA'))
 
-    % Get time
+    % Get end time
     if(length(varargin) >= 2)
       t = varargin{2};
     else
       disp('Time assumed to be 10 seconds');
       t = 10;
     end
-    t = 0:0.01:t; % Sample time assumed to be 0.01
+    
+    % Create time vector
+    sampleTime = varargin{1}.sampleTime;
+    if(sampleTime > 0)
+      t = 0:sampleTime:t;
+    else
+      t = 0:0.01:t; % Sample time assumed to be 0.01
+    end
 
     % Create input u
     u = linspace(0, 0, length(t));
