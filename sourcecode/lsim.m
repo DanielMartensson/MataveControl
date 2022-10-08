@@ -5,7 +5,7 @@
 % Example 3: [y,t,x] = lsim(sys,u,t,x0)
 % Author: Daniel Mårtensson, September 2017
 % Update 2022-04-20: Plots the input signal as well now
-
+% Update 2022-10-08: Simulate ARMA model
 
 function [y,t,X] = lsim(varargin)
   % Check if there is some input arguments or it's not a model
@@ -22,28 +22,28 @@ function [y,t,X] = lsim(varargin)
     D = model.D; % Will not be used
     delay = model.delay;
     sampleTime = model.sampleTime;
-    
+
     % Get input
     u = varargin{2}; % In signal vector
     % Check in signal vector
     if(size(u, 1) ~= size(B, 2))
       error('Input signal vector has not the same columns size as B matrix')
     end
-    
+
     % Get time
-    t = varargin{3}; 
+    t = varargin{3};
     % Check t vector
     if(size(t, 1) > 1)
-      error('No double time vector are allowed')
+      error('No double time vectors are allowed')
     end
-    
+
     % Check if t and u have the same length
     lengthTime = length(t);
     lengthSignal = length(u);
     if(lengthTime ~= lengthSignal)
       error('Input and time has not the same length')
     end
-    
+
     % Get the initial state vector
     if(length(varargin) >= 4)
       x = varargin{4}(:); % Initial state vector
@@ -54,29 +54,29 @@ function [y,t,X] = lsim(varargin)
       % Does not exist - create one then!
       x = zeros(size(A, 1), 1); % Assume x0 = [0; 0; 0; ..... ; 0]
     end
-    
-    
+
+
     % Create discrete model - Important for simulation
     if(sampleTime > 0) % Allready Discrete!
       sysd = varargin{1};
     else % Time continous
       sysd = c2d(varargin{1}, t(2) - t(1)); % Sample time is the difference t(2) - t(1)
     end
-    
+
     % Discrete matrecies
     Ad = sysd.A;
     Bd = sysd.B;
     Cd = sysd.C;
     Dd = sysd.D;
-    
-    % Simulation 
-    for k = 1:size(t,2) 
+
+    % Simulation
+    for k = 1:size(t,2)
       X(:,k) = x; % The return states
       y(:,k) = Cd*x + Dd*u(:,k);
       x = Ad*x + Bd*u(:,k); % Update state vector
     end
-    
-    
+
+
     % If we have a sample time bigger that 0, then we need to make sure
     % that the signal look like it's in discrete form.
     % If the model has the sample time t(2) - t(1)
@@ -88,27 +88,27 @@ function [y,t,X] = lsim(varargin)
         rightPart = y(:,(i+1):end);
         y = [leftPart y(:,i) rightPart];
       end
-      
+
       for(i = 1:2:length(u)*2)
         leftPart = u(:,1:i);
         rightPart = u(:,(i+1):end);
         u = [leftPart u(:,i) rightPart];
       end
-        
+
       for(i = 1:2:length(t)*2)
         leftPart = t(1:i);
         rightPart = t((i+1):end);
         t = [leftPart t(i) rightPart];
       end
-        
-      % Just remove the first one 
+
+      % Just remove the first one
       t = t(:,2:length(t));
       % And the last one
       y = y(:,1:(length(y)-1));
       u = u(:,1:(length(u)-1));
       % Now we have three vectors which look like a discrete signal
     end
-    
+
     % This is for the sub plot - How many max rows should we have
     rows = max(size(C,1), size(B, 2));
 
@@ -137,15 +137,15 @@ function [y,t,X] = lsim(varargin)
         legend(strcat('u', num2str(i)))
       end
     end
-    
+
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
     sys = tf2ss(varargin{1}, 'OCF');
-    
+
     % Get input
     u = varargin{2}; % In signal vector
     t = varargin{3}; % Time vector
-    
+
     % Check the initial state vector
     if(length(varargin) >= 4)
       x0 = varargin{4}(:); % Initial state vector
@@ -155,12 +155,43 @@ function [y,t,X] = lsim(varargin)
     else
       x0 = zeros(size(sys.A, 1), 1); % Assume x0 = 0
     end
-    
+
     % Call lsim
     [y,t,X] = lsim(sys, u, t, x0);
-    
+
+  elseif(strcmp(varargin{1}.type,'ARMA'))
+    % Get input
+    u = varargin{2}; % In signal vector
+    % Check in signal vector
+    if(size(u, 1) > 2)
+      error('No double input vectors are allowed for ARMA models')
+    end
+
+    % Get time
+    t = varargin{3};
+    % Check t vector
+    if(size(t, 1) > 1)
+      error('No double time vectors are allowed')
+    end
+
+    % Check if t and u have the same length
+    lengthTime = length(t);
+    lengthSignal = length(u);
+    if(lengthTime ~= lengthSignal)
+      error('Input and time has not the same length')
+    end
+
+    % Simulate the ARMA model with internal filter command
+    numerator = varargin{1}.num;
+    denomerator = varargin{1}.den;
+    y = filter(numerator, denomerator, u);
+    X = y; % States
+
+    % Plot signals
+    plot(t, y, t, u);
+    grid on
+    legend('y', 'u');
   else
     error('No transfer function or state space model')
   end
-  
 end
