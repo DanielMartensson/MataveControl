@@ -67,3 +67,4 @@ updatematavecontrol.m
 zero.m
 zpk.m
 nlsim.m
+arma.m
