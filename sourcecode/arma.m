@@ -1,6 +1,8 @@
 % Generates a ARMA model from numerator vector and denomerator vector
-% Input: numerator, denomerator, delay(optional)
+% Input: numerator, denomerator, sampleTime(optional), delay(optional)
 % Example 1: H = arma(num, den)
+% Example 2: H = arma(num, den, sampleTime)
+% Example 3: H = arma(num, den, sampleTime, delay)
 % Author: Daniel Mårtensson, 2022 Oktober
 
 function [H] = arma(varargin)
@@ -16,11 +18,19 @@ function [H] = arma(varargin)
   else
     numerator = varargin{1};
   end
+
   % Get denomerator
   if(length(varargin) < 2)
     error('Missing denomerator')
   else
     denomerator = varargin{2};
+  end
+
+  % Get sampleTime
+  if(length(varargin) >= 3)
+    denomerator = varargin{2};
+  else
+    sampleTime = 0;
   end
 
   % Check if there is some numerators
@@ -86,7 +96,7 @@ function [H] = arma(varargin)
 
   % Add type and sample time
   H.type = 'ARMA';
-  H.sampleTime = 0;
+  H.sampleTime = sampleTime;
 end
 
 
