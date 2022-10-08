@@ -31,7 +31,7 @@ function [reval] = bodemag(varargin)
     G = ss2tf(varargin{1});
     % Call bode
     bode(G, w1, w2);
-  elseif(strcmp(type, 'TF' ))
+  elseif(or(strcmp(type, 'TF' ), strcmp(type, 'ARMA' )))
     % If there is a MIMO TF
     G = varargin{1};
     for i = 1:size(G,1)
