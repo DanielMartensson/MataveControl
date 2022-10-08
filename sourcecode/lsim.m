@@ -173,6 +173,8 @@ function [y,t,X] = lsim(varargin)
     if(size(t, 1) > 1)
       error('No double time vectors are allowed')
     end
+    sampleTime = varargin{1}.sampleTime;
+
 
     % Check if t and u have the same length
     lengthTime = length(t);
