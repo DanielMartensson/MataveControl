@@ -30,7 +30,7 @@ function [u, fs] = chirp(varargin)
   N = length(t);
 
   % Create the difference chirp duration
-  T = t(end)-t(1) %
+  T = t(end) - t(1);
 
   % Create the sampling frequency
   fs = 1/(T/N);
