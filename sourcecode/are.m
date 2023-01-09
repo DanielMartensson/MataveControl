@@ -134,7 +134,7 @@ function [X, K, L] = are(varargin)
     end
 
     % Get initial conditions
-    x0 = ones(size(A))(:); % Vector
+    x0 = ones(numel(A),1); % Vector
 
     if(sampleTime > 0)
       % Create discrete algebraic riccati equation and simulate
@@ -149,9 +149,9 @@ function [X, K, L] = are(varargin)
 
     % Find K
     if(sampleTime > 0)
-      K = inv(B'*X*B + R)*(B'*X*A + S');
+      K = (B'*X*B + R)\(B'*X*A + S');
     else
-      K = inv(R)*(B'*X*E + S');
+      K = R\(B'*X*E + S');
     end
 
     % Find L
@@ -171,7 +171,7 @@ end
 function [value, isterminal, direction] = care(t, X, A, B, Q, R, S, E, G)
 
   X = reshape(X, size(A)); % Vector -> Matrix
-  value = A'*X*E + E'*X*A + E'*X*G*X*E - (E'*X*B + S)*inv(R)*(B'*X*E + S') + Q; % Value is the derivative of X
+  value = A'*X*E + E'*X*A + E'*X*G*X*E - (E'*X*B + S)*(R\(B'*X*E + S')) + Q; % Value is the derivative of X
   value = value(:); % Matrix -> Vector
 
   isterminal = 1;
@@ -181,7 +181,7 @@ end
 function [value, isterminal, direction] = dare(t, X, A, B, Q, R, S, E)
 
   X = reshape(X, size(A)); % Vector -> Matrix
-  value = A'*X*A - E'*X*E - (A'*X*B + S)*inv(B'*X*B + R)*(A'*X*B + S)' + Q; % Value is the derivative of X
+  value = A'*X*A - E'*X*E - (A'*X*B + S)*((B'*X*B + R)\(A'*X*B + S)') + Q; % Value is the derivative of X
   value = value(:); % Matrix -> Vector
 
   isterminal = 1;
