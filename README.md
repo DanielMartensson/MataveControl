@@ -88,4 +88,8 @@ Write this inside the terminal. Then Matavecontrol is going to download new .m f
 updatematavecontrol
 ```
 
+# TODO
+
+- `reg.m` This need to be fixed so it is the same as MATLAB
+- `lqgreg.m` I don't know if `Matavecontrol` should keep it. It do the same as `reg.m`.
 
