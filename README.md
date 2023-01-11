@@ -5,6 +5,12 @@ Matavecontrol is a basic toolbox for control engineering. The toolbox can be use
 
 Installing GNU Octave's Control-Toolbox or MATLAB's Control-Toolbox/System Identification Toolbox WILL cause problems with MataveID & MataveControl because they are using the same function names.
 
+# TODO
+
+- `reg.m` This need to be fixed so it is the same as MATLAB
+- `lqgreg.m` I don't know if `Matavecontrol` should keep it. It do the same as `reg.m`.
+- More work on `gensig.m`
+
 # Typical use
 
 To use Matavecontrol, you should allways start with to create a transfer function or a state space model. Then you can use that mathematical model in almost all the function of Matavecontrol. 
@@ -87,9 +93,4 @@ Write this inside the terminal. Then Matavecontrol is going to download new .m f
 ```matlab
 updatematavecontrol
 ```
-
-# TODO
-
-- `reg.m` This need to be fixed so it is the same as MATLAB
-- `lqgreg.m` I don't know if `Matavecontrol` should keep it. It do the same as `reg.m`.
 
