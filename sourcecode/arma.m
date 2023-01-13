@@ -28,7 +28,7 @@ function [H] = arma(varargin)
 
   % Get sampleTime
   if(length(varargin) >= 3)
-    sampleTime = varargin{2};
+    sampleTime = varargin{3};
   else
     sampleTime = 0;
   end
