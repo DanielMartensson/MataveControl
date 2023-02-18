@@ -137,7 +137,7 @@ function [Y, T, X, U] = lmpc(varargin)
           error('Linear programming GLPK could not optimize input signals. Try increase the horizion N number.');
         end
       else
-        [u, solution] = linprog2(clp, alp, blp, 0); % Used for MATLAB users
+        [u, solution] = linprog(clp, alp, blp, 0); % Used for MATLAB users
         if(solution == false)
           error('Linear programming linprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
         end
@@ -199,7 +199,7 @@ function [Y, T, X, U] = lmpc(varargin)
 end
 
 % This simplex method has been written as it was C code
-function [x, solution] = linprog2(c, A, b, max_or_min)
+function [x, solution] = linprog(c, A, b, max_or_min)
   row_a = size(A, 1);
   column_a = size(A, 2);
 
