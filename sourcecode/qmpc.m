@@ -1,4 +1,4 @@
-% Use Model Predictive Control with integral action and quadratic programming 
+% Use Model Predictive Control with integral action and quadratic programming
 % Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), I(integral parameter 0 to 1), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = qmpc(sysd, N, R, T)
@@ -6,6 +6,7 @@
 % Example 3: [Y, T, X, U] = qmpc(sysd, N, R, T, a, I)
 % Example 4: [Y, T, X, U] = qmpc(sysd, N, R, T, a, I, x0)
 % Author: Daniel Mårtensson 2022 September 3
+% Update 2023-02-18: Faster quadprog, also renamed quadprog2 to quadprog
 
 function [Y, T, X, U] = qmpc(varargin)
   % Check if there is any input
@@ -135,7 +136,7 @@ function [Y, T, X, U] = qmpc(varargin)
           error('Quadratic programming QP could not optimize input signals. Try increase the horizion N number.');
         end
       else
-        [u, solution] = quadprog2(qqp, cqp, aqp, bqp); % Used for MATLAB users
+        [u, solution] = quadprog(qqp, cqp, aqp, bqp); % Used for MATLAB users
         if(solution == false)
           error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
         end
@@ -196,48 +197,61 @@ function [Y, T, X, U] = qmpc(varargin)
   title('Model Predictive Control With Integral Action And Quadratic Programming')
 end
 
-function [x, solution] = quadprog2(Q, c, A, b)
-  x = -linsolve(Q, c);
+function [x, solution] = quadprog(Q, c, A, b)
+  % Assume that the solution is false
   solution = true;
 
-  [n1,m1]=size(A);
-  k = 0;
-  for i=1:n1
-    if (A(i,:)*x > b(i))
-      k = k +1;
+  % Set number of iterations
+  number_of_iterations = 255;
+
+  % Same as in C code
+  FLT_EPSILON = 1.19209290e-07;
+
+  % Unconstrained solution
+  x = -linsolve(Q, c);
+
+  % Constraints difference
+  K = b - A*x;
+
+  % Check constraint violation
+  if(sum(K >= 0) == 0)
+    return; % No violation
+  end
+
+  % Create P
+  P = linsolve(Q, A');
+
+  % Create H = A*Q*A'
+  H = A*P;
+
+  % Solve lambda from H*lambda = -K, where lambda >= 0
+  [m, n] = size(K);
+  lambda = zeros(m, n);
+  for km = 1:number_of_iterations
+    lambda_p = lambda;
+
+    % Use Gauss Seidel
+    for i = 1:m
+      w = -1.0/H(i,i)*(K(i) + H(i,:)*lambda - H(i,i)*lambda(i));
+      lambda(i) = max(0, w);
     end
-  end
-  if (k==0)
-    return;
-  end
 
-  X = linsolve(Q, A');
-  P = A*X;
+    % Check if the minimum convergence has been reached
+    w = (lambda - lambda_p)'*(lambda - lambda_p);
+    if (w < FLT_EPSILON)
+      break;
+    end
 
-  d = A*x;
-  d = -d + b;
-
-  [n,m] = size(d);
-  lambda = zeros(n,m);
-  for km = 1:255
-   lambda_p = lambda;
-   for i=1:n
-    w = P(i,:)*lambda - P(i,i)*lambda(i,1) + d(i, 1);
-    lambda(i,1) = max(0,-w/P(i,i));
-   end
-   w = (lambda - lambda_p)'*(lambda - lambda_p);
-   if (w < 10e-7)
-       break;
-   end
-   if(km == 255)
+    % Check if the maximum iteration have been reached
+    if(km == 255)
       solution = false;
       return;
     end
   end
 
-  x = x - X*lambda;
+  % Find the solution: x = -inv(Q)*c - inv(Q)*A'*lambda
+  x = x - P*lambda;
 end
-
 
 function PHI = phiMat(A, C, N)
 
