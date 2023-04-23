@@ -137,6 +137,8 @@ function [Y, T, X, U] = lmpc(varargin)
           error('Linear programming GLPK could not optimize input signals. Try increase the horizion N number.');
         end
       else
+        % Setting the last value of clp to 0 will make this optimization work for Simplex Method if we have lambda > 0
+        clp(end) = 0;
         [u, solution] = linprog(clp, alp, blp, 0); % Used for MATLAB users
         if(solution == false)
           error('Linear programming linprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
