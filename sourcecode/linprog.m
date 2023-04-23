@@ -91,7 +91,7 @@ function [x, solution] = opti(c, A, b, row_a, column_a, max_or_min)
     end
 
     % If we found no solution
-    if(count == 255)
+    if(count > 1000)
       solution = false;
       break;
     end
