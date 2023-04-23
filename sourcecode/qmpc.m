@@ -198,7 +198,7 @@ function [Y, T, X, U] = qmpc(varargin)
 end
 
 function [x, solution] = quadprog(Q, c, A, b)
-  % Assume that the solution is false
+  % Assume that the solution is true
   solution = true;
 
   % Set number of iterations
