@@ -69,3 +69,5 @@ zpk.m
 nlsim.m
 arma.m
 chirp.m
+linprog.m
+quadprog.m
