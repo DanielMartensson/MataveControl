@@ -99,14 +99,14 @@ function [x, solution] = opti(c, A, b, row_a, column_a, max_or_min)
     % Find our pivot row
     pivotRowIndex = 1;
     value1 = tableau(1, pivotColumIndex); % Value in pivot column
-    if(value1 == 0)
+    if(abs(value1) < eps)
       value1 = eps;
     end
     value2 = tableau(1, column_a+row_a+2); % Value in the b vector
     smallest = value2/value1; % Initial smalles value1
     for i = 2:row_a
       value1 = tableau(i, pivotColumIndex); % Value in pivot column
-      if(value1 == 0)
+      if(abs(value1) < eps)
         value1 = eps;
       end
       value2 = tableau(i, column_a+row_a+2); % Value in the b vector
@@ -120,7 +120,7 @@ function [x, solution] = opti(c, A, b, row_a, column_a, max_or_min)
     % We know where our pivot is. Turn the pivot into 1
     % 1/pivot * PIVOT_ROW -> PIVOT_ROW
     pivot = tableau(pivotRowIndex, pivotColumIndex); % Our pivot value
-    if(pivot == 0)
+    if(abs(pivot) < eps)
       pivot = eps;
     end
     for i = 1:column_a + row_a + 2
@@ -130,7 +130,7 @@ function [x, solution] = opti(c, A, b, row_a, column_a, max_or_min)
 
 
     % Turn all other values in pivot column into 0. Jump over pivot row
-		% -value1* PIVOT_ROW + ROW -> ROW
+    % -value1* PIVOT_ROW + ROW -> ROW
     for i = 1:row_a + 1
       if(i ~= pivotRowIndex)
         value1 = tableau(i, pivotColumIndex); %  This is at pivot column
