@@ -8,7 +8,7 @@
 % Max 1/2x^T(-Q)x + (-c)^Tx
 % S.t Ax <= b
 % 		x >= 0
-% Input: Q(Symmetric matrix), N(Objective function), A(Constraint matrix), b(Constraint vector)
+% Input: Q(Symmetric matrix), c(Objective function), A(Constraint matrix), b(Constraint vector)
 % Output: x(Solution vector), solution(boolean flag)
 % Example 1: [x, solution] = quadprog(Q, c, A, b)
 % Author: Daniel Mårtensson 2022 September 3
