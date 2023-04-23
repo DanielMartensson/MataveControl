@@ -10,6 +10,7 @@ Installing GNU Octave's Control-Toolbox or MATLAB's Control-Toolbox/System Ident
 - `reg.m` This need to be fixed so it is the same as MATLAB
 - `lqgreg.m` I don't know if `Matavecontrol` should keep it. It do the same as `reg.m`.
 - More work on `gensig.m`
+- Make `linprog.m` faster by using vectorization and not C-code style
 
 # Typical use
 
