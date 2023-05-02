@@ -1,13 +1,12 @@
 % This is quadratic programming with Hildreth's method
 % Min 1/2x^TQx + c^Tx
 % S.t Ax <= b
-% 		x >= 0
 %
 % If you want to do maximization, then turn Q and c negative. The constraints are the same
 %
 % Max 1/2x^T(-Q)x + (-c)^Tx
 % S.t Ax <= b
-% 		x >= 0
+%
 % Input: Q(Symmetric matrix), c(Objective function), A(Constraint matrix), b(Constraint vector)
 % Output: x(Solution vector), solution(boolean flag)
 % Example 1: [x, solution] = quadprog(Q, c, A, b)
@@ -18,7 +17,7 @@ function [x, solution] = quadprog(Q, c, A, b)
   solution = true;
 
   % Set number of iterations
-  number_of_iterations = 255;
+  number_of_iterations = 1000;
 
   % Same as in C code
   FLT_EPSILON = 1.19209290e-07;
@@ -59,7 +58,7 @@ function [x, solution] = quadprog(Q, c, A, b)
     end
 
     % Check if the maximum iteration have been reached
-    if(km == 255)
+    if(km == number_of_iterations)
       solution = false;
       return;
     end
