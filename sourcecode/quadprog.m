@@ -16,11 +16,9 @@ function [x, solution] = quadprog(Q, c, A, b)
   % Assume that the solution is true
   solution = true;
 
-  % Set number of iterations
-  number_of_iterations = 1000;
-
   % Same as in C code
-  FLT_EPSILON = 1.19209290e-07;
+  MIN_VALUE = 1e-14;
+	MAX_ITERATIONS = 2000;
 
   % Unconstrained solution
   x = -linsolve(Q, c);
@@ -42,7 +40,7 @@ function [x, solution] = quadprog(Q, c, A, b)
   % Solve lambda from H*lambda = -K, where lambda >= 0
   [m, n] = size(K);
   lambda = zeros(m, n);
-  for km = 1:number_of_iterations
+  for km = 1:MAX_ITERATIONS
     lambda_p = lambda;
 
     % Use Gauss Seidel
@@ -53,12 +51,12 @@ function [x, solution] = quadprog(Q, c, A, b)
 
     % Check if the minimum convergence has been reached
     w = (lambda - lambda_p)'*(lambda - lambda_p);
-    if (w < FLT_EPSILON)
+    if (w < MIN_VALUE)
       break;
     end
 
     % Check if the maximum iteration have been reached
-    if(km == number_of_iterations)
+    if(km == MAX_ITERATIONS)
       solution = false;
       return;
     end
