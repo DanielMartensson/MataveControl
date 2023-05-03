@@ -18,7 +18,7 @@ function [x, solution] = quadprog(Q, c, A, b)
 
   % Same as in C code
   MIN_VALUE = 1e-14;
-	MAX_ITERATIONS = 2000;
+  MAX_ITERATIONS = 2000;
 
   % Unconstrained solution
   x = -linsolve(Q, c);
