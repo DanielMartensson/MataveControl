@@ -16,9 +16,9 @@ function [x, solution] = quadprog(Q, c, A, b)
   % Assume that the solution is true
   solution = true;
 
-  % Same as in C code
-  MIN_VALUE = 1e-14;
-  MAX_ITERATIONS = 2000;
+  % Same as in C code for Functions.h at CControl
+  MIN_VALUE = 1e-12;
+  MAX_ITERATIONS = 10000;
 
   % Unconstrained solution
   x = -linsolve(Q, c);
