@@ -56,4 +56,4 @@ function [K] = rlocfind (varargin)
   else
     error('Error model structure - Unknow');
   end
-endfunction
+end

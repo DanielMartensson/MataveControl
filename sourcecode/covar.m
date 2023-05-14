@@ -27,7 +27,7 @@ function [P] = covar(varargin)
     if(length(varargin) >= 2)
       W = varargin{2};
     else
-      erro('Missing W matrix')
+      error('Missing W matrix')
     end
     
     % Check W matrix

@@ -11,7 +11,7 @@ function [Y, T, X, U] = lmpc(varargin)
   % Check if there is any input
   if(isempty(varargin))
     error ('Missing model')
-  endif
+  end
 
   % Get model type
   type = varargin{1}.type;

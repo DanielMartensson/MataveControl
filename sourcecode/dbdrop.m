@@ -31,7 +31,7 @@ function [drop] = dbdrop(varargin)
     % SS to TF
     G = ss2tf(varargin{1});
     % Call dBdrop
-    dBdrop(G, w1, w2);
+    dbdrop(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};
