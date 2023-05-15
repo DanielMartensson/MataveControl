@@ -1,5 +1,4 @@
-D = 0;
-sys = mc.ss(0, [D 1; -1 -1], [0;1], [1 0]); % SISO state space model
+sys = mc.ss(0, [0 1; -1 -1], [0;1], [1 0]); % SISO state space model
 
 sysd = mc.c2d(sys, 0.5); % To discrete
 
