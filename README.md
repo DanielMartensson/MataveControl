@@ -77,7 +77,7 @@ path('path/to/the/folder_of_sourcecode/+mc', path)
 savepath
 ```
 
-Example of a typical `path`. Notice that `+mc` must be there.
+Example of a typical `path`. Notice that `+mc` must be included.
 
 ```matlab
 path('C:\Users\dmn\Documents\Octave\libraries\+mc', path)
