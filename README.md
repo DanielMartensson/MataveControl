@@ -70,14 +70,19 @@ Matavecontrol have both linear programming MPC and quadratic programming MPC. Th
 ![MPC Example - MATLAB](examples/mpcExampleMATLAB.png)
 
 # Install
-To install Matavecontrol, download the "sourcecode" folder and place it on your path. 
+To install Matavecontrol, download the `sourcecode` folder and rename the folder `sourcecode`it to a name of free choice.
 
 ```matlab
-path('path/to/the/sourcecode/folder/where/all/matave/files/are/matavecontrol', path)
+path('path/to/the/folder_of_sourcecoude/+mc', path)
 savepath
 ```
 
-Important! All the .m files need to be inside the folder matavecontrol if you want the update function to work.
+Example of a typical `path`. Notice that `+mc` must be there.
+
+```matlab
+path('C:\Users\dmn\Documents\Octave\libraries\+mc', path)
+savepath
+```
 
 # Update
 Write this inside the terminal. Then Matavecontrol is going to download new .m files to matavecontrol from GitHub
