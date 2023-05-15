@@ -1,8 +1,8 @@
 % Print out all margins of a state space model or a 
 % transfer function between frequencies w1 and w2
 % Input: sys, G, w1, w2
-% Example 1: S = allmargin(sys, w1, w2)
-% Example 2: S = allmargin(G, w1, w2)
+% Example 1: S = mc.allmargin(sys, w1, w2)
+% Example 2: S = mc.allmargin(G, w1, w2)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [S] = allmargin(varargin)
@@ -26,9 +26,9 @@ function [S] = allmargin(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call allmargin
-    allmargin(G, w1, w2);
+    mc.allmargin(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};
@@ -98,7 +98,7 @@ function [S] = allmargin(varargin)
         Dm = pi*phim/(180*wc);
         
         % Check if it's stable
-        p = pole(G(i,j));
+        p = mc.pole(G(i,j));
         stable = 1;
         for k = 1:length(p)
           if(real(p(k)) > 0)

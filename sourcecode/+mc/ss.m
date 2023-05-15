@@ -1,8 +1,8 @@
 % Generates a state space model from matrix A, B, C, D
 % Input: delay, A, B, C(optional), D(optional)
-% Example 1: sys = ss(delay, A, B)         % C set to diagnoal matrix
-% Example 2: sys = ss(delay, A, B, C)      % D set to zero matrix
-% Example 3: sys = ss(delay, A, B, C, D)
+% Example 1: sys = mc.ss(delay, A, B)         % C set to diagnoal matrix
+% Example 2: sys = mc.ss(delay, A, B, C)      % D set to zero matrix
+% Example 3: sys = mc.ss(delay, A, B, C, D)
 % Author: Daniel Mårtensson, 2017 September
 
 function [sys] = ss(varargin)

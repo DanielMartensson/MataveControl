@@ -2,8 +2,8 @@
 % Chirp - Generates a frequency signal
 % Input: t(time), A(amplitude, optional)
 % Output: u(signal), fs(sampling frequency)
-% Example 1: [u, fs] = chirp(t);
-% Example 1: [u, fs] = chirp(t, A);
+% Example 1: [u, fs] = mc.chirp(t);
+% Example 1: [u, fs] = mc.chirp(t, A);
 % Author: Daniel Mårtensson, Oktober 29:e 2022
 
 function [u, fs] = chirp(varargin)

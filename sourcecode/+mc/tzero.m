@@ -1,7 +1,7 @@
 % Generates the MIMO zeros from a transfer function or state space model
 % Input: G, sys
-% Example 1: [z, gain] = tzero(G)
-% Example 2: [z, gain] = tzero(sys)
+% Example 1: [z, gain] = mc.tzero(G)
+% Example 2: [z, gain] = mc.tzero(sys)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [z, gain] = tzero(varargin)
@@ -43,8 +43,8 @@ function [z, gain] = tzero(varargin)
       % if sizeOrginalA - length(z) <= 0, then it will be no change
       z = [z zeros(1, sizeOrginalA - length(z))]; % add 0 if needed
     end
-    p = pole(varargin{1});
-    dc = dcgain(varargin{1});
+    p = mc.pole(varargin{1});
+    dc = mc.dcgain(varargin{1});
     gain = dc*prod(-p)/prod(-z);
   elseif(strcmp(type, 'TF' ))
     error('Only for state space models!')

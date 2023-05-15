@@ -1,6 +1,6 @@
 % Compute the LQE kalman gain matrix with the weighing matricies Q and R and state space model
 % Input: SS, Q, R
-% Example 1: [K] = lqe(sys, Q, R)
+% Example 1: [K] = mc.lqe(sys, Q, R)
 % Author: Daniel Mårtensson, October 2017
 
 function [K] = lqe(varargin)
@@ -26,7 +26,7 @@ function [K] = lqe(varargin)
     % Change matrecies due to the Kalman Duality!
     sys.A = sys.A'; % Transpose
     sys.B = sys.C'; % Transpose
-    K = (lqr(sys, Q, R))';
+    K = (mc.lqr(sys, Q, R))';
   elseif(strcmp(type, 'TF' ))
     disp('Only state space models only')
   else

@@ -1,6 +1,6 @@
 % Get the covariance matrix of a state space model with the intensity of Gaussian white noise matrix
 % Input: sys, W
-% Example: [P] = covar(sys, W)
+% Example: [P] = mc.covar(sys, W)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [P] = covar(varargin)
@@ -55,7 +55,7 @@ function [P] = covar(varargin)
     end
     
     % Get lyapunov solution
-    X = lyap(A, B*W*B', opt);
+    X = mc.lyap(A, B*W*B', opt);
     
     % Get P matrix
     P = C*X*C' + D*W*D';

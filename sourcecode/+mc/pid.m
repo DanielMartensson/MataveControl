@@ -1,6 +1,6 @@
 % Generates the parallel PID controller as a transfer function
 % Input: Kp, Ti(Integrator, Optinal), Td(Derivative, Optional), Tf(Low pass filter, Optinal), Ts(Sample time, Optinal)
-% Example 1: [Gpid] = pid(Kp, Ti, Td, Tf, Ts)
+% Example 1: [Gpid] = mc.pid(Kp, Ti, Td, Tf, Ts)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [Gpid] = pid(varargin)
@@ -11,7 +11,7 @@ function [Gpid] = pid(varargin)
   
   % Input the parameters
   if(length(varargin) >= 1)
-    Kp = tf(varargin{1}, 1);
+    Kp = mc.tf(varargin{1}, 1);
     Gpid = Kp;
   else
     error('Need to have at least Kp');
@@ -19,8 +19,8 @@ function [Gpid] = pid(varargin)
   
   % Integrator
   if(length(varargin) >= 2)
-    Ki = tf(varargin{2}, [1 0]);
-    Gpid = parallel(Kp, Ki);
+    Ki = mc.tf(varargin{2}, [1 0]);
+    Gpid = mc.parallel(Kp, Ki);
   else
     Ti = 0;
   end
@@ -35,10 +35,10 @@ function [Gpid] = pid(varargin)
   % Low pass filter for derivative
   if(length(varargin) >= 4)
     Tf = varargin{4};
-    Kd = tf([Td 0], [Tf 1]);
+    Kd = mc.tf([Td 0], [Tf 1]);
   else
     Tf = 0;
-    Kd = tf([Td 0], [1]);
+    Kd = mc.tf([Td 0], [1]);
   end
   
   % Sampling time
@@ -51,14 +51,14 @@ function [Gpid] = pid(varargin)
   % Build the PID
   % Check if derivative was 0
   if Td > 0
-    Gpid = parallel(Gpid, Kd);
+    Gpid = mc.parallel(Gpid, Kd);
   end
   
   % Else - Just return Gpid as it is
   
   % Convert to discrete if needed
   if(Ts > 0)
-    Gpid = c2d(Gpid, Ts);
+    Gpid = mc.c2d(Gpid, Ts);
   end
   
 end

@@ -1,7 +1,7 @@
 % Plot root locus plot from a transfer function or state space model at given vector of gains gainvector
 % Input: sys, G, gainvector
-% Example 1: rlocus(sys, gainvector)
-% Example 2: rlocus(G, gainvector)
+% Example 1: mc.rlocus(sys, gainvector)
+% Example 2: mc.rlocus(G, gainvector)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [retval] = rlocus(varargin)
@@ -15,14 +15,14 @@ function [retval] = rlocus(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     if(length(varargin) >= 2)
       Kvector = varargin{2};
     else
       error('Missing K gain vector');
     end
     % Call rlocus
-    rlocus(G, Kvector);
+    mc.rlocus(G, Kvector);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};
@@ -38,22 +38,22 @@ function [retval] = rlocus(varargin)
         end
         
         % Size of the pole and zeros
-        [npole,mpole] = size(pole(G));
-        [nzero,mzero] = size(zero(G));
+        [npole,mpole] = size(mc.pole(G));
+        [nzero,mzero] = size(mc.zero(G));
         % Create empty vectors for storeing the zeros and poles
         pvector = [];%zeros(npole, length(Kvector));
         zvector = [];%zeros(nzero, length(Kvector));
         for k = 1:length(Kvector)
           if(sampleTime > 0) % Discret
-            GK = tf(Kvector(k),1);
-            GKd = c2d(GK, sampleTime); % Sampleing time need to be the same
-            Gfeedback = feedback(G(i,j), GKd);
+            GK = mc.tf(Kvector(k),1);
+            GKd = mc.c2d(GK, sampleTime); % Sampleing time need to be the same
+            Gfeedback = mc.feedback(G(i,j), GKd);
           else
-            GK = tf(Kvector(k),1); 
-            Gfeedback = feedback(G(i,j), GK);
+            GK = mc.tf(Kvector(k),1); 
+            Gfeedback = mc.feedback(G(i,j), GK);
           end
-          pvector(:,k) = pole(Gfeedback);
-          zvector(:,k) = zero(Gfeedback);
+          pvector(:,k) = mc.pole(Gfeedback);
+          zvector(:,k) = mc.zero(Gfeedback);
         end
         % Done! Plot it now!
 

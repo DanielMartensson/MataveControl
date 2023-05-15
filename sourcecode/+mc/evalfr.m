@@ -1,7 +1,7 @@
 % Computes the frequency response from a transfer function or state space model at single frequency w
 % Input: G, sys, w
-% Example 1: frsp = evalfr(sys, w)
-% Example 2: frsp = evalfr(G, w)
+% Example 1: frsp = mc.evalfr(sys, w)
+% Example 2: frsp = mc.evalfr(G, w)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [frsp] = evalfr(varargin)
@@ -22,9 +22,9 @@ function [frsp] = evalfr(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call evalfr
-    [frsp] = evalfr(G, w);
+    [frsp] = mc.evalfr(G, w);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

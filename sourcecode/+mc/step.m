@@ -1,8 +1,8 @@
 % Simulate continuous time model of a state space model or transfer function
 % Input: G, sys, t(optional)
-% Example 1: [y,t,x] = step(G, t)
-% Example 2: [y,t,x] = step(G)
-% Example 3: [y,t,x] = step(sys, t)
+% Example 1: [y,t,x] = mc.step(G, t)
+% Example 2: [y,t,x] = mc.step(G)
+% Example 3: [y,t,x] = mc.step(sys, t)
 % Author: Daniel Mårtensson, 2017 September
 % Update 2022-10-08: Simulate ARMA model
 
@@ -36,10 +36,10 @@ function [y,t,X] = step(varargin)
     x0 = zeros(size(varargin{1}.A, 1), 1); % Assume x0 = [0; 0; 0; ..... ; 0]
 
     % Call lsim!
-    [y,t,X] = lsim(varargin{1}, u, t, x0);
+    [y,t,X] = mc.lsim(varargin{1}, u, t, x0);
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
-    sys = tf2ss(varargin{1}, 'OCF');
+    sys = mc.tf2ss(varargin{1}, 'OCF');
 
     % Get time
     if(length(varargin) >= 2)
@@ -50,7 +50,7 @@ function [y,t,X] = step(varargin)
     end
 
     % Call step
-    [y,t,X] = step(sys,t);
+    [y,t,X] = mc.step(sys,t);
   elseif(strcmp(varargin{1}.type,'ARMA'))
 
     % Get end time
@@ -73,7 +73,7 @@ function [y,t,X] = step(varargin)
     u = linspace(1, 1, length(t));
 
     % Call lsim!
-    [y,t,X] = lsim(varargin{1}, u, t);
+    [y,t,X] = mc.lsim(varargin{1}, u, t);
   else
     error('Not a state space model or a transfer function')
   end

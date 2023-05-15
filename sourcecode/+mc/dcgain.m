@@ -1,7 +1,7 @@
 % Generates the low frequency gain of a state space model or a transfer function
 % Input: sys, G
-% Example 1: dc = dcgain(sys)
-% Example 2: dc = dcgain(G)
+% Example 1: dc = mc.dcgain(sys)
+% Example 2: dc = mc.dcgain(G)
 % Author: Daniel Mårtensson 2017 September
 
 function [dc] = dcgain(varargin)
@@ -31,7 +31,7 @@ function [dc] = dcgain(varargin)
         
         % If divided by zero - Is not a number
         if isnan(dc(i, j))
-          disp(sprintf('Divided my zero - dcgain (%i, %i) set to 0', i, j))
+          disp(sprintf('Divided my zero - mc.dcgain(%i, %i) set to 0', i, j))
           dc(i, j) = 0;
         end
       end

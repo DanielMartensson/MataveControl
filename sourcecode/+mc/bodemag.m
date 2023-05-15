@@ -1,8 +1,8 @@
 % Plot the bode diagram, without phase diagram, of a state space model or a 
 % transfer function between frequencies w1 and w2
 % Input: sys, G, w1, w2
-% Example 1:  bodemag(sys, w1, w2)
-% Example 2:  bodemag(G, w1, w2)
+% Example 1:  mc.bodemag(sys, w1, w2)
+% Example 2:  mc.bodemag(G, w1, w2)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [reval] = bodemag(varargin)
@@ -28,9 +28,9 @@ function [reval] = bodemag(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call bode
-    bode(G, w1, w2);
+    mc.bode(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

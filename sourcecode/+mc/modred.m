@@ -1,7 +1,7 @@
 % Generates the balanced recuded state space model of a balanced state space model
 % Remove states with the tolerance of Hankel singular values
 % Input: SS, tol
-% Example 1: model = modred(sys, tol)
+% Example 1: model = mc.modred(sys, tol)
 % Author: Daniel Mårtensson, 2017 October
 
 function [model] = modred(varargin)
@@ -30,7 +30,7 @@ function [model] = modred(varargin)
     delay = sys.delay;
     
     % Get hankel singular values
-    hsv = diag(hsvd(sys));
+    hsv = diag(mc.hsvd(sys));
     hsv = hsv(hsv >= tol);
     n = size(hsv, 1); % Dimension states
     A = A(1:n, 1:n);
@@ -38,7 +38,7 @@ function [model] = modred(varargin)
     C = C(:,1:n);
     
     % Create the state space model
-    model = ss(delay, A, B, C, D);
+    model = mc.ss(delay, A, B, C, D);
     model.sampleTime = sampleTime;
     
   elseif(strcmp(type, 'TF' ))

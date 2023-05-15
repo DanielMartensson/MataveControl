@@ -1,10 +1,10 @@
 % Use Model Predictive Control with integral action and linear programming 
 % Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), I(integral parameter 0 to 1), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [Y, T, X, U] = lmpc(sysd, N, R, T)
-% Example 2: [Y, T, X, U] = lmpc(sysd, N, R, T, a)
-% Example 3: [Y, T, X, U] = lmpc(sysd, N, R, T, a, I)
-% Example 4: [Y, T, X, U] = lmpc(sysd, N, R, T, a, I, x0)
+% Example 1: [Y, T, X, U] = mc.lmpc(sysd, N, R, T)
+% Example 2: [Y, T, X, U] = mc.lmpc(sysd, N, R, T, a)
+% Example 3: [Y, T, X, U] = mc.lmpc(sysd, N, R, T, a, I)
+% Example 4: [Y, T, X, U] = mc.lmpc(sysd, N, R, T, a, I, x0)
 % Author: Daniel Mårtensson
 
 function [Y, T, X, U] = lmpc(varargin)
@@ -77,7 +77,7 @@ function [Y, T, X, U] = lmpc(varargin)
     end
 
     % Check if the system has integration behaviour already
-    abseigenvalues = abs(pole(sys));
+    abseigenvalues = abs(mc.pole(sys));
     if(max(abseigenvalues) < 1)
       % Add integral action - It's very good and pratical!
       % A = [A B; 0 I]
@@ -139,7 +139,7 @@ function [Y, T, X, U] = lmpc(varargin)
       else
         % Setting the last value of clp to 0 will make this optimization work for Simplex Method if we have lambda > 0
         clp(end) = 0;
-        [u, solution] = linprog(clp, alp, blp, 0); % Used for MATLAB users
+        [u, solution] = mc.linprog(clp, alp, blp, 0); % Used for MATLAB users
         if(solution == false)
           error('Linear programming linprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
         end

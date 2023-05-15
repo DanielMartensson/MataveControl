@@ -1,8 +1,8 @@
 % Plot the nyquist diagram of a state space model or a transfer function 
 % between given frequencies w1 and w2
 % Input: G, sys, w1, w2
-% Example 1: [Margin_Sensitivity] = sensitivity(sys, w1, w2)
-% Example 2: [Margin_Sensitivity] = sensitivity(G, w1, w2)
+% Example 1: [Margin_Sensitivity] = mc.sensitivity(sys, w1, w2)
+% Example 2: [Margin_Sensitivity] = mc.sensitivity(G, w1, w2)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [Ms] = sensitivity(varargin)
@@ -26,9 +26,9 @@ function [Ms] = sensitivity(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call sensitivity
-    Ms = sensitivity(G, w1, w2);
+    Ms = mc.sensitivity(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

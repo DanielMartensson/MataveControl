@@ -1,7 +1,7 @@
 % Generates the controllability matrix of a state space model
 % Input: sys, n(optinal)
-% Example 1: [Cs] = ctrb(sys)
-% Example 1: [Cs] = ctrb(sys, n)
+% Example 1: [Cs] = mc.ctrb(sys)
+% Example 1: [Cs] = mc.ctrb(sys, n)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [Cs] = ctrb(varargin)

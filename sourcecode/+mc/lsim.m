@@ -1,8 +1,8 @@
 % Do a linear simulation of a transfer function or a state space model
 % Input: G, sys, u, t, x0(optional)
-% Example 1: [y,t,x] = lsim(G,u,t)
-% Example 2: [y,t,x] = lsim(sys,u,t)
-% Example 3: [y,t,x] = lsim(sys,u,t,x0)
+% Example 1: [y,t,x] = mc.lsim(G,u,t)
+% Example 2: [y,t,x] = mc.lsim(sys,u,t)
+% Example 3: [y,t,x] = mc.lsim(sys,u,t,x0)
 % Author: Daniel Mårtensson, September 2017
 % Update 2022-04-20: Plots the input signal as well now
 % Update 2022-10-08: Simulate ARMA model
@@ -60,7 +60,7 @@ function [y,t,X] = lsim(varargin)
     if(sampleTime > 0) % Allready Discrete!
       sysd = varargin{1};
     else % Time continous
-      sysd = c2d(varargin{1}, t(2) - t(1)); % Sample time is the difference t(2) - t(1)
+      sysd = mc.c2d(varargin{1}, t(2) - t(1)); % Sample time is the difference t(2) - t(1)
     end
 
     % Discrete matrecies
@@ -140,7 +140,7 @@ function [y,t,X] = lsim(varargin)
 
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
-    sys = tf2ss(varargin{1}, 'OCF');
+    sys = mc.tf2ss(varargin{1}, 'OCF');
 
     % Get input
     u = varargin{2}; % In signal vector
@@ -157,7 +157,7 @@ function [y,t,X] = lsim(varargin)
     end
 
     % Call lsim
-    [y,t,X] = lsim(sys, u, t, x0);
+    [y,t,X] = mc.lsim(sys, u, t, x0);
 
   elseif(strcmp(varargin{1}.type,'ARMA'))
     % Get input

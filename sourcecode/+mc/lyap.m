@@ -1,7 +1,7 @@
 % Compute solution X of the Lyapunov equation
 % Input: A, Q, opt(optinal)
-% Example 1: [X] = lyap(A, B*B'); % t = time contious as default
-% Example 2: [X] = lyap(A, B*B', 'd'); % d = discrete
+% Example 1: [X] = mc.lyap(A, B*B'); % t = time contious as default
+% Example 2: [X] = mc.lyap(A, B*B', 'd'); % d = discrete
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [X] = lyap(varargin)

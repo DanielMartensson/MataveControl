@@ -1,8 +1,8 @@
 % Generates the state feedback controler with the control law L and with integral action law Li
 % Input: sys, L, Li(optional), Kr(optional)
-% Example 1: [regsys] = reg(sys, L)
-% Example 2: [regsys] = reg(sys, L, Li)
-% Example 3: [regsys] = reg(sys, L, Li)
+% Example 1: [regsys] = mc.reg(sys, L)
+% Example 2: [regsys] = mc.reg(sys, L, Li)
+% Example 3: [regsys] = mc.reg(sys, L, Li)
 % Author: Daniel Mårtensson, November 2017
 
 function [regsys] = reg(varargin)
@@ -59,7 +59,7 @@ function [regsys] = reg(varargin)
         C = [C;L]; % This is for the uf = L*x control law
         D = [D; D*0]; % D need to have the same row length as C 
         
-        regsys = ss(delay, A, B, C, D);
+        regsys = mc.ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
         
       case 3 % LQR with integral action LQI
@@ -76,7 +76,7 @@ function [regsys] = reg(varargin)
         
         % Matrix D will be created by it self
         
-        regsys = ss(delay, A, B, C, D);
+        regsys = mc.ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
       case 4 % LQR with integral action LQI + precompensator for reference 
         % Create A matrix
@@ -92,7 +92,7 @@ function [regsys] = reg(varargin)
         
         % Matrix D will be created by it self
         
-        regsys = ss(delay, A, B, C, D);
+        regsys = mc.ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
      end
     

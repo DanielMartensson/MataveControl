@@ -1,7 +1,7 @@
 % Generates the observability matrix of a state space model
 % Input: sys, n(optinal)
-% Example 1: Or = obsv(sys)
-% Example 2: Or = obsv(sys, n)
+% Example 1: Or = mc.obsv(sys)
+% Example 2: Or = mc.obsv(sys, n)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [Or] = obsv(varargin)

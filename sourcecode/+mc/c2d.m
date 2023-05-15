@@ -1,7 +1,7 @@
 % Transform continuous time model to discrete model
 % Input: sys, G, sampeltime
-% Example 1: Gd = c2d(G, sampleTime)
-% Example 2: sysd = c2d(sys, sampleTime)
+% Example 1: Gd = mc.c2d(G, sampleTime)
+% Example 2: sysd = mc.c2d(sys, sampleTime)
 % Author: Daniel Mårtensson, September 2017
 
 function [model] = c2d(varargin)
@@ -33,22 +33,22 @@ function [model] = c2d(varargin)
      % Find the discrete matrecies
     Ad = M(1:size(A,1), 1:size(A,2));
     Bd = M(1:size(B,1), (size(A,2) + 1):(size(A,2) + size(B,2)));
-    model = ss(delay, Ad, Bd, C, D);
+    model = mc.ss(delay, Ad, Bd, C, D);
     % Don't forget to add sample time
     model.sampleTime = h;
   
   % Transfer function
   elseif(strcmp(varargin{1}.type, 'TF' ))
     % Transform it to a state space model.
-    sys = tf2ss(varargin{1}, 'OCF');
+    sys = mc.tf2ss(varargin{1}, 'OCF');
     % Turn sys to discrete
     h = varargin{2};
     if(and(h > 0, sys.delay > 0))
-      error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = tf2ss(G) -> sysd = c2d(sys)');
+      error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = mc.tf2ss(G) -> sysd = c2d(sys)');
     end
-    model = c2d(sys, h);
+    model = mc.c2d(sys, h);
     % Turn it then into a tf
-    model = ss2tf(model);
+    model = mc.ss2tf(model);
     model.sampleTime = h;
     % Replace the delaytime to discrete delay time
     model.tfdash = strrep(model.tfdash, 'e', 'z');

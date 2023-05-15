@@ -1,7 +1,7 @@
 % Generates poles from transfer functions or state space models
 % Input: TF or SS
-% Example 1: p = pole(G)
-% Example 2: p = pole(sys)
+% Example 1: p = mc.pole(G)
+% Example 2: p = mc.pole(sys)
 % Author: Daniel Mårtensson 2017 September
 
 function [p] = pole(varargin)

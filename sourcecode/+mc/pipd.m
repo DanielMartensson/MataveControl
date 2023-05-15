@@ -1,6 +1,6 @@
 % Generates the serial PID controller as a transfer function
 % Input: Kp, Ti(optinal), Td(optional), b(optinal), Ts(optinal)
-% Example 1: [Gpipd] = pipd(Kp, Ti, Td, b, Ts)
+% Example 1: [Gpipd] = mc.pipd(Kp, Ti, Td, b, Ts)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [Gpipd] = pipd(varargin)
@@ -45,11 +45,11 @@ function [Gpipd] = pipd(varargin)
   end
   
   % Build the PIPD
-  Gpipd = tf([Kp*Ti*Td Kp*(Ti+Td) Kp],[Ti*Td/b Ti 0]);
+  Gpipd = mc.tf([Kp*Ti*Td Kp*(Ti+Td) Kp],[Ti*Td/b Ti 0]);
   
   % Convert to discrete if needed
   if(Ts > 0)
-    Gpipd = c2d(Gpipd, Ts);
+    Gpipd = mc.c2d(Gpipd, Ts);
   end
   
 end

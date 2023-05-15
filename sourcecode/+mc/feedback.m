@@ -1,8 +1,8 @@
 % Computes the new transfer function or state space model of serial connection
 % Input: G, sys, sign(optinal)
-% Example 1: G = feedback(G1, G2) % Negative feedback is used as default
-% Example 2: sys = feedback(sys1, sys2) % Negative feedback is used as default
-% Example 3: sys = feedback(sys1, sys2, sign) % sign = '+' Positive feedback
+% Example 1: G = mc.feedback(G1, G2) % Negative feedback is used as default
+% Example 2: sys = mc.feedback(sys1, sys2) % Negative feedback is used as default
+% Example 3: sys = mc.feedback(sys1, sys2, sign) % sign = '+' Positive feedback
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [model] = feedback(varargin)
@@ -62,7 +62,7 @@ function [model] = feedback(varargin)
         error('It need to be the same delay for both of the systems')
       end
       delay = sys1.delay;
-      model = ss(delay, A, B, C, D);
+      model = mc.ss(delay, A, B, C, D);
       model.sampleTime = sys1.sampleTime;
     else
       error('Need to have the same sampling time')
@@ -73,7 +73,7 @@ function [model] = feedback(varargin)
     G2 = varargin{2};
     if(G1.sampleTime == G2.sampleTime)
       % Get num and den for the model down
-      G_down = series(G1, G2);
+      G_down = mc.series(G1, G2);
       num_down = G_down.num;
       den_down = G_down.den;
       % Get num and den for model above
@@ -101,9 +101,9 @@ function [model] = feedback(varargin)
       den = conv(den_up, num_down);
 
       if(delay > 0)
-        model = tf(num, den, delay);
+        model = mc.tf(num, den, delay);
       else
-        model = tf(num, den);
+        model = mc.tf(num, den);
       end
       model.sampleTime = G1.sampleTime;
       

@@ -1,10 +1,10 @@
 % Use Model Predictive Control with integral action and quadratic programming
 % Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), I(integral parameter 0 to 1), x0(Initial state, optimal)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [Y, T, X, U] = qmpc(sysd, N, R, T)
-% Example 2: [Y, T, X, U] = qmpc(sysd, N, R, T, a)
-% Example 3: [Y, T, X, U] = qmpc(sysd, N, R, T, a, I)
-% Example 4: [Y, T, X, U] = qmpc(sysd, N, R, T, a, I, x0)
+% Example 1: [Y, T, X, U] = mc.qmpc(sysd, N, R, T)
+% Example 2: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a)
+% Example 3: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, I)
+% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, I, x0)
 % Author: Daniel Mårtensson 2022 September 3
 % Update 2023-02-18: Faster quadprog, also renamed quadprog2 to quadprog
 
@@ -78,7 +78,7 @@ function [Y, T, X, U] = qmpc(varargin)
     end
 
     % Check if the system has integration behaviour already
-    abseigenvalues = abs(pole(sys));
+    abseigenvalues = abs(mc.pole(sys));
     if(max(abseigenvalues) < 1)
       % Add integral action - It's very good and pratical!
       % A = [A B; 0 I]
@@ -136,7 +136,7 @@ function [Y, T, X, U] = qmpc(varargin)
           error('Quadratic programming QP could not optimize input signals. Try increase the horizion N number.');
         end
       else
-        [u, solution] = quadprog(qqp, cqp, aqp, bqp); % Used for MATLAB users
+        [u, solution] = mc.quadprog(qqp, cqp, aqp, bqp); % Used for MATLAB users
         if(solution == false)
           error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
         end

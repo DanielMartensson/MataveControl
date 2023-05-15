@@ -1,8 +1,8 @@
 % Transform a state space model or transfer function to discrete state space model with delay
 % Input: G, sys, sampleTime
 % Output: sysd(discrete state space model with delay), l(step prediction)
-% Example 1: [sysd, l] = c2dt(G, sampleTime)
-% Example 2: [sysd, l] = c2dt(sys, sampleTime)
+% Example 1: [sysd, l] = mc.c2dt(G, sampleTime)
+% Example 2: [sysd, l] = mc.c2dt(sys, sampleTime)
 % Author: Daniel Mårtensson, Oktober 2017
 % Updated: 2018-03-04
 
@@ -29,7 +29,7 @@ function [sysd, l] = c2dt(varargin)
     % Check if allready discrete 
     if(varargin{1}.sampleTime > 0)
       % The model is allready discrete! Turn it back!
-      sys = d2c(varargin{1}, varargin{1}.sampleTime);
+      sys = mc.d2c(varargin{1}, varargin{1}.sampleTime);
       A = sys.A;
       B = sys.B;
       C = sys.C;
@@ -79,28 +79,28 @@ function [sysd, l] = c2dt(varargin)
       D = zeros(cx, by);
     end
     % Get the discrete state space model now
-    sysd = ss(delay, A, B, C, D);
+    sysd = mc.ss(delay, A, B, C, D);
     sysd.sampleTime = sampleTime; % Get the sample time
     
   elseif(strcmp(type, 'TF' ))
     % Check if allready discrete 
     if(varargin{1}.sampleTime > 0)
       % Yes! The model is discrete! Turn it back!
-      G = d2c(varargin{1}, varargin{1}.sampleTime); 
+      G = mc.d2c(varargin{1}, varargin{1}.sampleTime); 
       % TF to SS
-      sys = tf2ss(G, 'OCF');
+      sys = mc.tf2ss(G, 'OCF');
       % Get the sample time
       sampleTime = varargin{1}.sampleTime;
       % Call c2dt
-      [sysd, l] = c2dt(sys, sampleTime);
+      [sysd, l] = mc.c2dt(sys, sampleTime);
     else
       % TF to SS
       G = varargin{1};
-      sys = tf2ss(G, 'OCF');
+      sys = mc.tf2ss(G, 'OCF');
       % Get the sample time
       sampleTime = varargin{2};
       % Call c2dt
-      [sysd, l] = c2dt(sys, sampleTime);
+      [sysd, l] = mc.c2dt(sys, sampleTime);
     end
   else
     error('No state space model or transfer function')

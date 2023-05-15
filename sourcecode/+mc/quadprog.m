@@ -9,7 +9,7 @@
 %
 % Input: Q(Symmetric matrix), c(Objective function), A(Constraint matrix), b(Constraint vector)
 % Output: x(Solution vector), solution(boolean flag)
-% Example 1: [x, solution] = quadprog(Q, c, A, b)
+% Example 1: [x, solution] = mc.quadprog(Q, c, A, b)
 % Author: Daniel Mårtensson 2022 September 3
 
 function [x, solution] = quadprog(Q, c, A, b)

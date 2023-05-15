@@ -1,8 +1,8 @@
 % Plot the nyquist diagram of a state space model or a transfer function 
 % between given frequencies w1 and w2
 % Input: sys, G
-% Example 1:  nyquist(sys, w1, w2)
-% Example 2:  nyquist(G, w1, w2)
+% Example 1:  mc.nyquist(sys, w1, w2)
+% Example 2:  mc.nyquist(G, w1, w2)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [reval] = nyquist(varargin)
@@ -25,9 +25,9 @@ function [reval] = nyquist(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call nyquist
-    nyquist(G, w1, w2);
+    mc.nyquist(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

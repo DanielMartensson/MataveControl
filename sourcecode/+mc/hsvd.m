@@ -1,7 +1,7 @@
 % Get the hankel singular values of a state space model
 % Input: SS, p(optional)
-% Example 1: hsv = hsvd(sys)
-% Example 1: hsv = hsvd(sys, p) % p = 'plot'
+% Example 1: hsv = mc.hsvd(sys)
+% Example 1: hsv = mc.hsvd(sys, p) % p = 'plot'
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [hsv] = hsvd(varargin)
@@ -23,8 +23,8 @@ function [hsv] = hsvd(varargin)
     % Get sys
     sys = varargin{1};
     % Get gramians
-    P = gram(sys, 'c');
-    Q = gram(sys, 'o');
+    P = mc.gram(sys, 'c');
+    Q = mc.gram(sys, 'o');
     % Get hankel singular values
     hsv = sqrt(eig(P*Q));
     % Plot them too!

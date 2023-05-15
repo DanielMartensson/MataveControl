@@ -1,6 +1,6 @@
 % An IMC controller
 % Input: G(System), K(Controller), Go(Forward Model)
-% Example 1: [G] = imc(G, K, Go)
+% Example 1: [G] = mc.imc(G, K, Go)
 % Author: Daniel Mårtensson, Februari 2018
 
 
@@ -51,13 +51,13 @@ function [model] = imc(varargin)
       den = conv(den1, den2);
       
       % Create a transfer function of num and den
-      GGo = tf(num, den);
+      GGo = mc.tf(num, den);
       % Need to have the same sample time as G!
       GGo.sampleTime = G.sampleTime;
       % Do feedback witg GGo and K.
-      F = feedback(K, GGo);
+      F = mc.feedback(K, GGo);
       % Do serial connection with F and G.
-      model = series(F, G);
+      model = mc.series(F, G);
       
       
     else

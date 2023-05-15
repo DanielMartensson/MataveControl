@@ -1,7 +1,7 @@
 % Generates zeros from SISO transfer function or SISO state space model
 % Input: G, sys
-% Example 1: [z, gain] = zero(G)
-% Example 2: [z, gain] = zero(sys)
+% Example 1: [z, gain] = mc.zero(G)
+% Example 2: [z, gain] = mc.zero(sys)
 % Author: Daniel Mårtensson, 2017 September
 
 function [z, gain] = zero(varargin)
@@ -34,8 +34,8 @@ function [z, gain] = zero(varargin)
       % if sizeOrginalA - length(z) <= 0, then it will be no change
       z = [z zeros(1, sizeOrginalA - length(z))]; % add 0 if needed
     end
-    p = pole(varargin{1});
-    dc = dcgain(varargin{1});
+    p = mc.pole(varargin{1});
+    dc = mc.dcgain(varargin{1});
     gain = dc*prod(-p)/prod(-z);
   elseif(strcmp(type, 'TF' ))
     % Get z, p, k
@@ -45,7 +45,7 @@ function [z, gain] = zero(varargin)
     end
     z = roots(G.num);
     p = roots(G.den);
-    dc = dcgain(G);
+    dc = mc.dcgain(G);
     gain = dc*prod(-p)/prod(-z);
   else
     error('This is not TF or SS');

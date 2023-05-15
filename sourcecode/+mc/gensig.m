@@ -1,6 +1,6 @@
 % Generates a signal of sin, square or pulse
 % Input: type, amp, Tf, Ts
-% Example 1: [u, t] = gensig(type, amp, Tf, Ts)
+% Example 1: [u, t] = mc.gensig(type, amp, Tf, Ts)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [u, t] = gensig(varargin)

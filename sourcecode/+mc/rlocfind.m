@@ -17,8 +17,8 @@ function [K] = rlocfind (varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
-    [k, poles] = rlocfind(G, p);
+    G = mc.ss2tf(varargin{1});
+    [k, poles] = mc.rlocfind(G, p);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

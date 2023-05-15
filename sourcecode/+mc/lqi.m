@@ -1,7 +1,7 @@
 % Compute the LQI integral gain matrix control law L with the weighing matricies Q and R and state space model
 % Input: SS, Q, R
-% Example 1: [L, Li] = lqi(sys, Q, R)
-% Example 2: [L, Li, sysi] = lqi(sys, Q, R)
+% Example 1: [L, Li] = mc.lqi(sys, Q, R)
+% Example 2: [L, Li, sysi] = mc.lqi(sys, Q, R)
 % Author: Daniel Mårtensson, October 2017
 % Update 2019-06-07: Returning the model wth integral action
 
@@ -50,7 +50,7 @@ function [L, Li, sys] = lqi(varargin)
     
     
     % Get the LQR + LQI control law  
-    ControlLaw = lqr(sys, Q, R); 
+    ControlLaw = mc.lqr(sys, Q, R); 
     % Important to have a negative sign!
     Li = -ControlLaw(:, (1 + size(C, 2)):end); % We add +1 beacuse we want -Li from [L -Li]. 
     L = ControlLaw(:, 1:size(C, 2));

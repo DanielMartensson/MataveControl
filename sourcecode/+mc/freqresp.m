@@ -1,7 +1,7 @@
 % Computes the frequency response from a transfer function or state space model with the frequency vector w
 % Input: sys, G, w
-% Example 1: [H, wout] = freqresp(sys, w)
-% Example 2: [H, wout] = freqresp(G, w)
+% Example 1: [H, wout] = mc.freqresp(sys, w)
+% Example 2: [H, wout] = mc.freqresp(G, w)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [H, wout] = freqresp(varargin)
@@ -22,9 +22,9 @@ function [H, wout] = freqresp(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call freqresp
-    [H, wout] = freqresp(G, w);
+    [H, wout] = mc.freqresp(G, w);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

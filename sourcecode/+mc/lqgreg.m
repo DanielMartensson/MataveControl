@@ -1,8 +1,8 @@
 % Generates the state feedback state space model with disturbance matrix Bd and noise matrix Bn
 % Input: SS, L, K, Bd(optional), Bn(optional)
-% Example 1: [regsys] = lqgreg(sys, L, K)
-% Example 2: [regsys] = lqgreg(sys, L, K, Bd)
-% Example 3: [regsys] = lqgreg(sys, L, K, Bd, Bn)
+% Example 1: [regsys] = mc.lqgreg(sys, L, K)
+% Example 2: [regsys] = mc.lqgreg(sys, L, K, Bd)
+% Example 3: [regsys] = mc.lqgreg(sys, L, K, Bd, Bn)
 % Author: Daniel Mårtensson, November 2017
 
 function [regsys, Kr] = lqgreg(varargin)
@@ -81,7 +81,7 @@ function [regsys, Kr] = lqgreg(varargin)
         D31 = ones(size(C11,1), size(B11, 2));
         D = [D11; D21; D31];
         
-        regsys = ss(delay, A, B, C, D);
+        regsys = mc.ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
         
       case 4 % LQG - Without noise matrix
@@ -123,7 +123,7 @@ function [regsys, Kr] = lqgreg(varargin)
         D32 = zeros(size(C31, 1), size(B12, 2));
         D = [D11 D12; D21 D22; D31 D32];
         
-        regsys = ss(delay, A, B, C, D);
+        regsys = mc.ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
       case 5 % LQG 
         % Create the A matrix
@@ -175,7 +175,7 @@ function [regsys, Kr] = lqgreg(varargin)
         D33 = zeros(size(C32, 1), size(B23, 2));
         D = [D11 D12 D13; D21 D22 D23; D31 D32 D33];
 
-        regsys = ss(delay, A, B, C, D);
+        regsys = mc.ss(delay, A, B, C, D);
         regsys.sampleTime = sampleTime;
      end
     

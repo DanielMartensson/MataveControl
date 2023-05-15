@@ -1,10 +1,10 @@
 % Solve Algebraic Riccati Equation
 % Input: sys(State space model for A,B,C,D), Q(Hermitian and same size as A), R(Hermitian and same size as columns of B)
 % Input: S(Same rows as A and same columns as B), E(Hermitian and same size as A), G(Hermitian and continuous ARE. Same size as rows of B)
-% Example 1: [X, K, L] = are(sys, Q, R)
-% Example 2: [X, K, L] = are(sys, Q, R, S)
-% Example 3: [X, K, L] = are(sys, Q, R, S, E)
-% Example 4: [X, K, L] = are(sys, Q, R, S, E, G)
+% Example 1: [X, K, L] = mc.are(sys, Q, R)
+% Example 2: [X, K, L] = mc.are(sys, Q, R, S)
+% Example 3: [X, K, L] = mc.are(sys, Q, R, S, E)
+% Example 4: [X, K, L] = mc.are(sys, Q, R, S, E, G)
 % Author: Daniel Mårtensson, Oktober 2017
 % Updated: November 2017
 % Updated: July 2020 - Added symmetric semi-positive definitive check for Q and R

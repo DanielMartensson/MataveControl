@@ -1,7 +1,7 @@
 % Generates a transfer function from numerator vector and denomerator vector
 % Input: numerator, denomerator, delay(optional)
-% Example 1: G = tf(num, den, delay)
-% Example 2: G = tf(num, den)
+% Example 1: G = mc.tf(num, den, delay)
+% Example 2: G = mc.tf(num, den)
 % Author: Daniel Mårtensson, 2017 September
 % Update: Added padé approximation 2020-06-29
 
@@ -92,7 +92,7 @@ function [G] = tf(varargin)
   
   % Padé approximation
   if(G.delay > 0)
-    G = pade(G, 4); 
+    G = mc.pade(G, 4); 
   end
 end
 

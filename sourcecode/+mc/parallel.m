@@ -1,7 +1,7 @@
 % Generates the new transfer function or new state space model of parallel connection
 % Input: G, sys
-% Example 1: G = parallel(G1, G2)
-% Example 2: sys = parallel(sys1, sys2)
+% Example 1: G = mc.parallel(G1, G2)
+% Example 2: sys = mc.parallel(sys1, sys2)
 % Author: Daniel Mårtensson 2017 Oktober
 
 function [model] = parallel(varargin)
@@ -39,7 +39,7 @@ function [model] = parallel(varargin)
       C = [C1 C2];
       D = (D1 + D2);
       delay = max([sys1.delay  sys2.delay]);
-      model = ss(delay, A, B, C, D);
+      model = mc.ss(delay, A, B, C, D);
       model.sampleTime = sys1.sampleTime;
     else
       error('Need to have the same sampling time')
@@ -73,9 +73,9 @@ function [model] = parallel(varargin)
       den = conv(den1, den2);
       
       if(delay > 0)
-        model = tf(num, den, delay);
+        model = mc.tf(num, den, delay);
       else
-        model = tf(num, den);
+        model = mc.tf(num, den);
       end
       model.sampleTime = G1.sampleTime;
       

@@ -1,7 +1,7 @@
 % Generate a transfer function from vector of zero, vector of poles and vectior of gain
 % Input: z, p , k, delay(optional)
-% Example 1: G = zpk(z, p, k)
-% Example 2: G = zpk(z, p, k, delay)
+% Example 1: G = mc.zpk(z, p, k)
+% Example 2: G = mc.zpk(z, p, k, delay)
 % Author: Daniel Mårtensson, 2017 September
 
 
@@ -49,9 +49,9 @@ function [G] = zpk(varargin)
   % Get delay
   if(length(varargin) >= 4)
     delay = varargin{4};
-    G = tf(round(cell2mat(num)*1/1e-6)*1e-6, round(cell2mat(den)*1/1e-6)*1e-6, delay); % Tar bort alla 000000 på slutet
+    G = mc.tf(round(cell2mat(num)*1/1e-6)*1e-6, round(cell2mat(den)*1/1e-6)*1e-6, delay); % Tar bort alla 000000 på slutet
   else
-    G = tf(cell2mat(num), cell2mat(den));
+    G = mc.tf(cell2mat(num), cell2mat(den));
   end
   
   

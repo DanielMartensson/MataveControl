@@ -1,7 +1,7 @@
 % Generates zeros from transfer functions or state space models
 % Input: G, sys
-% Example 1: [Frequency, Damping, Poles, TimeConstant]  = damp(G)
-% Example 2: [Frequency, Damping, Poles, TimeConstant]  = damp(sys)
+% Example 1: [Frequency, Damping, Poles, TimeConstant]  = mc.damp(G)
+% Example 2: [Frequency, Damping, Poles, TimeConstant]  = mc.damp(sys)
 % Author: Daniel Mårtensson, September 2017
 
 function [Frequency, Damping, Poles] = damp(varargin)
@@ -18,13 +18,13 @@ function [Frequency, Damping, Poles] = damp(varargin)
   if(strcmp(type, 'SS' ))
     % Check if it's discrete
     if(sampleTime == 0)
-      Poles = pole(varargin{1})
+      Poles = mc.pole(varargin{1})
       Frequency = abs(Poles)
       Damping = -cos(angle(Poles))
       TimeConstant = (1./(Frequency.*Damping))
     else
       % Discrete
-      Poles = pole(varargin{1})
+      Poles = mc.pole(varargin{1})
       Frequency = abs(log(Poles)/sampleTime)
       Damping = -cos(angle(log(Poles)))
       TimeConstant = (1./(Frequency.*Damping))
@@ -32,13 +32,13 @@ function [Frequency, Damping, Poles] = damp(varargin)
   elseif(strcmp(type, 'TF' ))
     % Check if it's discrete
     if(sampleTime == 0)
-      Poles = pole(varargin{1})
+      Poles = mc.pole(varargin{1})
       Frequency = abs(Poles)
       Damping = -cos(angle(Poles))
       TimeConstant = (1./(Frequency.*Damping))
     else
       % Discrete
-      Poles = pole(varargin{1})
+      Poles = mc.pole(varargin{1})
       Frequency = abs(log(Poles)/sampleTime)
       Damping = -cos(angle(log(Poles)))
       TimeConstant = (1./(Frequency.*Damping))

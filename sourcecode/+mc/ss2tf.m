@@ -1,6 +1,6 @@
 % Transform state space model to transfer function 
 % Input: sys
-% Example 1: G = ss2tf(sys)
+% Example 1: G = mc.ss2tf(sys)
 % Author: Daniel Mårtensson, 2017 September
 
 function [G] = ss2tf(varargin)
@@ -19,25 +19,25 @@ function [G] = ss2tf(varargin)
   % Get sampleTime
   sampleTime = varargin{1}.sampleTime;
   % Get the dc gain
-  dc = dcgain(varargin{1});
+  dc = mc.dcgain(varargin{1});
   % Get the poles
-  p = pole(varargin{1});
+  p = mc.pole(varargin{1});
   
   % Create SISO state space models and convert them into a TF
   for i = 1:size(B,2)
     for j = 1:size(C,1)
-      partialSys = ss(delay, A, B(:,i), C(j,:), D(j,i));
+      partialSys = mc.ss(delay, A, B(:,i), C(j,:), D(j,i));
       % Get the z,p,k values
-      [z, gain] = tzero(partialSys);
+      [z, gain] = mc.tzero(partialSys);
       % Get the numerators and denomerators
-      partialG = zpk(z, p, gain);
+      partialG = mc.zpk(z, p, gain);
       partialnum = partialG.num;
       partialden = partialG.den;
       % Get TF with delay
       if(delay > 0)
-        G(j,i) = tf(partialnum, partialden, delay);
+        G(j,i) = mc.tf(partialnum, partialden, delay);
       else
-        G(j,i) = tf(partialnum, partialden);
+        G(j,i) = mc.tf(partialnum, partialden);
       end
       
       % Get sample time

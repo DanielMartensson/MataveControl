@@ -1,8 +1,8 @@
 % Plot the bode diagram of a state space model or a 
 % transfer function between frequencies w1 and w2
 % Input: sys, G, w1, w2
-% Example 1:  [mag, phase, wout] = bode(sys, w1, w2)
-% Example 2:  [mag, phase, wout] = bode(G, w1, w2)
+% Example 1:  [mag, phase, wout] = mc.bode(sys, w1, w2)
+% Example 2:  [mag, phase, wout] = mc.bode(G, w1, w2)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [mag, phase, wout] = bode(varargin)
@@ -28,9 +28,9 @@ function [mag, phase, wout] = bode(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call bode
-    [mag, phase, wout] = bode(G, w1, w2);
+    [mag, phase, wout] = mc.bode(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

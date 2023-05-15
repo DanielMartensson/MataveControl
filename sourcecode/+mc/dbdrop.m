@@ -1,8 +1,8 @@
 % Plot the nyquist diagram of a state space model or a transfer function to find the 
 % 3 dB gain drop between frequencies w1 and w2
 % Input: G, sys, w1, w2
-% Example 1: [drop] = dbdrop(sys, w1, w2)
-% Example 2: [drop] = dbdrop(G, w1, w2)
+% Example 1: [drop] = mc.dbdrop(sys, w1, w2)
+% Example 2: [drop] = mc.dbdrop(G, w1, w2)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [drop] = dbdrop(varargin)
@@ -29,9 +29,9 @@ function [drop] = dbdrop(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call dBdrop
-    dbdrop(G, w1, w2);
+    mc.dbdrop(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};
@@ -71,7 +71,7 @@ function [drop] = dbdrop(varargin)
         % Plot bode diagram
         
 
-        dBstatic = 20*log10(abs(freqresp(G(i,j), 0))); % The static G(0) dB gain
+        dBstatic = 20*log10(abs(mc.freqresp(G(i,j), 0))); % The static G(0) dB gain
         dBinitial = dBstatic - 3;
         dropWc = NaN;
         drop = 0;

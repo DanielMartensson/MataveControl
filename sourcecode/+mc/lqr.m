@@ -1,6 +1,6 @@
 % Compute the LQR gain matrix control law L with the weighing matricies Q and R and state space model
 % Input: sys, Q, R
-% Example 1: [L] = lqr(sys, Q, R)
+% Example 1: [L] = mc.lqr(sys, Q, R)
 % Author: Daniel Mårtensson, October 2017
 
 function [L] = lqr(varargin)
@@ -24,7 +24,7 @@ function [L] = lqr(varargin)
     % Get model
     sys = varargin{1};
     % Solve the Algebraic Riccati Equation
-    X = are(sys, Q, R);
+    X = mc.are(sys, Q, R);
     % Return the control law L
     if(sys.sampleTime > 0)
       L = inv(sys.B'*X*sys.B + R)*(sys.B'*X*sys.A);

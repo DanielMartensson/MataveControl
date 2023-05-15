@@ -16,7 +16,7 @@
 %
 % Input: c(Objective function), A(Constraint matrix), b(Constraint vector), max_or_min(Maximization = 0, Minimization = 1)
 % Output: x(Solution vector), solution(boolean flag)
-% Example 1: [x, solution] = linprog(c, A, b, max_or_min)
+% Example 1: [x, solution] = mc.linprog(c, A, b, max_or_min)
 % Author: Daniel Mårtensson 2022 September 3
 
 function [x, solution] = linprog(c, A, b, max_or_min)

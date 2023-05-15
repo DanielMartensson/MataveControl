@@ -3,8 +3,8 @@
 % non-controllable and non-observable states
 % The arbitrary variables r and s controlls the dimension of Hankel Matrix
 % Input: TF or SS, tol(optinal), r, s
-% Example 1: G = minreal(G, tol)
-% Example 2: sys = minreal(sys, s, r)
+% Example 1: G = mc.minreal(G, tol)
+% Example 2: sys = mc.minreal(sys, s, r)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [model] = minreal(varargin)
@@ -37,12 +37,12 @@ function [model] = minreal(varargin)
     if(varargin{1}.sampleTime > 0) % Allready Discrete!
       sysd = varargin{1};
     else % Time continous
-      sysd = c2d(varargin{1}, 0.1); % Sample time is 0.1 second
+      sysd = mc.c2d(varargin{1}, 0.1); % Sample time is 0.1 second
     end
     
     % Hankel matrix 0
     k = 0;
-    H0 = obsv(sysd, r)*sysd.A^k*ctrb(sysd, s);
+    H0 = mc.obsv(sysd, r)*sysd.A^k*mc.ctrb(sysd, s);
     [U,E,V] = svd(H0,'econ');
     
     % New rank n for finding En, Un, Vn
@@ -59,30 +59,30 @@ function [model] = minreal(varargin)
     
     % Hankel matrix 1
     k = 1;
-    H1 = obsv(sysd, r)*sysd.A^k*ctrb(sysd, s);
+    H1 = mc.obsv(sysd, r)*sysd.A^k*mc.ctrb(sysd, s);
     
     % The new minimal state space realization
     A = En^(-1/2)*Un'*H1*Vn*En^(-1/2);
     B = En^(1/2)*Vn'*Eu;
     C = Ey'*Un*En^(1/2);
     D = sysd.D;
-    model = ss(varargin{1}.delay, A, B, C, D); 
+    model = mc.ss(varargin{1}.delay, A, B, C, D); 
     if(varargin{1}.sampleTime > 0)
       % The model was discrete in the input
       model.sampleTime = varargin{1}.sampleTime;
     else
       % The model was continous in the input
       model.sampleTime = 0.1; 
-      model = d2c(model); % Turn it back!
+      model = mc.d2c(model); % Turn it back!
     end
     % Done!
     
   elseif(strcmp(type, 'TF' ))
     % Get poles
     model = varargin{1};
-    p = pole(model);
+    p = mc.pole(model);
     % Get zeros
-    [z, k] = zero(model);
+    [z, k] = mc.zero(model);
     % Get delay
     delay = model.delay;
     % Get sample time
@@ -96,9 +96,9 @@ function [model] = minreal(varargin)
     
     % Check if the model has delay
     if(delay > 0)
-      model = zpk(z, p, k, delay);
+      model = mc.zpk(z, p, k, delay);
     else
-      model = zpk(z, p, k);
+      model = mc.zpk(z, p, k);
     end
     
     % Insert sample time

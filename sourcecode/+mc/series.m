@@ -1,7 +1,7 @@
 % Do a serial connection of transfer functions or state space models
 % Input: G, sys
-% Example 1: G = series(G1, G2)
-% Example 2: sys = series(sys1, sys2)
+% Example 1: G = mc.series(G1, G2)
+% Example 2: sys = mc.series(sys1, sys2)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [model] = series(varargin)
@@ -39,7 +39,7 @@ function [model] = series(varargin)
       C = [D2*C1 C2];
       D = D2*D1;
       delay = sys1.delay + sys2.delay;
-      model = ss(delay, A, B, C, D);
+      model = mc.ss(delay, A, B, C, D);
       model.sampleTime = sys1.sampleTime;
     else
       error('Need to have the same sampling time')
@@ -59,9 +59,9 @@ function [model] = series(varargin)
       num = conv(num1, num2);
       den = conv(den1, den2);
       if(delay > 0)
-        model = tf(num, den, delay);
+        model = mc.tf(num, den, delay);
       else
-        model = tf(num, den);
+        model = mc.tf(num, den);
       end
       model.sampleTime = G1.sampleTime;
       

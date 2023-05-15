@@ -1,6 +1,6 @@
 % An Otto Smith predictor 
 % Input: G(System with delay), K(Controller), n(Pade Approximation number)
-% Example 1: [G] = smithpredict(G, K, n)
+% Example 1: [G] = mc.smithpredict(G, K, n)
 % Author: Daniel Mårtensson, Februari 2018
 % Important! Discrete system may be very sensitive with Otto Smith predictor!
 
@@ -36,7 +36,7 @@ function [model] = smithpredict(varargin)
     n = varargin{3};
     
     % Create the system with delay
-    Gdelaysystem = pade(Gsystem, n);
+    Gdelaysystem = mc.pade(Gsystem, n);
     
     % Get the controller transfer function
     Gcontroller = varargin{2};
@@ -66,24 +66,24 @@ function [model] = smithpredict(varargin)
       den = conv(den1, den2);
       
       % Create a transfer function of num and den
-      Gdelaysubstractsystem = tf(num, den);
+      Gdelaysubstractsystem = mc.tf(num, den);
       % Need to have the same sample time as Gdelaysystem!
       Gdelaysubstractsystem.sampleTime = Gdelaysystem.sampleTime;
       % Create the predicive controller now
-      predictController = feedback(Gcontroller, Gdelaysubstractsystem);
+      predictController = mc.feedback(Gcontroller, Gdelaysubstractsystem);
       % Connect predictController with Gdelay
-      Looptransferfunction = series(Gdelaysystem, predictController);
+      Looptransferfunction = mc.series(Gdelaysystem, predictController);
       
       % This is only for scalar 1 in the feedback
       if Gsystem.sampleTime > 0
-        M = tf(1,1); % Just a scalar 1 of TF
-        M = c2d(M, Gsystem.sampleTime);
+        M = mc.tf(1,1); % Just a scalar 1 of TF
+        M = mc.c2d(M, Gsystem.sampleTime);
       else
-        M = tf(1,1); % Just a scalar 1 of TF
+        M = mc.tf(1,1); % Just a scalar 1 of TF
       end
       
       % Our smitth predictor system!
-      model = feedback(Looptransferfunction, M);
+      model = mc.feedback(Looptransferfunction, M);
     else
       error('Not the same sample time')
     end

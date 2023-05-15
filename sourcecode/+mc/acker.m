@@ -1,6 +1,6 @@
 % Generate control law gain matrix L of a state space model by using eigen values vector P
 % Input: G, sys, P
-% Example 1: [L] = acker(sys, P)
+% Example 1: [L] = mc.acker(sys, P)
 % Author: Daniel Mårtensson, October 2017
 % Source from Modern Control Engineering, Ogata, 3th edition.
 
@@ -40,7 +40,7 @@ function [L] = acker(varargin)
     
     % Create the control law gain matrix L
     %Formula from Ogata Modern Control Engineering
-    Cm = ctrb(sys); % Controllability matrix
+    Cm = mc.ctrb(sys); % Controllability matrix
     RealPoly = real(poly(P)); % Real polynomal of P
     L = Cm\polyvalm(RealPoly, A);
     L = L(size(A,2),:);

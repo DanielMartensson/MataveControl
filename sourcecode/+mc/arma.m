@@ -1,8 +1,8 @@
 % Generates a ARMA model from numerator vector and denomerator vector
 % Input: numerator, denomerator, sampleTime(optional), delay(optional)
-% Example 1: H = arma(num, den)
-% Example 2: H = arma(num, den, sampleTime)
-% Example 3: H = arma(num, den, sampleTime, delay)
+% Example 1: H = mc.arma(num, den)
+% Example 2: H = mc.arma(num, den, sampleTime)
+% Example 3: H = mc.arma(num, den, sampleTime, delay)
 % Author: Daniel Mårtensson, 2022 Oktober
 
 function [H] = arma(varargin)

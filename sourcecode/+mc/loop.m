@@ -1,6 +1,6 @@
 % Create the Complementary sensitivity, sensitivity of an open loop transfer function L
 % Input: L
-% Example 1: [S, T] = loop(L)
+% Example 1: [S, T] = mc.loop(L)
 % Author: Daniel Mårtensson, Oktober 2017
 function [S, T] = loop(varargin)
   % Check if there is any input
@@ -17,10 +17,10 @@ function [S, T] = loop(varargin)
     % Get open loop transfer function
     L = varargin{1};
     % Create S
-    N = tf(1,1); % Create a constant only for sensitivity function
-    S = feedback(L, N);
+    N = mc.tf(1,1); % Create a constant only for sensitivity function
+    S = mc.feedback(L, N);
     % Create T
-    T = feedback(L, L);
+    T = mc.feedback(L, L);
   else
     error('This is not TF or SS');
   end

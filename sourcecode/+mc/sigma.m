@@ -1,8 +1,8 @@
 % Plot sigma diagram from a transfer function or state space model 
 % between given frequencies w1 and w2
 % Input: G, sys, w1, w2
-% Example 1: sigma(sys, w1, w2)
-% Example 2: sigma(G, w1, w2)
+% Example 1: mc.sigma(sys, w1, w2)
+% Example 2: mc.sigma(G, w1, w2)
 % Author: Daniel Mårtensson, 2017 Oktober
 
 function [retval] = sigma(varargin)
@@ -25,9 +25,9 @@ function [retval] = sigma(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     % Call sigma
-    sigma(G, w1, w2);
+    mc.sigma(G, w1, w2);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

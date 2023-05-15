@@ -1,6 +1,6 @@
 % Generates the balanced realization of a state space model
 % Input: sys
-% Example 1: model = balreal(sys)
+% Example 1: model = mc.balreal(sys)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [model] = balreal(varargin)
@@ -16,10 +16,10 @@ function [model] = balreal(varargin)
     % Get sys
     sys = varargin{1};
     % Get gramians
-    Q = gram(sys, 'o');
-    P = gram(sys, 'c');
+    Q = mc.gram(sys, 'o');
+    P = mc.gram(sys, 'c');
     % Get hankel singular values
-    E = diag(hsvd(sys));
+    E = diag(mc.hsvd(sys));
     
     % Begin
     Q1 = chol(Q);
@@ -36,7 +36,7 @@ function [model] = balreal(varargin)
     delay = sys.delay;
     sampleTime = sys.sampleTime;
     
-    model = ss(delay, T*A*inv(T), T*B, C*inv(T), D);
+    model = mc.ss(delay, T*A*inv(T), T*B, C*inv(T), D);
     model.sampleTime = sampleTime;
   elseif(strcmp(type, 'TF' ))
     disp('Only state space model are allowed')

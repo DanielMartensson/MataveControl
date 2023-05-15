@@ -1,9 +1,9 @@
 % Do a nonlinear simulation of a nonlinear state space model
 % Input: model, u(inputs), x0(initial state vector), stepTime, simulationMethod('ode23', 'ode45', 'ode15s', 'ode23s'), options
-% Example 1: [x,t] = nlsim(model, u, x0, stepTime);
-% Example 2: [x,t] = nlsim(model, u, x0, stepTime, 'ode23');
-% Example 3: [x,t] = nlsim(model, u, x0, stepTime, 'ode23', options);
-% Author: Daniel Mårtensson, April 2022
+% Example 1: [x,t] = mc.nlsim(model, u, x0, stepTime);
+% Example 2: [x,t] = mc.nlsim(model, u, x0, stepTime, 'ode23');
+% Example 3: [x,t] = mc.nlsim(model, u, x0, stepTime, 'ode23', options);
+% Author: Daniel MÃ¥rtensson, April 2022
 
 function [x,t] = nlsim(varargin)
   % Check if there is any input

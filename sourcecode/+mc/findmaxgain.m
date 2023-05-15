@@ -1,9 +1,9 @@
 % Find the maximum gain limit when the process becomes unstable.
 % Input: sys, G, maxgain
-% Example 1: [K] = findmaxgain(sys, maxgain)
-% Example 2: [K] = findmaxgain(G, maxgain)
-% Example 3: [K] = findmaxgain(G)
-% Example 4: [K] = findmaxgain(sys)
+% Example 1: [K] = mc.findmaxgain(sys, maxgain)
+% Example 2: [K] = mc.findmaxgain(G, maxgain)
+% Example 3: [K] = mc.findmaxgain(G)
+% Example 4: [K] = mc.findmaxgain(sys)
 % Author: Daniel Mårtensson, 2018 Februari
 
 function [K] = findmaxgain(varargin)
@@ -17,7 +17,7 @@ function [K] = findmaxgain(varargin)
   % Check if there is a TF or SS model
   if(strcmp(type, 'SS' ))
     % SS to TF
-    G = ss2tf(varargin{1});
+    G = mc.ss2tf(varargin{1});
     if(length(varargin) >= 2)
       maxgain = varargin{2};
     else
@@ -25,7 +25,7 @@ function [K] = findmaxgain(varargin)
       maxgain = 1000;
     end
     % Call findmaxgain
-    findmaxgain(G, maxgain);
+    mc.findmaxgain(G, maxgain);
   elseif(strcmp(type, 'TF' ))
     % If there is a MIMO TF
     G = varargin{1};

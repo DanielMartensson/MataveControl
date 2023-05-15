@@ -1,8 +1,8 @@
 % Do a impulse response of a transfer function or a state space model
 % Input: G, sys, t(optional)
-% Example 1: [y,t,x] = impulse(G, t)
-% Example 2: [y,t,x] = impulse(G)
-% Example 3: [y,t,x] = impulse(sys, t)
+% Example 1: [y,t,x] = mc.impulse(G, t)
+% Example 2: [y,t,x] = mc.impulse(G)
+% Example 3: [y,t,x] = mc.impulse(sys, t)
 % Author: Daniel Mårtensson, September 2017
 % Update 2022-10-08: Simulate ARMA model
 
@@ -37,10 +37,10 @@ function [y,t,X] = impulse(varargin)
     x0 = zeros(size(varargin{1}.A, 1), 1); % Assume x0 = [0; 0; 0; ..... ; 0]
 
     % Call lsim!
-    [y,t,X] = lsim(varargin{1}, u, t, x0);
+    [y,t,X] = mc.lsim(varargin{1}, u, t, x0);
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
-    sys = tf2ss(varargin{1}, 'OCF');
+    sys = mc.tf2ss(varargin{1}, 'OCF');
 
     % Get time
     if(length(varargin) >= 2)
@@ -51,7 +51,7 @@ function [y,t,X] = impulse(varargin)
     end
 
     % Call impulse
-    [y,t,X] = impulse(sys,t);
+    [y,t,X] = mc.impulse(sys,t);
   elseif(strcmp(varargin{1}.type,'ARMA'))
 
     % Get end time
@@ -75,7 +75,7 @@ function [y,t,X] = impulse(varargin)
     u(1) = 1;
 
     % Call lsim!
-    [y,t,X] = lsim(varargin{1}, u, t);
+    [y,t,X] = mc.lsim(varargin{1}, u, t);
   else
     error('Not a state space model or a transfer function')
   end

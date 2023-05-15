@@ -1,6 +1,6 @@
 % Computes the reference gain Kr and give back a state space model with including the reference gain
 % Input: sys
-% Example 1: [sys_kr, Kr] = referencegain(sys)
+% Example 1: [sys_kr, Kr] = mc.referencegain(sys)
 % Author: Daniel Mårtensson, September 2018
 
 function [sys_kr, Kr] = referencegain(varargin)
@@ -29,7 +29,7 @@ function [sys_kr, Kr] = referencegain(varargin)
     % Now create B matrix with precompensator factor - For better tracking
     B = B*Kr;
     
-    sys_kr = ss(delay, A, B, C, D);
+    sys_kr = mc.ss(delay, A, B, C, D);
     sys_kr.sampleTime = sampleTime;
 
   elseif(strcmp(type, 'TF' ))

@@ -1,7 +1,7 @@
 % Append diffrent models into one large model and get a state space model
 % Input: G, sys
-% Example 1: sys = append(G1, G2, sys1)
-% Example 2: sys = append(sys1, sys2, G1, G2)
+% Example 1: sys = mc.append(G1, G2, sys1)
+% Example 2: sys = mc.append(sys1, sys2, G1, G2)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [sys] = append(varargin)
@@ -19,7 +19,7 @@ function [sys] = append(varargin)
       type = varargin{i}.type;
       if(strcmp(type, 'TF' ))
         % Yes!
-        sys = tf2ss(varargin{i}, 'OCF');
+        sys = mc.tf2ss(varargin{i}, 'OCF');
       else
         % No!
         sys = varargin{i};
@@ -53,7 +53,7 @@ function [sys] = append(varargin)
       end
     end
     % Now we are done! Create the SS model now!
-    sys = ss(firstdelay, Apast, Bpast, Cpast, Dpast);
+    sys = mc.ss(firstdelay, Apast, Bpast, Cpast, Dpast);
     sys.sampleTime = firstsampleTime;
   else
     error('No state space model or transfer function')

@@ -1,6 +1,6 @@
 % Do a pade approximation of a transfer function 
 % Input: G, n
-% Example 1: G = pade(G, n)
+% Example 1: G = mc.pade(G, n)
 % Author: Daniel Mårtensson, Februari 2018
 
 function [model] = pade(varargin)
@@ -31,18 +31,18 @@ function [model] = pade(varargin)
         % Get sample time
         sampleTime = G(i,j).sampleTime;
         if(and(sampleTime > 0, delay > 0))
-          error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = tf2ss(G) -> sysd = c2d(sys)');
+          error('You cannot turn time continous transfer function with delay into discrete transfer function. Try state space instead: sys = mc.tf2ss(G) -> sysd = mc.c2d(sys)');
         end
         
         switch PadeOrder
           case 1
-              TFdelay = tf([-delay 2],[delay 2]);
+              TFdelay = mc.tf([-delay 2],[delay 2]);
           case 2
-              TFdelay = tf([delay^2 -6*delay 12],[delay^2 6*delay 12]);
+              TFdelay = mc.tf([delay^2 -6*delay 12],[delay^2 6*delay 12]);
           case 3
-              TFdelay = tf([-delay^3 12*delay^2 -60*delay 120],[delay^3 12*delay^2 60*delay 120]);
+              TFdelay = mc.tf([-delay^3 12*delay^2 -60*delay 120],[delay^3 12*delay^2 60*delay 120]);
           case 4
-              TFdelay = tf([delay^4 -20*delay^3 180*delay^2 -840*delay 1680],[delay^4 20*delay^3 180*delay^2 840*delay 1680]);
+              TFdelay = mc.tf([delay^4 -20*delay^3 180*delay^2 -840*delay 1680],[delay^4 20*delay^3 180*delay^2 840*delay 1680]);
           otherwise
               error('Maximum Pade number is 4')
         end
@@ -52,7 +52,7 @@ function [model] = pade(varargin)
         
         % Remove the delay because we don't want e^(-delay*s) notion
         G(i,j).delay = 0;
-        model = series(G(i,j), TFdelay);
+        model = mc.series(G(i,j), TFdelay);
         % Add sample time
         model.sampleTime = sampleTime;
         model.delay = delay;

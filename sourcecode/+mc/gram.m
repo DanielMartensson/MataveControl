@@ -1,6 +1,6 @@
 % Generates the gramian a state space model, where opt = 'c' or opt = 'o'
 % Input: sys, opt
-% Example 1: X = gram(sys, opt)
+% Example 1: X = mc.gram(sys, opt)
 % Author: Daniel Mårtensson, Oktober 2017
 
 function [X] = gram(varargin)
@@ -31,9 +31,9 @@ function [X] = gram(varargin)
       C = sys.C;
       
       if(strcmp(opt, 'c'))
-        X = lyap(A, B*B', 'd');
+        X = mc.lyap(A, B*B', 'd');
       elseif(strcmp(opt, 'o'))
-        X = lyap(A', C'*C, 'd');
+        X = mc.lyap(A', C'*C, 'd');
       else
         disp(sprintf('Unknown option: %s', opt));
       end
@@ -45,9 +45,9 @@ function [X] = gram(varargin)
       C = sys.C;
       
       if(strcmp(opt, 'c'))
-        X = lyap(A, B*B');
+        X = mc.lyap(A, B*B');
       elseif(strcmp(opt, 'o'))
-        X = lyap(A', C'*C);
+        X = mc.lyap(A', C'*C);
       else
         disp(sprintf('Unknown option: %s', opt));
       end

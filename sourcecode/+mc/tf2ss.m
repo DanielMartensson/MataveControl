@@ -1,8 +1,8 @@
 % Transform transfer function to state space model
 % Input: G, canonical form(optional)
-% Example 1: sys = tf2ss(G) % Observable canonical form is used as default
-% Example 2: sys = tf2ss(G, 'OCF') % Observable canonical form
-% Example 3: sys = tf2ss(G, 'CCF') % Controllable canonical form
+% Example 1: sys = mc.tf2ss(G) % Observable canonical form is used as default
+% Example 2: sys = mc.tf2ss(G, 'OCF') % Observable canonical form
+% Example 3: sys = mc.tf2ss(G, 'CCF') % Controllable canonical form
 % Author: Daniel Mårtensson, 2017 September
 
 function [sys] = tf2ss(varargin)
@@ -90,7 +90,7 @@ function [sys] = tf2ss(varargin)
   
 
   % Now everything is done!
-  sys = ss(delay, A, B,C, D);
+  sys = mc.ss(delay, A, B,C, D);
   sys.sampleTime = varargin{1}.sampleTime;
 end
 

@@ -1,7 +1,7 @@
 % Do a nonlinear simulation of a transfer function or a state space model
 % Here you can use saturation limits on inputs
 % Input: sys, u, t, x0(optional), xL(optional)
-% Example 1: [y,t,x] = satlsim(sys,u,t,x0, xL)
+% Example 1: [y,t,x] = mc.satlsim(sys,u,t,x0, xL)
 % Author: Daniel Mårtensson, January 2018
 
 
@@ -75,7 +75,7 @@ function [y,t,X] = satlsim(varargin)
     if(sampleTime > 0) % Allready Discrete!
       sysd = varargin{1};
     else % Time continous
-      sysd = c2d(varargin{1}, t(2) - t(1)); % Sample time is the difference t(2) - t(1)
+      sysd = mc.c2d(varargin{1}, t(2) - t(1)); % Sample time is the difference t(2) - t(1)
     end
     
     % Discrete matrecies
@@ -149,7 +149,7 @@ function [y,t,X] = satlsim(varargin)
     
   elseif(strcmp(varargin{1}.type,'TF'))
     % TF to SS
-    sys = tf2ss(varargin{1}, 'OCF');
+    sys = mc.tf2ss(varargin{1}, 'OCF');
     
     % Get input
     u = varargin{2}; % In signal vector
@@ -166,7 +166,7 @@ function [y,t,X] = satlsim(varargin)
     end
     
     % Call lsim
-    [y,t,X] = nlsim(sys, u, t, x0);
+    [y,t,X] = mc.nlsim(sys, u, t, x0);
     
   else
     error('No transfer function or state space model')
