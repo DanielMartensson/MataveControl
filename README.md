@@ -73,7 +73,7 @@ Matavecontrol have both linear programming MPC and quadratic programming MPC. Th
 To install Matavecontrol, download the `sourcecode` folder and rename the folder `sourcecode`it to a name of free choice.
 
 ```matlab
-path('path/to/the/folder_of_sourcecoude/+mc', path)
+path('path/to/the/folder_of_sourcecode/+mc', path)
 savepath
 ```
 
