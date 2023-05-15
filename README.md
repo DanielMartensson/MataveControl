@@ -8,6 +8,7 @@ Matavecontrol is a basic toolbox for control engineering. The toolbox can be use
 - `lqgreg.m` I don't know if `Matavecontrol` should keep it. It do the same as `reg.m`.
 - More work on `gensig.m`
 - Make `linprog.m` faster by using vectorization and not C-code style
+- Make `arma.m` return a transfer function with discrete time `1`
 
 # Typical use
 
