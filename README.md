@@ -9,6 +9,7 @@ Matavecontrol is a basic toolbox for control engineering. The toolbox can be use
 - More work on `gensig.m`
 - Make `linprog.m` faster by using vectorization and not C-code style
 - Make `arma.m` return a transfer function with discrete time `1`
+- ARMA models should be simulated with Euler-method, instead of `filter`.
 
 # Typical use
 
