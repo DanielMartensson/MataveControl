@@ -2,15 +2,15 @@
 % Author: Daniel Mårtensson, Februari 2018
 % Update 2023-05-15 for MATLAB Control System Toolbox portability
 
-function [retval] = updatematavecontrol(varargin)
+function [retval] = updatematavecontrol()
   % Get the current working dictionary
   currentFolder = pwd;
 
   % Just update matavecontrol
-  A = what('+mc'); % Importat that it must stand '+mc'. Nothing else!
+  A = what('matave'); % Importat that it must stand 'matave'. Nothing else!
 
   % Get the information about where the files are
-  path = A.path; % File path
+  path = strcat(A.path, '\', '+mc'); % File path
 
   % Go to path dictionary
   cd(path);
