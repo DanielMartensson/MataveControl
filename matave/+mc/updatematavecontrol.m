@@ -33,7 +33,7 @@ function [retval] = updatematavecontrol()
   for i = 1:m
     % Downloading
     nameOfFile = fileList{i, 1};
-    URL = strcat('https://raw.githubusercontent.com/DanielMartensson/matavecontrol/master/sourcecode/+mc/', nameOfFile)
+    URL = strcat('https://raw.githubusercontent.com/DanielMartensson/matavecontrol/master/matave/+mc/', nameOfFile)
     [saveplace, Success] = urlwrite(URL, nameOfFile);
     saveplace
     Success
