@@ -1,5 +1,5 @@
-# Matavecontrol V11.0
-Matavecontrol is a basic toolbox for control engineering. The toolbox can be used for both GNU Octave and MATLAB®. Easy to use and easy to install. The main focus on matavecontrol is to offer a control toolbox which can be used in both GNU Octave and MATLAB®. Matavecontrol has the same function names as MATLAB®'s Control System Toolbox, but the time discrete functions are included in the time continuous functions. Also the library is a very basic library so other developers can fast dive into the code.
+# MataveControl V11.0
+MataveControl is a basic toolbox for control engineering. The toolbox can be used for both GNU Octave and MATLAB®. Easy to use and easy to install. The main focus of MataveControl is to offer a control toolbox which can be used in both GNU Octave and MATLAB®. MataveControl has the same function names as MATLAB®'s Control System Toolbox, but the time discrete functions are included in the time continuous functions. Also the library is a very basic library so other developers can fast dive into the code.
 
 
 # TODO
@@ -13,9 +13,9 @@ Matavecontrol is a basic toolbox for control engineering. The toolbox can be use
 
 # Typical use
 
-To use Matavecontrol, you should allways start with to create a transfer function or a state space model. Then you can use that mathematical model in almost all the function of Matavecontrol. 
+To use MataveControl, you should allways start with to create a transfer function or a state space model. Then you can use that mathematical model in almost all the function of MataveControl. 
 
-Here is some examples when I use Matavecontrol. MATLAB pictures are from Umeå University.
+Here is some examples when I use MataveControl. MATLAB pictures are from Umeå University.
 
 Creating a transfer function in MATLAB®
 
@@ -67,20 +67,18 @@ Do a nyquist diagram plot in GNU Octave
 
 # Model Predictive Control - Linear programming & Quadratic programming with integral action
 
-Matavecontrol have both linear programming MPC and quadratic programming MPC. There is equivalent C code at [CControl](https://github.com/DanielMartensson/CControl) if you want to apply them to embedded hardware. Select the programming method, quadratic or linear, that works with your situation. Both works fine, but quadratic programming (Hildreth's Method) is faster than linear programming (Simplex Method) in MATLAB. In C-code, it depends on your C-compiler.
+MataveControl have both linear programming MPC and quadratic programming MPC. There is equivalent C code at [CControl](https://github.com/DanielMartensson/CControl) if you want to apply them to embedded hardware. Select the programming method, quadratic or linear, that works with your situation. Both works fine, but quadratic programming (Hildreth's Method) is faster than linear programming (Simplex Method) in MATLAB. In C-code, it depends on your C-compiler.
 
 ![MPC Example - MATLAB](examples/mpcExampleMATLAB.png)
 
 # Install
-To install Matavecontrol, download the `sourcecode` folder and rename the folder `sourcecode`it to `matave`.
-Then you add the path to the folder
+To install MataveControl, download the folder "matave" and place it where you want it. Then the following code need to be written inside of the terminal of your MATLAB® or GNU Octave program. 
 
 ```matlab
 path('path/to/the/folder/matave', path)
 savepath
 ```
-
-Example of a typical `path`.
+Example of a typical path.
 
 ```matlab
 path('C:\Users\dmn\Documents\Octave\matave\', path)
@@ -88,9 +86,9 @@ savepath
 ```
 
 # Update
-Write this inside the terminal. Then Matavecontrol is going to download new .m files to matavecontrol from GitHub
+Write this inside the terminal. Then MataveControl is going to download new .m files to MataveControl from GitHub
 
 ```matlab
-updatematavecontrol
+mc.updatematavecontrol
 ```
 
