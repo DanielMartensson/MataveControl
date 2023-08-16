@@ -67,6 +67,7 @@ updatematavecontrol.m
 zero.m
 zpk.m
 nlsim.m
+fminsearch.m
 arma.m
 chirp.m
 linprog.m
