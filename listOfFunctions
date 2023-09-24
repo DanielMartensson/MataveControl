@@ -68,6 +68,7 @@ zero.m
 zpk.m
 nlsim.m
 fminsearch.m
+conv2fft.m
 arma.m
 chirp.m
 linprog.m
