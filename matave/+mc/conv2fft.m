@@ -17,7 +17,7 @@ function C = conv2fft(varargin)
     error('Missing input data matrix X')
   end
 
-  % Get the sigma
+  % Get the kernel
   if(length(varargin) >= 2)
     K = varargin{2};
   else
