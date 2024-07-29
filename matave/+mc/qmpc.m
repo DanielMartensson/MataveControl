@@ -1,12 +1,14 @@
 % Use Model Predictive Control with integral action and quadratic programming
-% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), I(integral parameter 0 to 1), x0(Initial state, optimal)
+% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), Umax(Maximum input signal, optional), I(integral parameter 0 to 1, optional), x0(Initial state, optional)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = mc.qmpc(sysd, N, R, T)
 % Example 2: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a)
-% Example 3: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, I)
-% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, I, x0)
+% Example 3: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax)
+% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, I)
+% Example 5: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, I, x0)
 % Author: Daniel Mårtensson 2022 September 3
 % Update 2023-02-18: Faster quadprog, also renamed quadprog2 to quadprog
+% Update 2024-07-29: Boundaries for input signals and output signals
 
 function [Y, T, X, U] = qmpc(varargin)
   % Check if there is any input
@@ -63,16 +65,23 @@ function [Y, T, X, U] = qmpc(varargin)
       a = 0;
     end
 
-    % Get the integral action parameter
+    % Get the max input value
     if(length(varargin) >= 6)
-      I = varargin{6};
+      Umax = repmat(varargin{6}, N/length(varargin{6}), 1);
+    else
+      Umax = R; % Max integral action
+    end
+
+    % Get the integral action parameter
+    if(length(varargin) >= 7)
+      I = varargin{7};
     else
       I = 0; % Max integral action
     end
 
     % Get the initial trajectory vector x
-    if(length(varargin) >= 7)
-      x = varargin{7};
+    if(length(varargin) >= 8)
+      x = varargin{8};
     else
       x = zeros(size(A, 1), 1);
     end
@@ -102,13 +111,18 @@ function [Y, T, X, U] = qmpc(varargin)
     GAMMA = gammaMat(A, B, C, N);
 
     % Solve: R = PHI*x + GAMMA*U with quadratic programming: Min: 1/2x^TQx + c^Tx, S.t: Ax <= b, x >= 0
-    % cqp = (GAMMA'*GAMMA + lambda)'*(R - PHI*x)
-    % bqp = GAMMA'*(R - PHI*x)
-    % aqp = GAMMA'*GAMMA + lambda
-    % qqp = GAMMA'*GAMMA + lambda
-    lambda = a*eye(size(GAMMA));
-    qqp = GAMMA'*GAMMA + lambda;
-    aqp = GAMMA;
+    % Q = a*eye(size(GAMMA))
+    % cqp = GAMMA'*Q*(PHI*x - R)
+    % bqp = [R - PHI*x; Umax; 0]
+    % aqp = [GAMMA; I; -I]
+    % qqp = GAMMA'*GAMMA + Q
+
+    % Create the q-matrix for QP-solver
+    Q = a*eye(size(GAMMA));
+    qqp = GAMMA'*GAMMA + Q;
+
+    % Constraints on: Upper bounds outputs, Upper bounds inputs, Lower bounds inputs
+    aqp = [GAMMA; eye(length(Umax), size(GAMMA, 2)); -eye(length(Umax), size(GAMMA, 2))];
 
     % Loop and save the data
     past_inputs = zeros(1, size(B, 2));
@@ -125,9 +139,11 @@ function [Y, T, X, U] = qmpc(varargin)
       % For applying this MPC regulator in reality, then state vector x should be the "sensors" if C = identity and D = 0
       x = A*x + B*delta;
 
-      % Update the constraints and objective function
-      cqp = GAMMA'*PHI*x - GAMMA'*R;
-      bqp = R-PHI*x;
+      % Update the objective function
+      cqp = GAMMA'*Q*(PHI*x - R);
+
+      % Update the constraints
+      bqp = [R-PHI*x; Umax; Umax*0];
 
       % Quadratic programming
       if(isOctave == 1)
