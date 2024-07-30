@@ -17,8 +17,10 @@ plot(t, u)
 
 I = 0.2; % Integral action constant
 Umax = [0.4]; % Maximum input signal vector
-lambda = 1.2; % Regularization for smoother inputs u
+Ymax = [R + 1]; % We say that the output can be +1 over the reference R
+lambda = 0.2; % Regularization for smoother inputs u
 figure(2); % New figure
-[y, t, x, u] = mc.qmpc(sysd, N, R, T, lambda, Umax, I); % Simulate MPC with quadratic programming
+x0 = [-3; 20];
+[y, t, x, u] = mc.qmpc(sysd, N, R, T, lambda, Umax, Ymax, I, x0); % Simulate MPC with quadratic programming
 hold on
 plot(t, u)
