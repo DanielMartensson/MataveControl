@@ -163,7 +163,7 @@ function [Y, T, X, U] = qmpc(varargin)
       else
         [u, solution] = mc.quadprog(qqp, cqp, aqp, bqp); % Used for MATLAB users
         if(solution == false)
-          error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization.');
+          error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization. Perhaps increase the slack variable.');
         end
       end
 
