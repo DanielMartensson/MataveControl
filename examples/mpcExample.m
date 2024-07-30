@@ -17,7 +17,7 @@ plot(t, u)
 
 I = 0.2; % Integral action constant
 Umax = [0.4]; % Maximum input signal vector
-Ymax = [R + 1]; % We say that the output can be +1 over the reference R
+S = [1]; % Slack variable say that the output can be +1 over the reference R
 lambda = 0.2; % Regularization for smoother inputs u
 figure(2); % New figure
 x0 = [-3; 20];
