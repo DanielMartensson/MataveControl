@@ -1,16 +1,16 @@
 % Use Model Predictive Control with integral action and quadratic programming
-% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), Umax(Maximum input signal, optional), Ymax(Maximum output signal, optional), I(integral parameter 0 to 1, optional), x0(Initial state, optional)
+% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), Umax(Maximum input signal, optional), S(Slack variables for output, optional), I(integral parameter 0 to 1, optional), x0(Initial state, optional)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = mc.qmpc(sysd, N, R, T)
 % Example 2: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a)
 % Example 3: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax)
-% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, Ymax)
-% Example 5: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, Ymax, I)
-% Example 6: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, Ymax, I, x0)
+% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, S)
+% Example 5: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, S, I)
+% Example 6: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, S, I, x0)
 % Author: Daniel Mårtensson 2022 September 3
 % Update 2023-02-18: Faster quadprog, also renamed quadprog2 to quadprog
 % Update 2024-07-29: Boundaries for input signals and output signals
-% Update 2024-07-30: Soft constraints on output
+% Update 2024-07-30: Soft constraints S on output
 
 function [Y, T, X, U] = qmpc(varargin)
   % Check if there is any input
@@ -74,11 +74,11 @@ function [Y, T, X, U] = qmpc(varargin)
       Umax = R;
     end
 
-    % Get the max output value
+    % Get the slack variable value
     if(length(varargin) >= 7)
-      Ymax = repmat(varargin{7}, N/length(varargin{7}), 1);
+      S = repmat(varargin{7}, N/length(varargin{7}), 1);
     else
-      Ymax = 0;
+      S = 0;
     end
 
     % Get the integral action parameter
@@ -122,7 +122,7 @@ function [Y, T, X, U] = qmpc(varargin)
     % Solve: R = PHI*x + GAMMA*U with quadratic programming: Min: 1/2x^TQx + c^Tx, S.t: Ax <= b, x >= 0
     % Q = a*eye(size(GAMMA))
     % cqp = GAMMA'*Q*(PHI*x - R)
-    % bqp = [R - PHI*x; Umax; 0]
+    % bqp = [S + R - PHI*x; Umax; 0]
     % aqp = [GAMMA; I; -I]
     % qqp = GAMMA'*GAMMA + Q
 
@@ -152,7 +152,7 @@ function [Y, T, X, U] = qmpc(varargin)
       cqp = GAMMA'*Q*(PHI*x - R);
 
       % Update the constraints
-      bqp = [Ymax + R-PHI*x; Umax; Umax*0];
+      bqp = [S + R-PHI*x; Umax; Umax*0];
 
       % Quadratic programming
       if(isOctave == 1)
