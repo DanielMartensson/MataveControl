@@ -1,14 +1,16 @@
 % Use Model Predictive Control with integral action and quadratic programming
-% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), Umax(Maximum input signal, optional), I(integral parameter 0 to 1, optional), x0(Initial state, optional)
+% Input: sysd(Discrete state space model), N(Horizon number), R(Reference vector), T(End time), a(lambda regularization parameter), Umax(Maximum input signal, optional), Ymax(Maximum output signal, optional), I(integral parameter 0 to 1, optional), x0(Initial state, optional)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = mc.qmpc(sysd, N, R, T)
 % Example 2: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a)
 % Example 3: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax)
-% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, I)
-% Example 5: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, I, x0)
+% Example 4: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, Ymax)
+% Example 5: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, Ymax, I)
+% Example 6: [Y, T, X, U] = mc.qmpc(sysd, N, R, T, a, Umax, Ymax, I, x0)
 % Author: Daniel Mårtensson 2022 September 3
 % Update 2023-02-18: Faster quadprog, also renamed quadprog2 to quadprog
 % Update 2024-07-29: Boundaries for input signals and output signals
+% Update 2024-07-30: Soft constraints on output
 
 function [Y, T, X, U] = qmpc(varargin)
   % Check if there is any input
@@ -69,19 +71,26 @@ function [Y, T, X, U] = qmpc(varargin)
     if(length(varargin) >= 6)
       Umax = repmat(varargin{6}, N/length(varargin{6}), 1);
     else
-      Umax = R; % Max integral action
+      Umax = R;
+    end
+
+    % Get the max output value
+    if(length(varargin) >= 7)
+      Ymax = repmat(varargin{7}, N/length(varargin{7}), 1);
+    else
+      Ymax = 0;
     end
 
     % Get the integral action parameter
-    if(length(varargin) >= 7)
-      I = varargin{7};
+    if(length(varargin) >= 8)
+      I = varargin{8};
     else
       I = 0; % Max integral action
     end
 
     % Get the initial trajectory vector x
-    if(length(varargin) >= 8)
-      x = varargin{8};
+    if(length(varargin) >= 9)
+      x = varargin{9};
     else
       x = zeros(size(A, 1), 1);
     end
@@ -143,7 +152,7 @@ function [Y, T, X, U] = qmpc(varargin)
       cqp = GAMMA'*Q*(PHI*x - R);
 
       % Update the constraints
-      bqp = [R-PHI*x; Umax; Umax*0];
+      bqp = [Ymax + R-PHI*x; Umax; Umax*0];
 
       % Quadratic programming
       if(isOctave == 1)
