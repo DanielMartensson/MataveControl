@@ -17,10 +17,10 @@ plot(t, u)
 
 I = 0.2; % Integral action constant
 Umax = [0.4]; % Maximum input signal vector
-S = [1]; % Slack variable say that the output can be +1 over the reference R
+S = [2]; % Slack variable say that the output can be +2 over the reference R, in this case: 6+2 = 8
 lambda = 0.2; % Regularization for smoother inputs u
 figure(2); % New figure
-x0 = [-3; 20];
-[y, t, x, u] = mc.qmpc(sysd, N, R, T, lambda, Umax, Ymax, I, x0); % Simulate MPC with quadratic programming
+x0 = [-8; 20];
+[y, t, x, u] = mc.qmpc(sysd, N, R, T, lambda, Umax, S, I, x0); % Simulate MPC with quadratic programming
 hold on
 plot(t, u)
