@@ -67,9 +67,9 @@ Do a nyquist diagram plot in GNU Octave
 
 # Model Predictive Control - Linear programming & Quadratic programming with integral action
 
-MataveControl have both linear programming MPC and quadratic programming MPC. There is equivalent C code at [CControl](https://github.com/DanielMartensson/CControl) if you want to apply them to embedded hardware. Select the programming method, quadratic or linear, that works with your situation. Both works fine, but quadratic programming (Hildreth's Method) is faster than linear programming (Simplex Method) in MATLAB. In C-code, it depends on your C-compiler.
+MataveControl have both linear programming MPC and quadratic programming MPC. There is equivalent C code at [CControl](https://github.com/DanielMartensson/CControl) if you want to apply them to embedded hardware. Select the programming method, quadratic or linear, that works with your situation. Both works fine, but quadratic programming (Hildreth's Method) is faster than linear programming (Simplex Method) in MATLAB. In C-code, it depends on your C-compiler. I have done more work on `qmpc.m` file, compared to `lmpc.m`, even if they both can do the same job.
 
-https://github.com/DanielMartensson/MataveControl/blob/f710100e63f49c074ad88c92d15c6a208d97949b/examples/mpcExample.m#L1-L24
+https://github.com/DanielMartensson/MataveControl/blob/25b209a5448b05ad3370a6d1d75675b5a5c84a24/examples/mpcExample.m#L1-L26
 
 ![MPC Example - MATLAB](examples/mpcExampleMATLAB.png)
 
