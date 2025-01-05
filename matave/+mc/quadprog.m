@@ -26,9 +26,9 @@ function [x, solution] = quadprog(Q, c, A, b)
   % Constraints difference
   K = b - A*x;
 
-  % Check constraint violation
-  if(sum(K < 0) > 0)
-    return; % No violation
+  % Check if all the constraints are satisfied
+  if(sum(K < 0) == 0)
+    return; % All satisfied
   end
 
   % Create P
