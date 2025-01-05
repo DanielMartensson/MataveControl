@@ -27,7 +27,7 @@ function [x, solution] = quadprog(Q, c, A, b)
   K = b - A*x;
 
   % Check constraint violation
-  if(sum(K <= 0) >= 0)
+  if(sum(K < 0) > 0)
     return; % No violation
   end
 
