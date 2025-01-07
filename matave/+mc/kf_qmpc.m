@@ -2,10 +2,10 @@
 function [Y, T, X, U] = kf_qmpc()
 
     % Model
-    A = [0 1; -3 -2];
-    B = [0; 1];
-    C = [1 0];
-    E = [0; 0.5];
+    A = [0 1; -2 -3];
+    B = [0 0; 1 1];
+    C = [1 0; 1 0];
+    E = [0 0; 2.5 1];
     Ts = 0.5;
 
     % Parameters
@@ -37,7 +37,7 @@ function [Y, T, X, U] = kf_qmpc()
 
     % Sizes
     Qz = eye(1);
-    S = eye(1);
+    S = eye(size(B, 2));
     Seta = eye(1);
     seta = eye(1);
     nx = size(Ae, 2);
@@ -45,6 +45,7 @@ function [Y, T, X, U] = kf_qmpc()
     nd = size(Ee, 2);
     nz = size(Ce, 1);
     QZ = QZMat(Qz, N, nz);
+    [barH, Gamma, Gammad, Phi, Mx0, Mum1, MR, MD, Lambda, barseta] = DesignMPCMatrices(Ae, Be, Ee, Ce, Qz, S, N, Seta, seta)
 
     % Create MPC matrices
     Phi = PhiMat(Ae, Ce, N)
@@ -58,6 +59,7 @@ function [Y, T, X, U] = kf_qmpc()
     Lambda = LambdaMat(N, nu)
     barseta = barsetaVec(seta, N)
 
+    return
     % Create MPC vectors
     D = DVec(d, N);
 
@@ -210,14 +212,14 @@ end
 function barH = barHMat(Gamma, Qz, S, N, nu, nz, Seta)
   QZ = QZMat(Qz, N, nz);
   HS = HSMat(S, N, nu);
-  barSeta = barSetaMat(Seta, N);
+  barSeta = barSetaMat(Seta, N, nu);
   H = Gamma' * QZ * Gamma + HS;
-  z = zeros(N, N);
+  z = zeros(nu * N, nu * N);
   barH = [H z; z barSeta];
 end
 
-function barSeta = barSetaMat(Seta, N)
-  barSeta = eye(N) * Seta;
+function barSeta = barSetaMat(Seta, N, nu)
+  barSeta = eye(nu * N) * Seta;
 end
 
 function HS = HSMat(S, N, nu)
@@ -310,7 +312,10 @@ function [Umin, Umax, Udmin, Udmax, Zmin, Zmax, ubarmin, ubarmax] = DesignConstr
 end
 
 function [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(Ac, Bc, Ec, Cc, Ts)
-    M1 = [Ac Bc Ec; zeros(size([Ac Bc Ec]))];
+    nx = size(Ac, 1);
+    nu = size(Bc, 2);
+    nd = size(Ec, 2);
+    M1 = [Ac Bc Ec; zeros(nu + nd, nx + nu + nd)];
     M2 = expm(M1 * Ts);
     Ad = M2(1:size(Ac, 1), 1:size(Ac, 2));
     Bd = M2(1:size(Ac, 1), size(Ac, 2) + 1:size(Ac, 2) + size(Bc, 2));
@@ -319,23 +324,25 @@ function [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(Ac, Bc, Ec, Cc, Ts)
 end
 
 function [Kfx, Ae, Be, Ce, Ee] = DesignKalman(A, B, C, E)
-    n = size(A, 1);  % Number of states
-    m = size(C, 1);  % Number of measurements
+    nx = size(A, 1); % Number of states
+    nz = size(C, 1); % Number of measurements
+    nu = size(B, 2); % Number of inputs
+    nd = size(E, 2); % Number of disturbances
 
     % Kalman design
-    Qw = eye(n, n) * 1e-2;   % Process noise covariance
-    Qxi = eye(m, m) * 1e-2;  % Measurement noise covariance
-    Rv = eye(m, m);          % Measurement noise covariance
-    Ad = eye(m, m);          % Identity for disturbance model
+    Qw = eye(nx, nx) * 1e-2;   % Process noise covariance
+    Qxi = eye(nz, nz) * 1e-2;  % Measurement noise covariance
+    Rv = eye(nz, nz);          % Measurement noise covariance
+    Ad = eye(nu, nu);          % Identity for disturbance model
 
     % Extended matrices for Kalman Filter
-    Ae = [A B; zeros(m, n) Ad];
-    Be = [B; zeros(m, m)];
-    Ee = [E; zeros(m, m)];
-    Ce = [C zeros(m, m)];
+    Ae = [A B; zeros(nu, nx) Ad];
+    Be = [B; zeros(nu, nu)];
+    Ee = [E; zeros(nu, nd)];
+    Ce = [C zeros(nz, nu)];
 
     % Covariance matrix for Kalman filter
-    Qe = [Qw zeros(n, m); zeros(m, n) Qxi];
+    Qe = eye(size(Ae)); % [Qw zeros(nx, nz); zeros(nz, nx) Qxi];
 
     % Solve the Discrete Algebraic Riccati Equation (DARE) for P
     P = dare(Ae', Ce', Qe, Rv);
@@ -409,7 +416,7 @@ function [barH, Gamma, Gammad, Phi, Mx0, Mum1, MR, MD, Lambda, barseta] = Design
     Mum1 = [-S; zeros((N - 1) * nu, nu)];
 
     %Form barSeta
-    barSeta = eye(N) * Seta;
+    barSeta = eye(N*nu) * Seta;
     barseta = ones(N, 1) * seta;
 
     %Form H, Mx0, MR, MD
@@ -421,7 +428,7 @@ function [barH, Gamma, Gammad, Phi, Mx0, Mum1, MR, MD, Lambda, barseta] = Design
     MD = T * Gammad;
 
     %barH, barg
-    z = zeros(N, N);
+    z = zeros(nu*N, nu*N);
     barH = [H z; z barSeta];
 
     %Form Lambda
