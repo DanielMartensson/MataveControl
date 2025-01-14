@@ -1,5 +1,180 @@
 
-function [Y, T, X, U] = kf_qmpc()
+function [Y, T, X, U] = kf_qmpc(varargin)
+    % Check if there is any input
+    if(isempty(varargin))
+      error('Missing inputs')
+    end
+
+    % Get model
+    if(length(varargin) >= 1)
+      sys = varargin{1};
+    else
+      error('Missing model');
+    end
+
+    % Get horizon
+    if(length(varargin) >= 2)
+      N = varargin{2};
+    else
+      error('Missing horizon');
+    end
+
+    % Get reference
+    if(length(varargin) >= 3)
+      r = varargin{3};
+      R = RVec(r, N); % Equation (3.8)
+    else
+      error('Missing reference');
+    end
+
+    % Get umin
+    if(length(varargin) >= 4)
+      umin = varargin{4};
+      Umin = UminVec(umin, N);
+    else
+      error('Missing umin');
+    end
+
+    % Get umax
+    if(length(varargin) >= 5)
+      umax = varargin{5};
+      Umax = UmaxVec(umax, N);
+    else
+      error('Missing umax');
+    end
+
+    % Get zmin
+    if(length(varargin) >= 6)
+      zmin = varargin{6};
+      Zmin = ZminVec(zmin, N);
+    else
+      error('Missing zmin');
+    end
+
+    % Get zmax
+    if(length(varargin) >= 7)
+      zmax = varargin{7};
+      Zmax = ZmaxVec(zmax, N);
+    else
+      error('Missing zmax');
+    end
+
+    % Get udmin
+    if(length(varargin) >= 8)
+      udmin = varargin{8};
+      Udmin = UdminVec(udmin, N);
+    else
+      error('Missing udmin');
+    end
+
+    % Get udmax
+    if(length(varargin) >= 9)
+      udmax = varargin{9};
+      Udmax = UdmaxVec(udmax, N);
+    else
+      error('Missing udmax');
+    end
+
+    % Get initial state x0
+    if(length(varargin) >= 10)
+      x0 = varargin{10};
+    else
+      x0 = 0;
+    end
+
+    % Get regularization parameter s
+    if(length(varargin) >= 11)
+      s = varargin{11};
+    else
+      s = 1;
+    end
+
+    % Get weight parameter Qz
+    if(length(varargin) >= 12)
+      Qz = varargin{12};
+    else
+      Qz = 1;
+    end
+
+    % Get slack parameter Spsi
+    if(length(varargin) >= 13)
+      Spsi = varargin{13};
+    else
+      Spsi = 1;
+    end
+
+    % Get slack parameter spsi
+    if(length(varargin) >= 14)
+      spsi = varargin{14};
+    else
+      spsi = 1;
+    end
+
+    % Get disturbance
+    if(length(varargin) >= 15)
+      d = varargin{15};
+      D = DVec(d, N); % Equation (3.27)
+    else
+      D = 0;
+    end
+
+    % Get disturbance matrix E
+    if(length(varargin) >= 16)
+      E = varargin{16};
+    else
+      E = 0;
+    end
+
+    % Get model type
+    type = varargin{1}.type;
+    % Check if there is a TF or SS model
+    if(strcmp(type, 'SS' ))
+      % Get A, B, C, D matrecies
+      A = sys.A;
+      B = sys.B;
+      C = sys.C;
+      D = sys.D;
+      delay = sys.delay;
+      Ts = sys.sampleTime;
+
+      % Check if the model is discrete! MPC can only be discrete in this case.
+      if(Ts <= 0)
+        error('Only discrete state space models');
+      end
+
+      % Get all the sizes
+      nx = size(A, 1); % Total number of states from system matrix A[nx * nx]
+      nu = size(B, 2); % Total number of inputs from control matrix B[nx * nu]
+      nz = size(C, 1); % Total number of outputs from observation matrix C[nz * nx]
+      nd = size(E, 2); % Total number of disturbances from disturbance matrix E[nx * nd]
+
+      % The disturbance matrix E need to have the same dimension as system matrix A
+      if(size(E, 1) ~= nx)
+        E = zeros(nx, nd);
+      end
+
+      % Create the discrete matrices - Equation (2.9)
+      [Ad, Bd, Cd, Ed] = DiscreteMatrices(A, B, C, E, Ts);
+
+      % Create the augmented matrices - Equation (3.68) and (3.69)
+      [Ae, Be, Ce, Ee] = ExtendedMatrices(Ad, Bd, Cd, Ed);
+
+      % Create the Phi matrix and lower hankel toeplitz Gamma matrix of inputs - Equation (3.6)
+      Phi = PhiMat(Ae, Ce, N);
+      Gamma = GammaMat(Ae, Be, Ce, N);
+
+      % Create the lower hankel toeplitz Gamma matrix of disturbance - Equation (3.27)
+      Gammad = GammaMat(Ae, Ee, Ce, N);
+
+
+
+    else
+      % TF to SS
+      sys = mc.tf2ss(sys, 'OCF');
+      [Y, T, X, U] = kf_qmpc(sys, x0, R, N, umin, umax, udmin, udmax, zmin, zmax);
+    end
+
+    return
 
     % Model
     A = [0 1; -2 -3];
@@ -28,12 +203,14 @@ function [Y, T, X, U] = kf_qmpc()
     [Umin, Umax, Udmin, Udmax, Zmin, Zmax, ubarmin, ubarmax] = DesignConstraints(umin, umax, udmax, udmin, zmin, zmax, big, N);
 
     % Turn them discrete
-    [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(A, B, E, C, Ts);
+    [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(A, B, E, C, Ts)
+    [Ad, Bd, Ed, Cd] = DiscreteMatrices(A, B, E, C, Ts)
 
     % Design kalman gain and add integral action to the matrices
     pkg load control
     pkg load optim
-    [Kfx, Ae, Be, Ce, Ee] = DesignKalman(Ad, Bd, Cd, Ed);
+    [Kfx, Ae, Be, Ce, Ee] = DesignKalman(Ad, Bd, Cd, Ed)
+    [Ae, Be, Ce, Ee] = ExtendedMatrices(Ad, Bd, Cd, Ed)
 
     % Sizes
     Qz = eye(1);
@@ -255,35 +432,35 @@ function gbar = gbarVec(Mx0, x0, MR, R, D, Mum1, dum1, barseta)
 end
 
 function R = RVec(r, N)
-  R = repmat(r, N, 1);
+  R = repmat(r, N/length(r), 1);
 end
 
 function D = DVec(d, N)
-  D = repmat(d, N, 1);
+  D = repmat(d, N/length(d), 1);
 end
 
 function Umin = UminVec(umin, N)
-  Umin = repmat(umin, N, 1);
+  Umin = repmat(umin, N/length(umin), 1);
 end
 
 function Umax = UmaxVec(umax, N)
-  Umax = repmat(umax, N, 1);
+  Umax = repmat(umax, N/length(umax), 1);
 end
 
 function Udmin = UdminVec(udmin, N)
-  Udmin = repmat(udmin, N-1, 1);
+  Udmin = repmat(udmin, (N-1)/length(udmin), 1);
 end
 
 function Udmax = UdmaxVec(udmax, N)
-  Udmax = repmat(udmax, N-1, 1);
+  Udmax = repmat(udmax, (N-1)/length(udmax), 1);
 end
 
 function Zmax = ZmaxVec(zmax, N)
-  Zmax = repmat(zmax, N, 1);
+  Zmax = repmat(zmax, N/length(zmax), 1);
 end
 
 function Zmin = ZminVec(zmin, N)
-  Zmin = repmat(zmin, N, 1);
+  Zmin = repmat(zmin, N/length(zmin), 1);
 end
 
 function ubarmin = ubarminvec(Umin, N)
@@ -311,6 +488,19 @@ function [Umin, Umax, Udmin, Udmax, Zmin, Zmax, ubarmin, ubarmax] = DesignConstr
 
 end
 
+function [Ad, Bd, Cd, Ed] = DiscreteMatrices(Ac, B, C, E, Ts)
+  % Discrete matrices for fixed step based simulation
+  nx = size(A, 1);
+  nu = size(B, 2);
+  nd = size(E, 2);
+  M1 = [A B E; zeros(nu + nd, nx + nu + nd)];
+  M2 = expm(M1 * Ts);
+  Ad = M2(1:nx, 1:nx);
+  Bd = M2(1:nx, nx + 1:nx + nu);
+  Ed = M2(1:nx, nx + nu + 1:nx + nu + nd);
+  Cd = Cc;
+end
+
 function [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(Ac, Bc, Ec, Cc, Ts)
     nx = size(Ac, 1);
     nu = size(Bc, 2);
@@ -322,6 +512,19 @@ function [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(Ac, Bc, Ec, Cc, Ts)
     Ed = M2(1:size(Ec, 1), size(Ac, 2) + size(Bc, 2) + 1:end);
     Cd = Cc;
 end
+
+function [Ae, Be, Ce, Ee] = ExtendedMatrices(A, B, C, E)
+  % Extended matrices for integral action
+  nx = size(A, 1);
+  nz = size(C, 1);
+  nu = size(B, 2);
+  nd = size(E, 2);
+  Ae = [A B; zeros(nu, nx) eye(nu, nu)];
+  Be = [B; zeros(nu, nu)];
+  Ee = [E; zeros(nu, nd)];
+  Ce = [C zeros(nz, nu)];
+end
+
 
 function [Kfx, Ae, Be, Ce, Ee] = DesignKalman(A, B, C, E)
     nx = size(A, 1); % Number of states
