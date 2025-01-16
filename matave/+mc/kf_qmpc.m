@@ -22,7 +22,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get reference
     if(length(varargin) >= 3)
       r = varargin{3};
-      R = RVec(r, N); % Equation (3.8)
     else
       error('Missing reference');
     end
@@ -30,7 +29,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get umin
     if(length(varargin) >= 4)
       umin = varargin{4};
-      Umin = UminVec(umin, N);
     else
       error('Missing umin');
     end
@@ -38,7 +36,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get umax
     if(length(varargin) >= 5)
       umax = varargin{5};
-      Umax = UmaxVec(umax, N);
     else
       error('Missing umax');
     end
@@ -46,7 +43,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get zmin
     if(length(varargin) >= 6)
       zmin = varargin{6};
-      Zmin = ZminVec(zmin, N);
     else
       error('Missing zmin');
     end
@@ -54,7 +50,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get zmax
     if(length(varargin) >= 7)
       zmax = varargin{7};
-      Zmax = ZmaxVec(zmax, N);
     else
       error('Missing zmax');
     end
@@ -62,7 +57,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get udmin
     if(length(varargin) >= 8)
       udmin = varargin{8};
-      Udmin = UdminVec(udmin, N);
     else
       error('Missing udmin');
     end
@@ -70,7 +64,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get udmax
     if(length(varargin) >= 9)
       udmax = varargin{9};
-      Udmax = UdmaxVec(udmax, N);
     else
       error('Missing udmax');
     end
@@ -113,7 +106,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Get disturbance
     if(length(varargin) >= 15)
       d = varargin{15};
-      D = DVec(d, N); % Equation (3.27)
     else
       D = 0;
     end
@@ -163,8 +155,49 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       Phi = PhiMat(Ae, Ce, N);
       Gamma = GammaMat(Ae, Be, Ce, N);
 
-      % Create the lower hankel toeplitz Gamma matrix of disturbance - Equation (3.27)
+      % Create reference vector - Equation (3.8)
+      R = RVec(r, N);
+
+      % Create the weigth matrix - Equation (3.10)
+      QZ = QZMat(Qz, N, nz);
+
+      % Create the regularization matrix - Equation (3.21)
+      S = SMat(s, nu);
+      HS = HSMat(S, N, nu);
+
+      % Create the QP solver H matrix - Equation (3.24)
+      H = HMat(Gamma, QZ, HS);
+
+      % Create the lower hankel toeplitz Gamma matrix of disturbance and its disturbance vector - Equation (3.27)
       Gammad = GammaMat(Ae, Ee, Ce, N);
+      D = DVec(d, N);
+
+      % Create the QP solver matrix for the gradient - Equation (3.32)
+      Mx0 = Mx0Mat(Gamma, QZ, Phi);
+      Mum1 = Mum1Mat(N, nu, S);
+      MR = MRMat(Gamma, QZ);
+      MD = MDMat(Gamma, QZ, Gammad);
+
+      % Create constraints on the movment - Equation (3.38)
+      Udmin = UdminVec(udmin, N);
+      Udmax = UdmaxVec(udmax, N);
+      Lambda = LambdaMat(N, nu);
+
+      % Create constraints on inputs - Equation (3.40)
+      Umin = UminVec(umin, N);
+      Umax = UmaxVec(umax, N);
+
+      % Create constraints on outputs - Equation (3.43)
+      Zmin = ZminVec(zmin, N);
+      Zmax = ZmaxVec(zmax, N);
+
+      % Create the slack variables - Equation (3.49)
+      barSpsi = barSpsiMat(Spsi, N, nu);
+      barspsi = barspsiVec(spsi, N);
+
+      % Create QP solver matrix - Equation (3.51)
+      barH = barHMat(H, N, nu);
+
 
 
 
@@ -204,13 +237,11 @@ function [Y, T, X, U] = kf_qmpc(varargin)
 
     % Turn them discrete
     [Ad, Bd, Ed, Cd] = DesignDiscreteMatrices(A, B, E, C, Ts)
-    [Ad, Bd, Ed, Cd] = DiscreteMatrices(A, B, E, C, Ts)
 
     % Design kalman gain and add integral action to the matrices
     pkg load control
     pkg load optim
     [Kfx, Ae, Be, Ce, Ee] = DesignKalman(Ad, Bd, Cd, Ed)
-    [Ae, Be, Ce, Ee] = ExtendedMatrices(Ad, Bd, Cd, Ed)
 
     % Sizes
     Qz = eye(1);
@@ -224,17 +255,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     QZ = QZMat(Qz, N, nz);
     [barH, Gamma, Gammad, Phi, Mx0, Mum1, MR, MD, Lambda, barseta] = DesignMPCMatrices(Ae, Be, Ee, Ce, Qz, S, N, Seta, seta)
 
-    % Create MPC matrices
-    Phi = PhiMat(Ae, Ce, N)
-    Gamma = GammaMat(Ae, Be, Ce, N)
-    Gammad = GammaMat(Ae, Ee, Ce, N)
-    barH = barHMat(Gamma, Qz, S, N, nu, nz, Seta)
-    Mx0 = Mx0Mat(Gamma, QZ, Phi)
-    Mum1 = Mum1Mat(N, nu, S)
-    MR = MRMat(Gamma, QZ)
-    MD = MDMat(Gamma, QZ, Gammad)
-    Lambda = LambdaMat(N, nu)
-    barseta = barsetaVec(seta, N)
+
 
     return
     % Create MPC vectors
@@ -386,17 +407,21 @@ function Lambda = LambdaMat(N, nu)
   end
 end
 
-function barH = barHMat(Gamma, Qz, S, N, nu, nz, Seta)
-  QZ = QZMat(Qz, N, nz);
-  HS = HSMat(S, N, nu);
-  barSeta = barSetaMat(Seta, N, nu);
+function H = HMat(Gamma, QZ, HS)
   H = Gamma' * QZ * Gamma + HS;
+end
+
+function S = SMat(s, nu)
+  S = s * eye(nu);
+end
+
+function barH = barHMat(H, N, nu)
   z = zeros(nu * N, nu * N);
   barH = [H z; z barSeta];
 end
 
-function barSeta = barSetaMat(Seta, N, nu)
-  barSeta = eye(nu * N) * Seta;
+function barSpsi = barSpsiMat(Seta, N, nu)
+  barSpsi = eye(nu * N) * Seta;
 end
 
 function HS = HSMat(S, N, nu)
@@ -422,8 +447,8 @@ function HS = HSMat(S, N, nu)
   end
 end
 
-function barseta = barsetaVec(seta, N)
-  barseta = ones(N, 1) * seta;
+function barspsi = barspsiVec(spsi, N)
+  barspsi = spsi * ones(N, 1);
 end
 
 function gbar = gbarVec(Mx0, x0, MR, R, D, Mum1, dum1, barseta)
