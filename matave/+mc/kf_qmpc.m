@@ -2,23 +2,24 @@
 % Input: sys(Continuous state space model), N(Horizon number), r(Reference vector), umin(Minimum input vector),
 % umax(Maximum input vector), zmin(Minimum output vector), zmax(Maximum output vector),
 % deltaumin(Minimum output vector rate of change), deltaumax(Maximum rate of change output vector),
-% Ts(The sample time, optional), T(End time, optional), x0(Initial state, optional)
+% lambda(Integral action parameter, optional), Ts(The sample time, optional), T(End time, optional), x0(Initial state, optional)
 % s(Regularization value, optional), Qz(Weight parameter, optional), qw(Disturbance kalman filter tuning, optional)
 % rv(Noice kalman filter tuning, optional), Spsi(Slack variable matrix tuning, optional), spsi(Slack variable vector tuning, optional)
 % d(Disturbance vector e.g other measurements rather than y, optional), E(Disturbance input signal matrix, optional)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
 % Example 1: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax)
-% Example 2: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts)
-% Example 3: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T)
-% Example 4: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0)
-% Example 5: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s)
-% Example 6: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz)
-% Example 7: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw)
-% Example 8: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv)
-% Example 9: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi)
-% Example 10: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi)
-% Example 11: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d)
-% Example 12: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d, E)
+% Example 2: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda)
+% Example 3: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts)
+% Example 4: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T)
+% Example 5: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0)
+% Example 6: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s)
+% Example 7: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz)
+% Example 8: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw)
+% Example 9: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv)
+% Example 10: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi)
+% Example 11: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi)
+% Example 12: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d)
+% Example 13: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d, E)
 % Author: Daniel Mårtensson 2025 Januari 18
 
 function [Y, T, X, U] = kf_qmpc(varargin)
@@ -90,79 +91,86 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     error('Missing deltaumax');
   end
 
-  % Get sample time
+  % Get the integral lambda parameter
   if(length(varargin) >= 10)
-    Ts = varargin{10};
+    lambda = varargin{10};
+  else
+    lambda = 0.001;
+  end
+
+  % Get sample time
+  if(length(varargin) >= 11)
+    Ts = varargin{11};
   else
     Ts = 1;
   end
 
   % Get time
-  if(length(varargin) >= 11)
-    T = varargin{11};
+  if(length(varargin) >= 12)
+    T = varargin{12};
   else
     T = 10;
   end
 
   % Get initial state x
-  if(length(varargin) >= 12)
-    x = varargin{12};
+  if(length(varargin) >= 13)
+    x = varargin{13};
   else
     x = 0;
   end
 
   % Get regularization parameter s
-  if(length(varargin) >= 13)
-    s = varargin{13};
+  if(length(varargin) >= 14)
+    s = varargin{14};
   else
     s = 1;
   end
 
   % Get weight parameter Qz
-  if(length(varargin) >= 14)
-    Qz = varargin{14};
+  if(length(varargin) >= 15)
+    Qz = varargin{15};
   else
     Qz = 1;
   end
 
   % Get kalman disturbance qw
-  if(length(varargin) >= 15)
-    qw = varargin{15};
+  if(length(varargin) >= 16)
+    qw = varargin{16};
   else
     qw = 1;
   end
 
   % Get kalman noise rv
-  if(length(varargin) >= 16)
-    rv = varargin{16};
+  if(length(varargin) >= 17)
+    rv = varargin{17};
   else
     rv = 1;
   end
 
   % Get slack parameter Spsi
-  if(length(varargin) >= 17)
-    Spsi = varargin{17};
+  if(length(varargin) >= 18)
+    Spsi = varargin{18};
   else
     Spsi = 1;
   end
 
   % Get slack parameter spsi
-  if(length(varargin) >= 18)
-    spsi = varargin{18};
+  if(length(varargin) >= 19)
+    spsi = varargin{19};
   else
     spsi = 1;
   end
 
   % Get disturbance
-  if(length(varargin) >= 19)
-    d = varargin{19};
+  if(length(varargin) >= 20)
+    d = varargin{20};
   else
     d = 0;
   end
 
   % Get disturbance matrix E
-  if(length(varargin) >= 20)
-    E = varargin{20};
+  if(length(varargin) >= 21)
+    E = varargin{21};
   else
     E = 0;
   end
@@ -199,12 +207,12 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     [Ae, Be, Ce, Ee] = ExtendedMatrices(Ad, Bd, Cd, Ed);
 
     % Extend the system vector as well
-    x = [x; zeros(nu, 1)];
+    %x = [x; zeros(nu, 1)];
 
     % Create the kalman gain matrix K - Here we use Kalman-Bucy (1961) filter instead of Kalman Filter (1960).
     syse = mc.ss(delay, Ae, Be, Ce);
     syse.sampleTime = Ts;
-    Qw = qw * eye(nx + nu);
+    Qw = qw * eye(nx); % old size is nx + nu
     Rv = rv * eye(nz);
     [K] = mc.lqe(syse, Qw, Rv);
 
@@ -240,10 +248,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     deltaUmax = deltaUmaxVec(deltaumax, N);
     Lambda = LambdaMat(N, nu);
 
-    % Create constraints on inputs - Equation (3.40)
-    Umin = UminVec(umin, N);
-    Umax = UmaxVec(umax, N);
-
     % Create constraints on outputs - Equation (3.43)
     Zmin = ZminVec(zmin, N);
     Zmax = ZmaxVec(zmax, N);
@@ -255,21 +259,23 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Create QP solver matrix - Equation (3.51)
     barH = barHMat(H, barSpsi, N, nu);
 
-    % Create barUmin and barUmax - Equation (3.52)
-    barUmin = barUminVec(Umin, N);
-    barUmax = barUmaxVec(Umax, infinity, N);
-
     % Create time vector
     t = 0:Ts:T;
     L = length(t);
 
-    % Create outputs
+    % Create outputs for the simulation
     u = zeros(nu, 1);
     y = zeros(nz, 1);
     um1 = zeros(nu, 1);
+    integral_action = zeros(nz, 1);
 
     % Create measurement noise
     v = rv * randn(nz, L);
+
+    % Create the output vectors
+    X = zeros(nx, L);
+    U = zeros(nu, L);
+    Y = zeros(nz, L);
 
     % Check if it's MATLAB or Octave
     isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
@@ -297,6 +303,10 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Create gradient g - Equation (3.32)
       g = gVec(Mx0, x, MR, R, MD, D, Mum1, um1);
 
+      % Create constraints on inputs - Equation (3.40)
+      Umin = UminVec(umin, deltaumin, um1, N, nu);
+      Umax = UmaxVec(umax, deltaumax, um1, N, nu);
+
       % Create constraints for the output - Equation (3.44)
       barZmin = barZminVec(Zmin, Phi, x, Gammad, D);
       barZmax = barZmaxVec(Zmax, Phi, x, Gammad, D);
@@ -304,27 +314,42 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Create gradient bar g - Equation (3.51)
       barg = bargVec(g, barspsi);
 
+      % Create barUmin and barUmax - Equation (3.52)
+      barUmin = barUminVec(Umin, N);
+      barUmax = barUmaxVec(Umax, infinity, N);
+      UI = eye(2 * N);
+
       % Create bmin, bmax and A - Equation (3.56)
       bmin = bminVec(deltaUmin, barZmin, infinity, N);
       bmax = bmaxVec(deltaUmax, barZmax, infinity, N);
       A = AMat(Lambda, Gamma, N);
 
-      % Create for QP
-      aqp = [A; -A];
-      bqp = [bmax; -bmin];
+      % Create for QP - Equation (3.57)
+      % barUmin <= I*U <= barUmax
+      % bmin <= A*U <= bmax
+      aqp = [UI; A; -UI; -A];
+      bqp = [barUmax; bmax; -barUmin; -bmin];
 
-      % Quadratic programming
+      % Quadratic programming for propotional action for u
       if(isOctave == 1)
-        [output, ~, e] = qp ([], barH, barg, [], [], [], [], [], aqp, bqp);
+        [propotional_action, ~, e] = qp ([], barH, barg, [], [], [], [], [], aqp, bqp);
         if(e.info == 3)
           error('Quadratic programming QP could not optimize input signals. Try increase the horizion N number.');
         end
       else
-        [output, solution] = mc.quadprog(barH, barg, aqp, bqp); % Used for MATLAB users
+        [propotional_action, solution] = mc.quadprog(barH, barg, aqp, bqp); % Used for MATLAB users
         if(solution == false)
           error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization. Perhaps increase the slack variable.');
         end
       end
+
+      % Do integral action for u
+      e = r - y
+      integral_action = integral_action + lambda * e;
+
+      % Set the u
+      u = propotional_action(1:nu) + integral_action;
+
     end
 
     %Cange t and y vector and u so the plot look like it is discrete - Important!
@@ -507,12 +532,14 @@ function D = DVec(d, N)
   D = repmat(d, N/length(d), 1);
 end
 
-function Umin = UminVec(umin, N)
+function Umin = UminVec(umin, deltaumin, um1, N, nu);
   Umin = repmat(umin, N/length(umin), 1);
+  Umin(1:nu) = max(umin, deltaumin + um1);
 end
 
-function Umax = UmaxVec(umax, N)
+function Umax = UmaxVec(umax, deltaumax, um1, N, nu);
   Umax = repmat(umax, N/length(umax), 1);
+  Umax(1:nu) = min(umax, deltaumax + um1);
 end
 
 function deltaUmin = deltaUminVec(deltaumin, N)
@@ -569,6 +596,13 @@ function [Ad, Bd, Cd, Ed] = DiscreteMatrices(A, B, C, E, Ts)
 end
 
 function [Ae, Be, Ce, Ee] = ExtendedMatrices(A, B, C, E)
+  % Need to find a way to implement integral action
+  Ae = A;
+  Be = B;
+  Ce = C;
+  Ee = E;
+  return
+
   % Extended matrices for integral action
   nx = size(A, 1);
   nz = size(C, 1);
