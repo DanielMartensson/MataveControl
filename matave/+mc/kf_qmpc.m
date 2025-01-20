@@ -261,6 +261,9 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Copy the state
     x0 = x;
 
+    % Get the disturbance
+    disturbance = D(1:nd);
+
     % Create the output vectors
     X = zeros(nx, L);
     U = zeros(nu, L);
@@ -279,11 +282,8 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Give the old u to um1
       um1 = u;
 
-      % Get the disturbance
-      disturbance = D(1:nd);
-
       % Integral action - Equation (3.66)
-      psi = r - y;
+      psi = r - y
       eta = eta + psi;
 
       % Compute candidate state x0 with optimized u and integral action - Equation (3.65)
