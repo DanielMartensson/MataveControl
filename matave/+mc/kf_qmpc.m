@@ -286,8 +286,8 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       psi = r - y;
       eta = eta + psi;
 
-      % Compute model with optimized u and integral action - Equation (3.65)
-      x0 = Ad*x0 + Bd*(u + eta) + Ed*disturbance;
+      % Compute candidate state x0 with optimized u and integral action - Equation (3.65)
+      x0 = Ad*x + Bd*(u + eta) + Ed*disturbance;
 
       % Create gradient g - Equation (3.32)
       g = gVec(Mx0, x0, MR, R, MD, D, Mum1, um1);
