@@ -2,24 +2,23 @@
 % Input: sys(Continuous state space model), N(Horizon number), r(Reference vector), umin(Minimum input vector),
 % umax(Maximum input vector), zmin(Minimum output vector), zmax(Maximum output vector),
 % deltaumin(Minimum output vector rate of change), deltaumax(Maximum rate of change output vector),
-% lambda(Integral action parameter, optional), Ts(The sample time, optional), T(End time, optional), x0(Initial state, optional)
+% Ts(The sample time, optional), T(End time, optional), x0(Initial state, optional)
 % s(Regularization value, optional), Qz(Weight parameter, optional), qw(Disturbance kalman filter tuning, optional)
 % rv(Noice kalman filter tuning, optional), Spsi(Slack variable matrix tuning, optional), spsi(Slack variable vector tuning, optional)
 % d(Disturbance vector e.g other measurements rather than y, optional), E(Disturbance input signal matrix, optional)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 1: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax)
-% Example 2: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda)
-% Example 3: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts)
-% Example 4: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T)
-% Example 5: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0)
-% Example 6: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s)
-% Example 7: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz)
-% Example 8: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw)
-% Example 9: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv)
-% Example 10: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi)
-% Example 11: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi)
-% Example 12: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d)
-% Example 13: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d, E)
+% Example 2: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax)
+% Example 3: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts)
+% Example 4: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T)
+% Example 5: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0)
+% Example 6: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s)
+% Example 7: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz)
+% Example 8: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw)
+% Example 9: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv)
+% Example 10: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi)
+% Example 11: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi)
+% Example 12: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d)
+% Example 13: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d, E)
 % Author: Daniel Mårtensson 2025 Januari 18
 
 function [Y, T, X, U] = kf_qmpc(varargin)
@@ -91,86 +90,79 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     error('Missing deltaumax');
   end
 
-  % Get the integral lambda parameter
-  if(length(varargin) >= 10)
-    lambda = varargin{10};
-  else
-    lambda = 0.001;
-  end
-
   % Get sample time
-  if(length(varargin) >= 11)
-    Ts = varargin{11};
+  if(length(varargin) >= 10)
+    Ts = varargin{10};
   else
     Ts = 1;
   end
 
   % Get time
-  if(length(varargin) >= 12)
-    T = varargin{12};
+  if(length(varargin) >= 11)
+    T = varargin{11};
   else
     T = 10;
   end
 
   % Get initial state x
-  if(length(varargin) >= 13)
-    x = varargin{13};
+  if(length(varargin) >= 12)
+    x = varargin{12};
   else
     x = 0;
   end
 
   % Get regularization parameter s
-  if(length(varargin) >= 14)
-    s = varargin{14};
+  if(length(varargin) >= 13)
+    s = varargin{13};
   else
     s = 1;
   end
 
   % Get weight parameter Qz
-  if(length(varargin) >= 15)
-    Qz = varargin{15};
+  if(length(varargin) >= 14)
+    Qz = varargin{14};
   else
     Qz = 1;
   end
 
   % Get kalman disturbance qw
-  if(length(varargin) >= 16)
-    qw = varargin{16};
+  if(length(varargin) >= 15)
+    qw = varargin{15};
   else
     qw = 1;
   end
 
   % Get kalman noise rv
-  if(length(varargin) >= 17)
-    rv = varargin{17};
+  if(length(varargin) >= 16)
+    rv = varargin{16};
   else
     rv = 1;
   end
 
   % Get slack parameter Spsi
-  if(length(varargin) >= 18)
-    Spsi = varargin{18};
+  if(length(varargin) >= 17)
+    Spsi = varargin{17};
   else
     Spsi = 1;
   end
 
   % Get slack parameter spsi
-  if(length(varargin) >= 19)
-    spsi = varargin{19};
+  if(length(varargin) >= 18)
+    spsi = varargin{18};
   else
     spsi = 1;
   end
 
   % Get disturbance
-  if(length(varargin) >= 20)
-    d = varargin{20};
+  if(length(varargin) >= 19)
+    d = varargin{19};
   else
     d = 0;
   end
 
   % Get disturbance matrix E
-  if(length(varargin) >= 21)
-    E = varargin{21};
+  if(length(varargin) >= 20)
+    E = varargin{20};
   else
     E = 0;
   end
@@ -266,6 +258,9 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Create measurement noise
     v = rv * randn(nz, L);
 
+    % Copy the state
+    x0 = x;
+
     % Create the output vectors
     X = zeros(nx, L);
     U = zeros(nu, L);
@@ -284,32 +279,26 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Give the old u to um1
       um1 = u;
 
+      % Get the disturbance
+      disturbance = D(1:nd);
+
       % Integral action - Equation (3.66)
       psi = r - y;
-      eta = eta + lambda*psi;
+      eta = eta + psi;
 
-      % Compute outputs and states - Equation (3.67)
-      y = Cd*x + v(:, k);
-
-      % Compute model - Equation (3.65)
-      x = Ad*x + Bd*(u + eta) + Ed*D(1:nd);
-
-      % Update error - Equation (3.72)
-      e = y - Cd*x;
-
-      % Kalman update - Equation (3.75)
-      x = x + K*e;
+      % Compute model with optimized u and integral action - Equation (3.65)
+      x0 = Ad*x0 + Bd*(u + eta) + Ed*disturbance;
 
       % Create gradient g - Equation (3.32)
-      g = gVec(Mx0, x, MR, R, MD, D, Mum1, um1);
+      g = gVec(Mx0, x0, MR, R, MD, D, Mum1, um1);
 
       % Create constraints on inputs - Equation (3.40)
       Umin = UminVec(umin, deltaumin, um1, N, nu);
       Umax = UmaxVec(umax, deltaumax, um1, N, nu);
 
       % Create constraints for the output - Equation (3.44)
-      barZmin = barZminVec(Zmin, Phi, x, Gammad, D);
-      barZmax = barZmaxVec(Zmax, Phi, x, Gammad, D);
+      barZmin = barZminVec(Zmin, Phi, x0, Gammad, D);
+      barZmax = barZmaxVec(Zmax, Phi, x0, Gammad, D);
 
       % Create gradient bar g - Equation (3.51)
       barg = bargVec(g, barspsi);
@@ -343,8 +332,20 @@ function [Y, T, X, U] = kf_qmpc(varargin)
         end
       end
 
-      % Set the u
-      u = output(1:nu)
+      % Set the input signal
+      u = output(1:nu);
+
+      % Compute outputs and states - Equation (3.67)
+      y = Cd*x + v(:, k)*0;
+
+      % Compute model with the optimized u - Equation (3.65)
+      x = Ad*x + Bd*u + Ed*disturbance;
+
+      % Update error - Equation (3.72)
+      e = y - Cd*x;
+
+      % Kalman update - Equation (3.75)
+      x = x + K*e;
 
     end
 
