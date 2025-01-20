@@ -19,7 +19,7 @@
 % Example 11: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi)
 % Example 12: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d)
 % Example 13: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d, E)
-% Author: Daniel Mårtensson 2025 Januari 18
+% Author: Daniel Mårtensson 2025 Januari 20
 
 function [Y, T, X, U] = kf_qmpc(varargin)
   % Check if there is any input
