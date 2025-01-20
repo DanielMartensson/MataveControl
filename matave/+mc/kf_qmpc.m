@@ -203,22 +203,16 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Create the discrete matrices - Equation (2.9)
     [Ad, Bd, Cd, Ed] = DiscreteMatrices(A, B, C, E, Ts);
 
-    % Create the augmented matrices - Equation (3.68) and (3.69)
-    [Ae, Be, Ce, Ee] = ExtendedMatrices(Ad, Bd, Cd, Ed);
-
-    % Extend the system vector as well
-    %x = [x; zeros(nu, 1)];
-
     % Create the kalman gain matrix K - Here we use Kalman-Bucy (1961) filter instead of Kalman Filter (1960).
-    syse = mc.ss(delay, Ae, Be, Ce);
+    syse = mc.ss(delay, Ad, Bd, Cd);
     syse.sampleTime = Ts;
     Qw = qw * eye(nx); % old size is nx + nu
     Rv = rv * eye(nz);
     [K] = mc.lqe(syse, Qw, Rv);
 
     % Create the Phi matrix and lower hankel toeplitz Gamma matrix of inputs - Equation (3.6)
-    Phi = PhiMat(Ae, Ce, N);
-    Gamma = GammaMat(Ae, Be, Ce, N);
+    Phi = PhiMat(Ad, Cd, N);
+    Gamma = GammaMat(Ad, Bd, Cd, N);
 
     % Create reference vector - Equation (3.8)
     R = RVec(r, N);
@@ -234,7 +228,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     H = HMat(Gamma, QZ, HS);
 
     % Create the lower hankel toeplitz Gamma matrix of disturbance and its disturbance vector - Equation (3.27)
-    Gammad = GammaMat(Ae, Ee, Ce, N);
+    Gammad = GammaMat(Ad, Ed, Cd, N);
     D = DVec(d, N);
 
     % Create the QP solver matrix for the gradient - Equation (3.32)
@@ -267,7 +261,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     u = zeros(nu, 1);
     y = zeros(nz, 1);
     um1 = zeros(nu, 1);
-    integral_action = zeros(nz, 1);
+    eta = zeros(nz, 1);
 
     % Create measurement noise
     v = rv * randn(nz, L);
@@ -290,12 +284,18 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Give the old u to um1
       um1 = u;
 
-      % Compute outputs and states - Equation (3.25)
-      y = Ce*x + v(:, k);
-      x = Ae*x + Be*u + Ee*D(1:nd);
+      % Integral action - Equation (3.66)
+      psi = r - y;
+      eta = eta + lambda*psi;
+
+      % Compute outputs and states - Equation (3.67)
+      y = Cd*x + v(:, k);
+
+      % Compute model - Equation (3.65)
+      x = Ad*x + Bd*(u + eta) + Ed*D(1:nd);
 
       % Update error - Equation (3.72)
-      e = y - Ce*x;
+      e = y - Cd*x;
 
       % Kalman update - Equation (3.75)
       x = x + K*e;
@@ -332,23 +332,19 @@ function [Y, T, X, U] = kf_qmpc(varargin)
 
       % Quadratic programming for propotional action for u
       if(isOctave == 1)
-        [propotional_action, ~, e] = qp ([], barH, barg, [], [], [], [], [], aqp, bqp);
+        [output, ~, e] = qp ([], barH, barg, [], [], [], [], [], aqp, bqp);
         if(e.info == 3)
           error('Quadratic programming QP could not optimize input signals. Try increase the horizion N number.');
         end
       else
-        [propotional_action, solution] = mc.quadprog(barH, barg, aqp, bqp); % Used for MATLAB users
+        [output, solution] = mc.quadprog(barH, barg, aqp, bqp); % Used for MATLAB users
         if(solution == false)
           error('Quadratic programming quadprog could not optimize input signals. Try to decrease the horizion N number or remove/change lambda regularization. Perhaps increase the slack variable.');
         end
       end
 
-      % Do integral action for u
-      e = r - y
-      integral_action = integral_action + lambda * e;
-
       % Set the u
-      u = propotional_action(1:nu) + integral_action;
+      u = output(1:nu)
 
     end
 
@@ -593,23 +589,4 @@ function [Ad, Bd, Cd, Ed] = DiscreteMatrices(A, B, C, E, Ts)
   Bd = M2(1:nx, nx + 1:nx + nu);
   Ed = M2(1:nx, nx + nu + 1:nx + nu + nd);
   Cd = C;
-end
-
-function [Ae, Be, Ce, Ee] = ExtendedMatrices(A, B, C, E)
-  % Need to find a way to implement integral action
-  Ae = A;
-  Be = B;
-  Ce = C;
-  Ee = E;
-  return
-
-  % Extended matrices for integral action
-  nx = size(A, 1);
-  nz = size(C, 1);
-  nu = size(B, 2);
-  nd = size(E, 2);
-  Ae = [A B; zeros(nu, nx) eye(nu, nu)];
-  Be = [B; zeros(nu, nu)];
-  Ee = [E; zeros(nu, nd)];
-  Ce = [C zeros(nz, nu)];
 end
