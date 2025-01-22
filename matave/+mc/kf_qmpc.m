@@ -438,7 +438,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     if(~strcmp(typec, 'SS' ))
       sysc = mc.tf2ss(sysc, 'OCF');
     end
-    [Y, T, X, U] = kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, Ts, T, x0, s, Qz, qw, rv, Spsi_spsi, d, E);
+    [Y, T, X, U] = kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi_spsi, d, E);
   end
 end
 
