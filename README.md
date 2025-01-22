@@ -198,7 +198,7 @@ legend('Input', 'Output', 'Reference')
 grid on
 ```
 
-This is the output where the plant model and the MPC model are not the same. Still, the error tracking can be minimized. 
+This is the output where the plant model and the MPC model are not identical. Still, the error tracking can be minimized and the constraints are taken into account.
 
 ![MPC Example - MATLAB](examples/kf_qmpcExampleMATLAB.png)
 
