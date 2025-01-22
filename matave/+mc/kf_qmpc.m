@@ -311,7 +311,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       um1 = u;
 
       % Integral action - Equation (3.66)
-      psi = r - y
+      psi = r - y;
       eta = eta + lambda*psi;
 
       % Limits for the integral eta
