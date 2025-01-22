@@ -1,24 +1,24 @@
 % Use Model Predictive Control with integral action, quadratic programming and kalman-bucy filter
-% Input: sys(Continuous state space model), N(Horizon number), r(Reference vector), umin(Minimum input vector),
-% umax(Maximum input vector), zmin(Minimum output vector), zmax(Maximum output vector),
-% deltaumin(Minimum output vector rate of change), deltaumax(Maximum rate of change output vector),
-% Ts(The sample time, optional), T(End time, optional), x0(Initial state, optional)
-% s(Regularization value, optional), Qz(Weight parameter, optional), qw(Disturbance kalman filter tuning, optional)
-% rv(Noice kalman filter tuning, optional), Spsi(Slack variable matrix tuning, optional), spsi(Slack variable vector tuning, optional)
+% Input: sysp(State space model of the plant), sysc(State space model of the controller), N(Horizon number), r(Reference vector),
+% umin(Minimum input vector), umax(Maximum input vector), zmin(Minimum output vector), zmax(Maximum output vector),
+% deltaumin(Minimum output vector rate of change), deltaumax(Maximum rate of change output vector), antiwindup(Maximum/Minimum value of integral),
+% lambda(Integral rate, optional), Ts(The sample time, optional), T(End time, optional), x0(Initial state, optional),
+% s(Regularization value, optional), Qz(Weight parameter, optional), qw(Disturbance kalman filter tuning, optional),
+% rv(Noice kalman filter tuning, optional), Spsi_spsi(Slack variable matrix tuning and slack variable vector tuning, optional),
 % d(Disturbance vector e.g other measurements rather than y, optional), E(Disturbance input signal matrix, optional)
 % Output: y(Output signal), T(Discrete time vector), X(State vector), U(Output signal)
-% Example 2: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax)
-% Example 3: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts)
-% Example 4: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T)
-% Example 5: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0)
-% Example 6: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s)
-% Example 7: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz)
-% Example 8: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw)
-% Example 9: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv)
-% Example 10: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi)
-% Example 11: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi)
-% Example 12: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d)
-% Example 13: [Y, T, X, U] = mc.kf_qmpc(sys, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, Ts, T, x0, s, Qz, qw, rv, Spsi, spsi, d, E)
+% Example 1: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup)
+% Example 2: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda)
+% Example 3: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts)
+% Example 4: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T)
+% Example 5: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0)
+% Example 6: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s)
+% Example 7: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz)
+% Example 8: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz, qw)
+% Example 9: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz, qw, rv)
+% Example 10: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi_spsi)
+% Example 11: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi_spsi, d)
+% Example 12: [Y, T, X, U] = mc.kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, lambda, Ts, T, x0, s, Qz, qw, rv, Spsi_spsi, d, E)
 % Author: Daniel Mårtensson 2025 Januari 20
 
 function [Y, T, X, U] = kf_qmpc(varargin)
@@ -27,156 +27,181 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     error('Missing inputs')
   end
 
-  % Get model
+  % Get system plant model
   if(length(varargin) >= 1)
-    sys = varargin{1};
+    sysp = varargin{1};
   else
-    error('Missing model');
+    error('Missing system plant model');
+  end
+
+  % Get system controller model
+  if(length(varargin) >= 2)
+    sysc = varargin{2};
+  else
+    error('Missing system controller model');
   end
 
   % Get horizon
-  if(length(varargin) >= 2)
-    N = varargin{2};
+  if(length(varargin) >= 3)
+    N = varargin{3};
   else
     error('Missing horizon');
   end
 
   % Get reference
-  if(length(varargin) >= 3)
-    r = varargin{3};
+  if(length(varargin) >= 4)
+    r = varargin{4};
   else
     error('Missing reference');
   end
 
   % Get umin
-  if(length(varargin) >= 4)
-    umin = varargin{4};
+  if(length(varargin) >= 5)
+    umin = varargin{5};
   else
     error('Missing umin');
   end
 
   % Get umax
-  if(length(varargin) >= 5)
-    umax = varargin{5};
+  if(length(varargin) >= 6)
+    umax = varargin{6};
   else
     error('Missing umax');
   end
 
   % Get zmin
-  if(length(varargin) >= 6)
-    zmin = varargin{6};
+  if(length(varargin) >= 7)
+    zmin = varargin{7};
   else
     error('Missing zmin');
   end
 
   % Get zmax
-  if(length(varargin) >= 7)
-    zmax = varargin{7};
+  if(length(varargin) >= 8)
+    zmax = varargin{8};
   else
     error('Missing zmax');
   end
 
   % Get udmin
-  if(length(varargin) >= 8)
-    deltaumin = varargin{8};
+  if(length(varargin) >= 9)
+    deltaumin = varargin{9};
   else
     error('Missing deltaumin');
   end
 
   % Get udmax
-  if(length(varargin) >= 9)
-    deltaumax = varargin{9};
+  if(length(varargin) >= 10)
+    deltaumax = varargin{10};
   else
     error('Missing deltaumax');
   end
 
+  % Get anti-windup
+  if(length(varargin) >= 11)
+    antiwindup = varargin{11};
+  else
+    error('Missing anti-windup');
+  end
+
+  % Get integral rate
+  if(length(varargin) >= 12)
+    lambda = varargin{12};
+  else
+    lambda = 0.01;
+  end
+
   % Get sample time
-  if(length(varargin) >= 10)
-    Ts = varargin{10};
+  if(length(varargin) >= 13)
+    Ts = varargin{13};
   else
     Ts = 1;
   end
 
   % Get time
-  if(length(varargin) >= 11)
-    T = varargin{11};
+  if(length(varargin) >= 14)
+    T = varargin{14};
   else
     T = 10;
   end
 
   % Get initial state x
-  if(length(varargin) >= 12)
-    x = varargin{12};
+  if(length(varargin) >= 15)
+    x = varargin{15};
   else
     x = 0;
   end
 
   % Get regularization parameter s
-  if(length(varargin) >= 13)
-    s = varargin{13};
+  if(length(varargin) >= 16)
+    s = varargin{16};
   else
     s = 1;
   end
 
   % Get weight parameter Qz
-  if(length(varargin) >= 14)
-    Qz = varargin{14};
+  if(length(varargin) >= 17)
+    Qz = varargin{17};
   else
     Qz = 1;
   end
 
   % Get kalman disturbance qw
-  if(length(varargin) >= 15)
-    qw = varargin{15};
+  if(length(varargin) >= 18)
+    qw = varargin{18};
   else
     qw = 1;
   end
 
   % Get kalman noise rv
-  if(length(varargin) >= 16)
-    rv = varargin{16};
+  if(length(varargin) >= 19)
+    rv = varargin{19};
   else
     rv = 1;
   end
 
-  % Get slack parameter Spsi
-  if(length(varargin) >= 17)
-    Spsi = varargin{17};
+  % Get slack parameter Spsi_spsi
+  if(length(varargin) >= 20)
+    Spsi_spsi = varargin{20};
   else
-    Spsi = 1;
-  end
-
-  % Get slack parameter spsi
-  if(length(varargin) >= 18)
-    spsi = varargin{18};
-  else
-    spsi = 1;
+    Spsi_spsi = 1;
   end
 
   % Get disturbance
-  if(length(varargin) >= 19)
-    d = varargin{19};
+  if(length(varargin) >= 21)
+    d = varargin{21};
   else
     d = 0;
   end
 
   % Get disturbance matrix E
-  if(length(varargin) >= 20)
-    E = varargin{20};
+  if(length(varargin) >= 22)
+    E = varargin{22};
+    Ep = E;
   else
     E = 0;
+    Ep = E;
   end
 
   % Get model type
-  type = varargin{1}.type;
+  typep = sysp.type;
+  typec = sysp.type;
+
   % Check if there is a TF or SS model
-  if(strcmp(type, 'SS' ))
-    % Get A, B, C, D matrecies
-    A = sys.A;
-    B = sys.B;
-    C = sys.C;
-    D = sys.D;
-    delay = sys.delay;
+  if(and(strcmp(typep, 'SS' ), strcmp(typec, 'SS' )))
+    % Get A, B, C, D matrecies from the plant model
+    Ap = sysp.A;
+    Bp = sysp.B;
+    Cp = sysp.C;
+    Dp = sysp.D;
+    delayp = sysp.delay;
+
+    % Get A, B, C, D matrecies from the controller model
+    A = sysc.A;
+    B = sysc.B;
+    C = sysc.C;
+    D = sysc.D;
+    delayc = sysc.delay;
 
     % This is the infinity value for single precision
     infinity = realmax('float');
@@ -194,13 +219,14 @@ function [Y, T, X, U] = kf_qmpc(varargin)
 
     % Create the discrete matrices - Equation (2.9)
     [Ad, Bd, Cd, Ed] = DiscreteMatrices(A, B, C, E, Ts);
+    [Adp, Bdp, Cdp, Edp] = DiscreteMatrices(Ap, Bp, Cp, Ep, Ts);
 
     % Create the kalman gain matrix K - Here we use Kalman-Bucy (1961) filter instead of Kalman Filter (1960).
-    syse = mc.ss(delay, Ad, Bd, Cd);
+    syse = mc.ss(delayc, Ad, Bd, Cd);
     syse.sampleTime = Ts;
-    Qw = qw * eye(nx); % old size is nx + nu
+    Qw = qw * eye(nx);
     Rv = rv * eye(nz);
-    [K] = mc.lqe(syse, Qw, Rv);
+    [K] = mc.lqe(syse, Qw, Rv); % This is the same as running the MATLAB command dare for computing kalman-bucy gain K
 
     % Create the Phi matrix and lower hankel toeplitz Gamma matrix of inputs - Equation (3.6)
     Phi = PhiMat(Ad, Cd, N);
@@ -239,6 +265,8 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     Zmax = ZmaxVec(zmax, N);
 
     % Create the slack variables - Equation (3.49)
+    Spsi = Spsi_spsi;
+    spsi = Spsi_spsi;
     barSpsi = barSpsiMat(Spsi, N, nu);
     barspsi = barspsiVec(spsi, N);
 
@@ -258,8 +286,8 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Create measurement noise
     v = rv * randn(nz, L);
 
-    % Copy the state
-    x0 = x;
+    % The plant state must have the same initial state as the controller state x
+    xp = x;
 
     % Get the disturbance
     disturbance = D(1:nd);
@@ -284,21 +312,27 @@ function [Y, T, X, U] = kf_qmpc(varargin)
 
       % Integral action - Equation (3.66)
       psi = r - y
-      eta = eta + psi;
+      eta = eta + lambda*psi;
 
-      % Compute candidate state x0 with optimized u and integral action - Equation (3.65)
-      x0 = Ad*x + Bd*(u + eta) + Ed*disturbance;
+      % Limits for the integral eta
+      if(abs(eta) > antiwindup)
+        eta = sign(eta)*antiwindup;
+      end
 
-      % Create gradient g - Equation (3.32)
-      g = gVec(Mx0, x0, MR, R, MD, D, Mum1, um1);
+      % Compute candidate state x - Equation (3.65)
+      x = Ad*x + Bd*u + Ed*disturbance;
+
+      % Create gradient g. Also add the integral eta together with reference vector R for adjust the reference settings - Equation (3.32)
+      % The reason why adjusting the reference R vector is because then the integral action will be optimized inside the QP-solver.
+      g = gVec(Mx0, x, MR, R + eta, MD, D, Mum1, um1);
 
       % Create constraints on inputs - Equation (3.40)
       Umin = UminVec(umin, deltaumin, um1, N, nu);
       Umax = UmaxVec(umax, deltaumax, um1, N, nu);
 
       % Create constraints for the output - Equation (3.44)
-      barZmin = barZminVec(Zmin, Phi, x0, Gammad, D);
-      barZmax = barZmaxVec(Zmax, Phi, x0, Gammad, D);
+      barZmin = barZminVec(Zmin, Phi, x, Gammad, D);
+      barZmax = barZmaxVec(Zmax, Phi, x, Gammad, D);
 
       % Create gradient bar g - Equation (3.51)
       barg = bargVec(g, barspsi);
@@ -335,11 +369,11 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Set the input signal
       u = output(1:nu);
 
-      % Compute outputs and states - Equation (3.67)
-      y = Cd*x + v(:, k)*0;
+      % Compute outputs - Equation (3.67)
+      y = Cdp*xp + v(:, k);
 
-      % Compute model with the optimized u - Equation (3.65)
-      x = Ad*x + Bd*u + Ed*disturbance;
+      % Compute plant model with the optimized u - Equation (3.65)
+      xp = Adp*xp + Bdp*u + Edp*disturbance;
 
       % Update error - Equation (3.72)
       e = y - Cd*x;
@@ -398,8 +432,13 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     title('Model Predictive Control With Integral Action And Quadratic Programming')
   else
     % TF to SS
-    sys = mc.tf2ss(sys, 'OCF');
-    [Y, T, X, U] = kf_qmpc(sys, x0, R, N, umin, umax, udmin, udmax, zmin, zmax);
+    if(~strcmp(typep, 'SS' ))
+      sysp = mc.tf2ss(sysp, 'OCF');
+    end
+    if(~strcmp(typec, 'SS' ))
+      sysc = mc.tf2ss(sysc, 'OCF');
+    end
+    [Y, T, X, U] = kf_qmpc(sysp, sysc, N, r, umin, umax, zmin, zmax, deltaumin, deltaumax, antiwindup, Ts, T, x0, s, Qz, qw, rv, Spsi_spsi, d, E);
   end
 end
 
