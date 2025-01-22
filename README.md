@@ -175,9 +175,9 @@ d = 3;                       % Disturbance signal at step iteration k = 0       
 E = [0; 0];                  % Disturbance signal matrix for both sysp and sysc      (optional)
 
 %% Run MPC with Kalman-bucy filter
-%                                                         d
-%                                                         |
-%                                                         |
+%                                                          d
+%                                                          |
+%                                                          |
 %                        ____________                 _____V_______
 %             + _       |            |               |            |
 %    ---r--|---|_|--R-->|  MPC + KF  |-------u------>|    PLANT   |----------y------>
