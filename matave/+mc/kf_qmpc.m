@@ -268,7 +268,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     Spsi = Spsi_spsi;
     spsi = Spsi_spsi;
     barSpsi = barSpsiMat(Spsi, N, nu);
-    barspsi = barspsiVec(spsi, N);
+    barspsi = barspsiVec(spsi, N, nu);
 
     % Create QP solver matrix - Equation (3.51)
     barH = barHMat(H, barSpsi, N, nu);
@@ -324,7 +324,8 @@ function [Y, T, X, U] = kf_qmpc(varargin)
 
       % Create gradient g. Also add the integral eta together with reference vector R for adjust the reference settings - Equation (3.32)
       % The reason why adjusting the reference R vector is because then the integral action will be optimized inside the QP-solver.
-      g = gVec(Mx0, x, MR, R + eta, MD, D, Mum1, um1);
+      Ri = repmat(eta, N, 1);
+      g = gVec(Mx0, x, MR, R + Ri, MD, D, Mum1, um1);
 
       % Create constraints on inputs - Equation (3.40)
       Umin = UminVec(umin, deltaumin, um1, N, nu);
@@ -340,17 +341,17 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Create barUmin and barUmax - Equation (3.52)
       barUmin = barUminVec(Umin, N);
       barUmax = barUmaxVec(Umax, infinity, N);
-      UI = eye(2 * N);
+      UI = eye(N * nu + N, 2 * N * nu);
 
-      % Create bmin, bmax and A - Equation (3.56)
-      bmin = bminVec(deltaUmin, barZmin, infinity, N);
-      bmax = bmaxVec(deltaUmax, barZmax, infinity, N);
-      A = AMat(Lambda, Gamma, N);
+      % Create bmin, bmax and AA - Equation (3.56)
+      bmin = bminVec(deltaUmin, barZmin, infinity, N, nz);
+      bmax = bmaxVec(deltaUmax, barZmax, infinity, N, nz);
+      AA = AAMat(Lambda, Gamma, N, nu, nz);
 
       % Create for QP - Equation (3.57)
       % barUmin <= I*U <= barUmax
-      % bmin <= A*U <= bmax
-      aqp = [UI; A; -UI; -A];
+      % bmin <= AA*U <= bmax
+      aqp = [UI; AA; -UI; -AA];
       bqp = [barUmax; bmax; -barUmin; -bmin];
 
       % Quadratic programming for propotional action for u
@@ -517,12 +518,12 @@ function barH = barHMat(H, barSpsi, N, nu)
   barH = [H z; z barSpsi];
 end
 
-function barSpsi = barSpsiMat(Seta, N, nu)
-  barSpsi = eye(nu * N) * Seta;
+function barSpsi = barSpsiMat(Spsi, N, nu)
+  barSpsi = Spsi * eye(nu * N);
 end
 
-function A = AMat(Lambda, Gamma, N)
-  A = [Lambda zeros(N-1, N); Gamma -eye(N, N); Gamma eye(N, N)];
+function AA = AAMat(Lambda, Gamma, N, nu, nz)
+  AA = [Lambda zeros((N-1)*nu, nu*N); Gamma -eye(nz*N, nu*N); Gamma eye(nz*N, nu*N)];
 end
 
 function HS = HSMat(S, N, nu)
@@ -548,8 +549,8 @@ function HS = HSMat(S, N, nu)
   end
 end
 
-function barspsi = barspsiVec(spsi, N)
-  barspsi = spsi * ones(N, 1);
+function barspsi = barspsiVec(spsi, N, nu)
+  barspsi = spsi * ones(N*nu, 1);
 end
 
 function barg = bargVec(g, barspsi)
@@ -561,37 +562,37 @@ function g = gVec(Mx0, x0, MR, R, MD, D, Mum1, um1)
 end
 
 function R = RVec(r, N)
-  R = repmat(r, N/length(r), 1);
+  R = repmat(r, N, 1);
 end
 
 function D = DVec(d, N)
-  D = repmat(d, N/length(d), 1);
+  D = repmat(d, N, 1);
 end
 
 function Umin = UminVec(umin, deltaumin, um1, N, nu);
-  Umin = repmat(umin, N/length(umin), 1);
+  Umin = repmat(umin, N, 1);
   Umin(1:nu) = max(umin, deltaumin + um1);
 end
 
 function Umax = UmaxVec(umax, deltaumax, um1, N, nu);
-  Umax = repmat(umax, N/length(umax), 1);
+  Umax = repmat(umax, N, 1);
   Umax(1:nu) = min(umax, deltaumax + um1);
 end
 
 function deltaUmin = deltaUminVec(deltaumin, N)
-  deltaUmin = repmat(deltaumin, (N-1)/length(deltaumin), 1);
+  deltaUmin = repmat(deltaumin, N-1, 1);
 end
 
 function deltaUmax = deltaUmaxVec(deltaumax, N)
-  deltaUmax = repmat(deltaumax, (N-1)/length(deltaumax), 1);
+  deltaUmax = repmat(deltaumax, N-1, 1);
 end
 
 function Zmax = ZmaxVec(zmax, N)
-  Zmax = repmat(zmax, N/length(zmax), 1);
+  Zmax = repmat(zmax, N, 1);
 end
 
 function Zmin = ZminVec(zmin, N)
-  Zmin = repmat(zmin, N/length(zmin), 1);
+  Zmin = repmat(zmin, N, 1);
 end
 
 function barZmin = barZminVec(Zmin, Phi, x0, Gammad, D)
@@ -610,16 +611,15 @@ function barUmax = barUmaxVec(Umax, infinity, N)
   barUmax = [Umax; infinity * ones(N, 1)];
 end
 
-function bmin = bminVec(deltaUmin, barZmin, infinity, N)
-  bmin = [deltaUmin; -infinity * ones(N, 1); barZmin];
+function bmin = bminVec(deltaUmin, barZmin, infinity, N, nz)
+  bmin = [deltaUmin; -infinity * ones(N*nz, 1); barZmin];
 end
 
-function bmax = bmaxVec(deltaUmax, barZax, infinity, N)
-  bmax = [deltaUmax; barZax; infinity * ones(N, 1)];
+function bmax = bmaxVec(deltaUmax, barZmax, infinity, N, nz)
+  bmax = [deltaUmax; barZmax; infinity * ones(N*nz, 1)];
 end
 
 function [Ad, Bd, Cd, Ed] = DiscreteMatrices(A, B, C, E, Ts)
-  % Discrete matrices for fixed step based simulation
   nx = size(A, 1);
   nu = size(B, 2);
   nd = size(E, 2);
