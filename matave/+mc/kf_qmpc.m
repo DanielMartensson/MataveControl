@@ -273,6 +273,9 @@ function [Y, T, X, U] = kf_qmpc(varargin)
     % Create QP solver matrix - Equation (3.51)
     barH = barHMat(H, barSpsi, N, nu);
 
+    % Create inequality constraints AA - Equation (3.56)
+    AA = AAMat(Lambda, Gamma, N, nu, nz);
+
     % Create time vector
     t = 0:Ts:T;
     L = length(t);
@@ -343,10 +346,9 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       barUmax = barUmaxVec(Umax, infinity, N);
       UI = eye(N * nu + N, 2 * N * nu);
 
-      % Create bmin, bmax and AA - Equation (3.56)
+      % Create bmin and bmax - Equation (3.56)
       bmin = bminVec(deltaUmin, barZmin, infinity, N, nz);
       bmax = bmaxVec(deltaUmax, barZmax, infinity, N, nz);
-      AA = AAMat(Lambda, Gamma, N, nu, nz);
 
       % Create for QP - Equation (3.57)
       % barUmin <= I*U <= barUmax
