@@ -82,6 +82,8 @@ https://github.com/DanielMartensson/MataveControl/blob/03df47fbb3688b9a541b172b1
 This MPC is different from the above. This MPC contains a kalman filter and is meant to be used for implementation of MPC for micro controllers. This have a unique integral action, were the integral is added 
 the reference vector `R` before optimizing with the QP-solver. The code follows the paper "Model Predictive Control for an artificial pancreas. Matias Sørensen og Simon Kristiansen", which can be found in this repository. 
 
+Ther is also an equivalent C code example here: [CControl](https://github.com/DanielMartensson/CControl/blob/master/src/CControl/Documents/Examples/ControlEngineering/mpc.txt)
+
 https://github.com/DanielMartensson/MataveControl/blob/65a3e6e6953bcd3bd6fe93240f7eb3293c43c048/examples/kf_qmpcExample.m#L1-L113
 
 This is the output where the plant model and the MPC model are not identical. Still, the error tracking can be minimized and the constraints are taken into account.
