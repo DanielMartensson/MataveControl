@@ -84,7 +84,7 @@ the reference vector `R` before optimizing with the QP-solver. The code follows 
 
 Ther is also an equivalent C code example here: [CControl](https://github.com/DanielMartensson/CControl/blob/master/src/CControl/Documents/Examples/ControlEngineering/mpc.txt)
 
-https://github.com/DanielMartensson/MataveControl/blob/65a3e6e6953bcd3bd6fe93240f7eb3293c43c048/examples/kf_qmpcExample.m#L1-L113
+https://github.com/DanielMartensson/MataveControl/blob/8d15f7b0d237f5142def693d02c09a49e3c5283d/examples/kf_qmpcExample.m#L1-L114
 
 This is the output where the plant model and the MPC model are not identical. Still, the error tracking can be minimized and the constraints are taken into account.
 
