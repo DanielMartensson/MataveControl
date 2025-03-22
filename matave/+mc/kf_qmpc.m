@@ -333,9 +333,6 @@ function [Y, T, X, U] = kf_qmpc(varargin)
         eta = sign(eta)*antiwindup;
       end
 
-      % Compute candidate state x - Equation (3.65)
-      x = Adkf*x + Bdkf*u + Edkf*disturbance;
-
       % Create gradient g. Also add the integral eta together with reference vector R for adjust the reference settings - Equation (3.32)
       % The reason why adjusting the reference R vector is because then the integral action will be optimized inside the QP-solver.
       Ri = repmat(eta, N, 1);
@@ -384,7 +381,7 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       u = output(1:nu);
 
       % Compute outputs - Equation (3.67)
-      y = Cdp*xp + v(:, k)*0;
+      y = Cdp*xp + v(:, k);
 
       % Compute plant model with the optimized u - Equation (3.65)
       xp = Adp*xp + Bdp*u + Edp*disturbance;
@@ -395,6 +392,8 @@ function [Y, T, X, U] = kf_qmpc(varargin)
       % Kalman update - Equation (3.75)
       x = x + K*e;
 
+      % Compute candidate state x - Equation (3.65)
+      x = Adkf*x + Bdkf*u + Edkf*disturbance;
     end
 
     %Cange t and y vector and u so the plot look like it is discrete - Important!
